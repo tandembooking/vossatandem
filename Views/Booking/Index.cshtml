@@ -13,6 +13,24 @@
 
 <form asp-controller="Booking" asp-action="Index" method="post">
     <div class="form-group">
+        <label asp-for="Date">
+            When would you like to fly?
+        </label>
+        <div class="row">
+            <div class="col-sm-4">
+                <div id="datepicker" data-date='@Model.Date?.ToString("MM/dd/yyyy")'></div>
+                <input type="hidden" asp-for="Date"/>
+            </div>
+            <div class="info col-sm-8">
+                Please note that paragliding is very dependent on weather. Safety is paramount, and we will only fly if the weather conditions permit it. If the selected day turns out to be unflyable, your pilot will contact you to cancel the flight. You will of course not pay anything if we're unable to fly.
+            </div>
+        </div>
+        <p>
+            <span asp-validation-for="Date" class="text-danger"></span>
+        </p>
+    </div>
+
+    <div class="form-group">
         <label asp-for="Name">
             Please enter your name
         </label>
@@ -25,24 +43,6 @@
         </div>
         <p>
             <span asp-validation-for="Name" class="text-danger"></span>
-        </p>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Date">
-            When would you like to fly?
-        </label>
-        <div class="row">
-            <div class="col-sm-4">
-                <div id="datepicker" data-date='@Model.Date?.ToString("MM/dd/yyyy")'></div>
-                <input type="hidden" asp-for="Date" />
-            </div>
-            <div class="info col-sm-8">
-                Please note that paragliding is very dependent on weather. Safety is paramount, and we will only fly if the weather conditions permit it. If the selected day turns out to be unflyable, your pilot will contact you to cancel the flight. You will of course not pay anything if we're unable to fly.
-            </div>
-        </div>
-        <p>
-            <span asp-validation-for="Date" class="text-danger"></span>
         </p>
     </div>
 
@@ -94,6 +94,23 @@
         </div>
         <p>
             <span asp-validation-for="Passengers" class="text-danger"></span>
+        </p>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Comment">
+            Message to pilot
+        </label>
+        <div class="row">
+            <div class="col-sm-4">
+                <textarea asp-for="Comment" class="form-control"></textarea>
+            </div>
+            <p class="col-sm-8">
+                Extra information you want to share with the pilot, e.g. time constraints or other requirements.
+            </p>
+        </div>
+        <p>
+            <span asp-validation-for="Comment" class="text-danger"></span>
         </p>
     </div>
 

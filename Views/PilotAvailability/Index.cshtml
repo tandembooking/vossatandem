@@ -1,7 +1,8 @@
+@using System.Security.Claims
 @model TandemBooking.Controllers.PilotAvailabilityViewModel
 
 @{
-    ViewData["Title"] = "Tilgjengelighet";
+    ViewData["Title"] = $"Availability for {User.GetUserName()}";
 }
 
 <style>
@@ -25,6 +26,9 @@
 
 <h2>@ViewData["Title"]</h2>
 
+<p>
+    Please select the dates you are available for tandem flights. Green means you are available on the selected date, red means unavailable.
+</p>
 
 <div class="row">
     <div class="col-xs-2">
@@ -40,13 +44,13 @@
 
 <table class="table table-bordered pilot-availability" style="width: 100%; table-layout: fixed;">
     <tr>
-        <th>Man</th>
-        <th>Tir</th>
-        <th>Ons</th>
-        <th>Tor</th>
-        <th>Fre</th>
-        <th>Lør</th>
-        <th>Søn</th>
+        <th>Mon</th>
+        <th>Tue</th>
+        <th>Wed</th>
+        <th>Thu</th>
+        <th>Fri</th>
+        <th>Sat</th>
+        <th>Sun</th>
     </tr>
     @{
         int day = 0;

@@ -9,6 +9,15 @@ namespace TandemBooking.ViewModels.Account
     public class RegisterViewModel
     {
         [Required]
+        [Display(Name = "Name")]
+        public string Name { get; set; }
+
+        [Required]
+        [Phone]
+        [Display(Name = "Phone Number")]
+        public string PhoneNumber { get; set; }
+
+        [Required]
         [EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; }

@@ -14,7 +14,7 @@ namespace TandemBooking.Models {
         
         public string PassengerName {get;set;}
         public string PassengerEmail {get;set;}
-        public string PassengerPhone {get;set;}
+        public string PassengerPhone {get;set;} 
         public string Comment {get;set;}
     }
 

@@ -23,5 +23,8 @@ namespace TandemBooking.ViewModels.Booking
 
         [Required(ErrorMessage = "Please enter a valid number of passengers or 1 if you're the only one flying")]
         public int Passengers { get; set; }
+
+        [DataType(DataType.MultilineText)]
+        public string Comment { get; set; }
     }
 }

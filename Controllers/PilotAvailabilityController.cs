@@ -25,18 +25,18 @@ namespace TandemBooking.Controllers
     {
         private static string[] _monthNames = new[]
         {
-            "Januar",
-            "Februar",
-            "Mars",
+            "January",
+            "February",
+            "March",
             "April",
-            "Mai",
-            "Juni",
-            "Juli",
+            "May",
+            "June",
+            "July",
             "August",
             "September",
-            "Oktober",
+            "October",
             "November",
-            "Desember"
+            "December"
         };
 
         private readonly ApplicationDbContext _context;
