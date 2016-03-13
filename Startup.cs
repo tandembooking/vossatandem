@@ -43,9 +43,14 @@ namespace TandemBooking
         {
             // Add framework services.
             services.AddEntityFramework()
-                .AddSqlite()
+                .AddSqlServer()
+                //.AddSqlite()
                 .AddDbContext<ApplicationDbContext>(options =>
-                    options.UseSqlite(Configuration["Data:DefaultConnection:ConnectionString"]));
+                {
+                    options.UseSqlServer(@"server=(localdb)\MSSQLLocalDB;database=tandembooking;integrated security=true");
+                    //options.UseSqlite(Configuration["Data:DefaultConnection:ConnectionString"]);
+                });
+                    
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options => {
                     options.Password.RequireDigit = false;

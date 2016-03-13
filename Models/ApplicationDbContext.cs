@@ -9,6 +9,9 @@ namespace TandemBooking.Models
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
+        public DbSet<Booking> Bookings { get; set; } 
+        public DbSet<PilotAvailability> PilotAvailabilities { get; set; } 
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

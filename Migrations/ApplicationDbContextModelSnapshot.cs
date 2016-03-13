@@ -5,7 +5,7 @@ using Microsoft.Data.Entity.Metadata;
 using Microsoft.Data.Entity.Migrations;
 using TandemBooking.Models;
 
-namespace TandemBooking.Migrations
+namespace tandembooking.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -13,7 +13,8 @@ namespace TandemBooking.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0-rc1-16348");
+                .HasAnnotation("ProductVersion", "7.0.0-rc1-16348")
+                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Microsoft.AspNet.Identity.EntityFramework.IdentityRole", b =>
                 {
@@ -111,11 +112,15 @@ namespace TandemBooking.Migrations
 
                     b.Property<bool>("EmailConfirmed");
 
+                    b.Property<bool>("IsAdmin");
+
                     b.Property<bool>("IsPilot");
 
                     b.Property<bool>("LockoutEnabled");
 
                     b.Property<DateTimeOffset?>("LockoutEnd");
+
+                    b.Property<string>("Name");
 
                     b.Property<string>("NormalizedEmail")
                         .HasAnnotation("MaxLength", 256);
@@ -151,8 +156,6 @@ namespace TandemBooking.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<string>("AssignedPilotId");
 
                     b.Property<DateTime>("BookingDate");
 
@@ -211,13 +214,6 @@ namespace TandemBooking.Migrations
                     b.HasOne("TandemBooking.Models.ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("TandemBooking.Models.Booking", b =>
-                {
-                    b.HasOne("TandemBooking.Models.ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("AssignedPilotId");
                 });
 
             modelBuilder.Entity("TandemBooking.Models.PilotAvailability", b =>

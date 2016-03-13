@@ -1,0 +1,125 @@
+@model TandemBooking.ViewModels.Booking.BookingViewModel
+@{
+    ViewData["Title"] = "Booking";
+}
+<h2>@ViewData["Title"]</h2>
+
+<p>
+    Awesome! We're super excited about showing you Voss from the air, and what paragliding is all about. Fill out
+    the form below, and one of our pilots will contact you and arrange the details.
+</p>
+
+<div asp-validation-summary="ValidationSummary.ModelOnly" class="text-danger"></div>
+
+<form asp-controller="Booking" asp-action="Index" method="post">
+    <div class="form-group">
+        <label asp-for="Name">
+            Please enter your name
+        </label>
+        <div class="row">
+            <div class="col-sm-4">
+                <input type="text" asp-for="Name" class="form-control" placeholder="Please enter your name" />
+            </div>
+            <div class="info col-sm-8">
+            </div>
+        </div>
+        <p>
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </p>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Date">
+            When would you like to fly?
+        </label>
+        <div class="row">
+            <div class="col-sm-4">
+                <div id="datepicker" data-date='@Model.Date?.ToString("MM/dd/yyyy")'></div>
+                <input type="hidden" asp-for="Date" />
+            </div>
+            <div class="info col-sm-8">
+                Please note that paragliding is very dependent on weather. Safety is paramount, and we will only fly if the weather conditions permit it. If the selected day turns out to be unflyable, your pilot will contact you to cancel the flight. You will of course not pay anything if we're unable to fly.
+            </div>
+        </div>
+        <p>
+            <span asp-validation-for="Date" class="text-danger"></span>
+        </p>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="PhoneNumber">
+            Phone number
+        </label>
+        <div class="row">
+            <div class="col-sm-4">
+                <input type="tel" asp-for="PhoneNumber" class="form-control" placeholder="Please enter a phone number"/>
+            </div>
+            <div class="info col-sm-8">
+                Your pilot will contact you on this phone number in order to arrange the details for your flight. It will not be used for any other purpose.
+            </div>
+        </div>
+        <p>
+            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+        </p>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Email">
+            Email
+        </label>
+        <div class="row">
+            <div class="col-sm-4">
+                <input type="email" asp-for="Email" class="form-control" placeholder="Optionally enter an email address" />
+            </div>
+            <p class="info col-sm-8">
+                An optional email address the pilot can use to send pictures/video of your flight. Arrange the details with your pilot.
+            </p>
+        </div>
+        <p>
+            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+        </p>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Passengers">
+            Number of passengers
+        </label>
+        <div class="row">
+            <div class="col-sm-4">
+                <input type="number" asp-for="Passengers" class="form-control"/>
+            </div>
+            <p class="col-sm-8">
+                Are you a group wanting to experience paragliding together? Enter the number of people wanting to fly, and we'll find a suitable number pilots.
+            </p>
+        </div>
+        <p>
+            <span asp-validation-for="Passengers" class="text-danger"></span>
+        </p>
+    </div>
+
+    <p>
+        When you click the submit button below, we will try to find an available pilot who can give you a tandem flight. The pilot will call you to discuss the exact time and place you'll fly. If you enter an email address, we'll send you a confirmation email with name and phone number to your pilot.
+    </p>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Take me flying!</button>
+    </div>
+
+
+
+</form>
+
+@section scripts
+{
+    <script>
+        $('#datepicker').datepicker({
+            format: "mm/dd/yyyy"
+        });
+        $('#datepicker').on("changeDate", function () {
+            $('#Date').val(
+                $('#datepicker').datepicker('getFormattedDate')
+            );
+        });
+    </script>
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
