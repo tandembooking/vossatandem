@@ -9,19 +9,21 @@ namespace TandemBooking.ViewModels.Booking
 {
     public class BookingViewModel
     {
+        [Required(ErrorMessage = "Please select a date")]
         [DataType(DataType.Date, ErrorMessage="Please enter a valid date")]
         public DateTime? Date { get; set; }
 
         [Required(ErrorMessage = "Please enter your name")]
         public string Name { get; set; }
 
+        [Phone(ErrorMessage = "We need a phone number to contact you about your flight. Please enter valid phone number.")]
         [Required(ErrorMessage = "We need a phone number to contact you about your flight. Please enter valid phone number.")]
         public string PhoneNumber { get; set; }
 
-        [DataType(DataType.EmailAddress, ErrorMessage = "Please enter a valid email address")]
+        [EmailAddress(ErrorMessage = "Please enter a valid email address")]
         public string Email { get; set;  }
 
-        [Required(ErrorMessage = "Please enter a valid number of passengers or 1 if you're the only one flying")]
+        [Required(ErrorMessage = "Please enter a valid number of passengers or 1 if you're the only one flying")]   
         public int Passengers { get; set; }
 
         [DataType(DataType.MultilineText)]

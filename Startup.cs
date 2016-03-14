@@ -32,8 +32,6 @@ namespace TandemBooking
 
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
-            Configuration["Data:DefaultConnection:ConnectionString"] = $@"Data Source={appEnv.ApplicationBasePath}/TandemBooking.db";
-
         }
 
         public IConfigurationRoot Configuration { get; set; }
@@ -47,8 +45,7 @@ namespace TandemBooking
                 //.AddSqlite()
                 .AddDbContext<ApplicationDbContext>(options =>
                 {
-                    options.UseSqlServer(@"server=(localdb)\MSSQLLocalDB;database=tandembooking;integrated security=true");
-                    //options.UseSqlite(Configuration["Data:DefaultConnection:ConnectionString"]);
+                    options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]);
                 });
                     
 
