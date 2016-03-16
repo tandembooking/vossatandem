@@ -7,7 +7,7 @@ using Microsoft.Data.Entity;
 
 namespace TandemBooking.Models
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class TandemBookingContext : IdentityDbContext<ApplicationUser>
     {
         public DbSet<Booking> Bookings { get; set; } 
         public DbSet<PilotAvailability> PilotAvailabilities { get; set; } 
@@ -18,6 +18,8 @@ namespace TandemBooking.Models
 
             builder.Entity<Booking>();
             builder.Entity<PilotAvailability>();
+            builder.Entity<BookingEvent>();
+            builder.Entity<BookedPilot>();
         }
     }
 }

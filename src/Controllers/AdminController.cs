@@ -8,9 +8,9 @@ namespace TandemBooking.Controllers
     [Authorize]
     public class AdminController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly TandemBookingContext _context;
 
-        public AdminController(ApplicationDbContext context)
+        public AdminController(TandemBookingContext context)
         {
             _context = context;
         }

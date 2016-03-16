@@ -23,18 +23,21 @@ namespace TandemBooking.Controllers
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
+        private readonly NexmoService _nexmo;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ISmsSender smsSender,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory, 
+            NexmoService nexmo)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _smsSender = smsSender;
+            _nexmo = nexmo;
             _logger = loggerFactory.CreateLogger<AccountController>();
         }
 
@@ -102,6 +105,19 @@ namespace TandemBooking.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
+            if (ModelState.IsValid)
+            {
+                var phoneNumber = await _nexmo.FormatPhoneNumber(model.PhoneNumber);
+                if (phoneNumber == null)
+                {
+                    ModelState.AddModelError("PhoneNumber", "Please enter a valid phone number");
+                }
+                else
+                {
+                    model.PhoneNumber = phoneNumber;
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser

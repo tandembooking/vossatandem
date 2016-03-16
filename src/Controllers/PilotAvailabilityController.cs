@@ -39,9 +39,9 @@ namespace TandemBooking.Controllers
             "December"
         };
 
-        private readonly ApplicationDbContext _context;
+        private readonly TandemBookingContext _context;
 
-        public PilotAvailabilityController(ApplicationDbContext context)
+        public PilotAvailabilityController(TandemBookingContext context)
         {
             _context = context;
         }

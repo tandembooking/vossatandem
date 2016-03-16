@@ -9,7 +9,7 @@
     the form below, and one of our pilots will contact you and arrange the details.
 </p>
 
-<div asp-validation-summary="ValidationSummary.ModelOnly" class="text-danger"></div>
+<div asp-validation-summary="ValidationSummary.All" class="text-danger"></div>
 
 <form id="BookingForm" asp-controller="Booking" asp-action="Index" method="post">
     <div class="form-group">
@@ -80,7 +80,7 @@
         </p>
     </div>
 
-    <div class="form-group">
+    @*<div class="form-group">
         <label asp-for="Passengers">
             Number of passengers
         </label>
@@ -95,7 +95,7 @@
         <p>
             <span asp-validation-for="Passengers" class="text-danger"></span>
         </p>
-    </div>
+    </div>*@
 
     <div class="form-group">
         <label asp-for="Comment">

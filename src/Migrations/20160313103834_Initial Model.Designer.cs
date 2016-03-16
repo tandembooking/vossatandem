@@ -7,7 +7,7 @@ using TandemBooking.Models;
 
 namespace tandembooking.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(TandemBookingContext))]
     [Migration("20160313103834_Initial Model")]
     partial class InitialModel
     {
