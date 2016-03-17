@@ -6,11 +6,11 @@ using TandemBooking.Models;
 namespace TandemBooking.Controllers
 {
     [Authorize]
-    public class AdminController : Controller
+    public class UserAdminController : Controller
     {
         private readonly TandemBookingContext _context;
 
-        public AdminController(TandemBookingContext context)
+        public UserAdminController(TandemBookingContext context)
         {
             _context = context;
         }

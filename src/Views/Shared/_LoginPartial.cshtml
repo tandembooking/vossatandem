@@ -6,7 +6,7 @@
         <ul class="nav navbar-nav navbar-right">
             @if (User.HasClaim(claim => claim.Type == "IsAdmin"))
             {
-                <li><a asp-controller="Admin" asp-action="Index">Pilots</a></li>
+                <li><a asp-controller="UserAdmin" asp-action="Index">Pilots</a></li>
             }
             @if (User.HasClaim(claim => claim.Type == "IsPilot"))
             {

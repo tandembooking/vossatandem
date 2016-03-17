@@ -1,25 +1,14 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Mvc;
 using TandemBooking.Models;
+using TandemBooking.ViewModels;
 
 namespace TandemBooking.Controllers
 {
- 
-    public class PilotAvailabilityViewModel
-    {
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-        public List<PilotAvailability> Availabilities { get; set; }
-        public DateTime Next { get; set; }
-        public DateTime Prev { get; set; }
-        public string MonthName { get; set; }
-    }
-
     [Authorize]
     public class PilotAvailabilityController : Controller
     {
