@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace TandemBooking.Models
@@ -8,5 +9,7 @@ namespace TandemBooking.Models
         public string Name { get; set; }
         public bool IsPilot { get; set; }
         public bool IsAdmin { get; set; }
+
+        public ICollection<BookedPilot> Bookings { get; set; }
     }
 }

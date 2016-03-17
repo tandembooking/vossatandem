@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Mvc;
 using Microsoft.Data.Entity;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using TandemBooking.Models;
 using TandemBooking.Services;
 using TandemBooking.ViewModels.Booking;
@@ -64,11 +65,23 @@ namespace TandemBooking.Controllers
                     };
                     _context.Add(booking);
 
-                    //find available pilot
+
+                    //find list of available pilots pilots having the least amount of flights
+                    //during the last 30 days
                     var availablePilots = _context.PilotAvailabilities
-                        .Include(pa => pa.Pilot)
                         .Where(pa => pa.Date.Date == date && pa.Pilot.IsPilot)
-                        .ToList();
+                        .Select(pa => new
+                        {
+                            Pilot = pa.Pilot,
+                            Bookings = pa.Pilot.Bookings.Where(b => b.Booking.BookingDate > DateTime.UtcNow.AddDays(-30))
+                        })
+                        .ToList()
+                        .GroupBy(pa => pa.Bookings.Count())
+                        .OrderBy(grp => grp.Key)
+                        .FirstOrDefault()
+                        .ToList()
+                        ;
+
 
                     ApplicationUser selectedPilot = null;
                     if (availablePilots.Count > 0)
@@ -91,7 +104,7 @@ namespace TandemBooking.Controllers
                     if (selectedPilot != null)
                     {
                         var message =
-                            $"You have a new flight on {bookingDateString}: {booking.PassengerName}, {booking.PassengerEmail}, {booking.PassengerPhone}.";
+                            $"You have a new flight on {bookingDateString}: {booking.PassengerName}, {booking.PassengerEmail}, {booking.PassengerPhone}, {booking.Comment}.";
                         await _nexmo.SendSms("VossHPK", selectedPilot.PhoneNumber, message);
 
                         var passengerMessage =
@@ -101,7 +114,7 @@ namespace TandemBooking.Controllers
                     else
                     {
                         var message =
-                            $"Please find a pilot on {bookingDateString}: {booking.PassengerName}, {booking.PassengerEmail}, {booking.PassengerPhone}";
+                            $"Please find a pilot on {bookingDateString}: {booking.PassengerName}, {booking.PassengerEmail}, {booking.PassengerPhone}, {booking.Comment}";
                         await _nexmo.SendSms("VossHPK", _bookingCoordinatorSettings.PhoneNumber, message);
 
                         var passengerMessage =
