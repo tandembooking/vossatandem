@@ -30,3 +30,15 @@ textarea {
 #datepicker .datepicker-inline table {
     width: 100%;   
 }
+
+.control-text {
+    margin-top: 7px;
+}
+
+tr.booking-past {
+    color: #999;
+}
+
+tr.booking-canceled {
+    text-decoration: line-through;  
+}

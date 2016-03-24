@@ -1,29 +1,26 @@
-@model List<ApplicationUser>
-
+@model List<Booking>
 @{
-    ViewData["Title"] = "Pilots";
+    ViewData["Title"] = "Booked flights";
 }
 
 <h2>@ViewData["Title"]</h2>
 
 <table class="table">
     <tr>
-        <th>Navn</th>
-        <th>Epost</th>
-        <th>Telefon</th>
-        <th>Tandempilot</th>
-        <th>Admin</th>
+        <th>Date</th>
+        <th>Passenger</th>
+        <th>Phone</th>
+        <th>Pilot</th>
         <th></th>
     </tr>
-    @foreach (var user in Model)
+    @foreach (var booking in Model)
     {
-        <tr>
-            <td>@user.Name</td>
-            <td>@user.Email</td>
-            <td>@user.PhoneNumber</td>
-            <td>@(user.IsPilot ? "Ja" : "Nei")</td>
-            <td>@(user.IsAdmin ? "Ja" : "Nei")</td>
-            <td><a href="@Url.Action("EditUser", new { id = user.Id })" class="btn btn-default">Rediger</a></td>
+        <tr class="@(booking.BookingDate < DateTime.Now.Date ? "booking-past" : "") @(booking.Canceled ? "booking-canceled" : "")">
+            <td>@booking.BookingDate.ToString("dd.MM.yyyy")</td>
+            <td>@booking.PassengerName</td>
+            <td>@booking.PassengerPhone</td>
+            <td>@(booking.AssignedPilot?.Name ?? "No pilot assigned")</td>
+            <td><a href="@Url.Action("Edit", new { id = booking.Id })" class="btn btn-default">Details</a></td>
         </tr>
     }
 </table>

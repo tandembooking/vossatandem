@@ -1,0 +1,201 @@
+@using System.Diagnostics.Tracing
+@model Booking
+@{
+    ViewData["Title"] = "Booking Details";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        <section>
+            <h3>Booking Info</h3>
+            <form asp-controller="Admin" asp-action="Edit" method="post" class="form-horizontal" role="form">
+                <input type="hidden" asp-for="Id"/>
+                <div asp-validation-summary="ValidationSummary.All" class="text-danger"></div>
+
+                <div class="form-group">
+                    <label asp-for="BookingDate" class="col-sm-4 control-label">Booked Date</label>
+                    <div class="col-sm-8 control-text">
+                        @Model.BookingDate.ToString("dd.MM.yyyy")
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="BookingDate" class="col-sm-4 control-label">Registration Date</label>
+                    <div class="col-sm-8 control-text">
+                        @Model.DateRegistered.ToString("dd.MM.yyyy HH:mm")
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="BookingDate" class="col-sm-4 control-label">Canceled</label>
+                    <div class="col-sm-8 control-text">
+                        @(Model.Canceled ? "Yes" : "No")
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="PassengerName" class="col-sm-4 control-label">Passenger</label>
+                    <div class="col-sm-8 control-text">
+                        @Model.PassengerName
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="PassengerPhone" class="col-sm-4 control-label">Passenger Email</label>
+                    <div class="col-sm-8 control-text">
+                        @Model.PassengerPhone
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="PassengerEmail" class="col-sm-4 control-label">Passenger Email</label>
+                    <div class="col-sm-8 control-text">
+                        @Model.PassengerEmail
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Comment" class="col-sm-4 control-label">Passenger Comment</label>
+                    <div class="col-sm-8 control-text">
+                        @Model.Comment
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Comment" class="col-sm-4 control-label">Assigned Pilot</label>
+                    <div class="col-sm-8 control-text">
+                        @if (Model.AssignedPilot != null)
+                        {
+                            <text>@Model.AssignedPilot?.Name (@Model.AssignedPilot.PhoneNumber)</text>
+                        }
+                        else
+                        {
+                            <text>No pilot assigned</text>
+                        }
+                    </div>
+                </div>
+            </form>
+        </section>
+
+
+        <section>
+            <h3>Booking History</h3>
+            <div class="">
+                <table class="table">
+                    <tr>
+                        <th>Date</th>
+                        <th>Message</th>
+                        <th>User</th>
+                    </tr>
+                    @foreach (var evt in Model.BookingEvents.OrderBy(e => e.EventDate))
+                    {
+                        <tr>
+                            <td>@evt.EventDate.ToString("dd.MM.yyyy HH:mm")</td>
+                            <td>
+                                @evt.EventMessage
+                            </td>
+                            <td>
+                                @if (evt.User != null)
+                                {
+                                    <text>@evt.User.Name (@evt.User.PhoneNumber):</text>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </section>
+
+
+        <section>
+            <h3>Add message</h3>
+
+            <div class="col-sm-12">
+                <p>Add message to the booking and optionally send the message to the passenger</p>
+
+                <form asp-controller="BookingAdmin" asp-action="AddMessage" class="form">
+                    <input type="hidden" name="Id" value="@Model.Id" />
+                    <div class="">
+                        <div>
+                            <textarea class="form-control" id="EventMessage" name="EventMessage" placeholder="Type message to add to booking"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox checkbox-inline">
+                            <input type="checkbox" name="SendToPassenger" id="SendToPassenger" value="true"/>
+                            <label class="control-label" for="SendToPassenger">
+                                Send message to passenger via SMS
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Add Message</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <section>
+            <h3>Assign new pilot</h3>
+
+            <div class="col-sm-12">
+                <p>If the currently assign pilot is unable to make the flight, use this to find a new pilot from the available pilots to take the flight. A message is sent to the passenger notifying him of the new pilot. If no other pilots are available, the tandem coordinator is notified and tasked with finding a new pilot.</p>
+                <form asp-controller="BookingAdmin" asp-action="NewPilot" method="post" role="form" onsubmit="return submitNewPilot()">
+                    <input type="hidden" name="Id" value="@Model.Id" />
+                    <div class="form-group">
+                        <textarea class="form-control" id="NewPilotMessage" name="NewPilotMessage" placeholder="Please enter a reason to assign a new pilot"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-info">Assign new pilot</button>
+                    </div>
+                </form>
+            </div>
+
+        </section>
+
+
+        <section>
+            <h3>Cancel Booking</h3>
+
+            <div class="col-sm-12">
+                <p>Cancel the booking and send a message to the passenger. Use this if the booking cannot completed be due to weather, passenger not showing up or similar. Do not use this if the booking is moved to another date.</p>
+                <p>The passenger will receive a message on the form: "Unfortunately your flight on @Model.BookingDate.ToString("dd.MM.yyyy") has been canceled due to {cancel-message}"</p>
+                <form asp-controller="BookingAdmin" asp-action="Cancel" method="post" role="form" onsubmit="return submitCancel()">
+                    <input type="hidden" name="Id" value="@Model.Id"/>
+                    <div class="form-group">
+                        <textarea class="form-control" id="CancelMessage" name="CancelMessage" placeholder="Please enter reason to cancel flight"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-danger">Cancel Booking</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+        function submitCancel() {
+            if ($("#CancelMessage").val() == "") {
+                alert("Please enter a message explaining why the flight was canceled");
+                return false;
+            }
+
+            return confirm("Cancel the flight and notify the passenger?");
+        }
+        
+        function submitNewPilot() {
+            return confirm("Unassign the current pilot and find a new one?")
+
+        }
+    </script>
+}

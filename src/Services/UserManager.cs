@@ -40,11 +40,11 @@ namespace TandemBooking.Services
             //Add custom claims
             if (user.IsAdmin)
             {
-                claims.Add(new Claim("IsAdmin", "true"));
+                claims.Add(new Claim(ClaimsPrincipalExtensions.AdminClaim, "true"));
             }
             if (user.IsPilot)
             {
-                claims.Add(new Claim("IsPilot", "true"));
+                claims.Add(new Claim(ClaimsPrincipalExtensions.PilotClaim, "true"));
             }
 
             return claims;

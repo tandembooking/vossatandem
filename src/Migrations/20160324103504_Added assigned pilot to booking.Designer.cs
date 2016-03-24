@@ -8,9 +8,10 @@ using TandemBooking.Models;
 namespace tandembooking.Migrations
 {
     [DbContext(typeof(TandemBookingContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20160324103504_Added assigned pilot to booking")]
+    partial class Addedassignedpilottobooking
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "7.0.0-rc1-16348")
@@ -179,8 +180,6 @@ namespace tandembooking.Migrations
 
                     b.Property<DateTime>("BookingDate");
 
-                    b.Property<bool>("Canceled");
-
                     b.Property<string>("Comment");
 
                     b.Property<DateTime>("DateRegistered");
@@ -204,8 +203,6 @@ namespace tandembooking.Migrations
                     b.Property<DateTime>("EventDate");
 
                     b.Property<string>("EventMessage");
-
-                    b.Property<string>("UserId");
 
                     b.HasKey("Id");
                 });
@@ -277,10 +274,6 @@ namespace tandembooking.Migrations
                     b.HasOne("TandemBooking.Models.Booking")
                         .WithMany()
                         .HasForeignKey("BookingId");
-
-                    b.HasOne("TandemBooking.Models.ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("TandemBooking.Models.PilotAvailability", b =>

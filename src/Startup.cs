@@ -87,6 +87,8 @@ namespace TandemBooking
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
 
+            services.AddTransient<BookingService>();
+
             Console.WriteLine($"Configure Services Done {(DateTime.UtcNow - _startTime).TotalSeconds}");
         }
 
