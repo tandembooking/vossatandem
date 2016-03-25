@@ -3,7 +3,7 @@
 @model TandemBooking.ViewModels.PilotAvailabilityViewModel
 
 @{
-    ViewData["Title"] = $"Availability for {User.GetUserName()}";
+    ViewData["Title"] = $"Availability for {Model.Pilot.Name}";
 }
 
 <style>
@@ -33,13 +33,13 @@
 
 <div class="row">
     <div class="col-xs-2">
-        <h2><a href="@Url.Action("Index", new {date = Model.Prev.Date})">&lt;</a></h2>
+        <h2><a href="@Url.Action("Index", new {date = Model.Prev.Date, userId=Model.Pilot.Id})">&lt;</a></h2>
     </div>
     <div class="col-xs-8 text-center">
         <h2>@Model.MonthName</h2>
     </div>
     <div class="col-xs-2 text-right">
-        <h2><a href="@Url.Action("Index", new {date = Model.Next.Date})">&gt;</a></h2>
+        <h2><a href="@Url.Action("Index", new {date = Model.Next.Date, userId=Model.Pilot.Id})">&gt;</a></h2>
     </div>
 </div>
 
@@ -69,7 +69,7 @@
 
                     @if (!inPast)
                     {
-                        var url = Url.Action("SetAvailability", new {date = date, available = !isAvailable});
+                        var url = Url.Action("SetAvailability", new {date = date, available = !isAvailable, userId = Model.Pilot.Id});
 
                         <a style="display: block; width: 100%; height: 100%" href="@url" onclick="postAvailability('@url'); return false">
                             @date.Day

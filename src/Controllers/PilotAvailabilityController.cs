@@ -6,6 +6,7 @@ using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Mvc;
 using TandemBooking.Models;
 using TandemBooking.ViewModels;
+using TandemBooking.Services;
 
 namespace TandemBooking.Controllers
 {
@@ -35,12 +36,19 @@ namespace TandemBooking.Controllers
             _context = context;
         }
 
-        public ActionResult Index(DateTime? date = null)
+        public ActionResult Index(DateTime? date = null, string userId=null)
         {
             if (date == null)
             {
                 date = DateTime.UtcNow;
             }
+
+            if (userId == null || !User.IsAdmin())
+            {
+                userId = User.GetUserId();
+            }
+            var user = _context.Users.Single(u => u.Id == userId);
+
             var startDate = new DateTime(date.Value.Year, date.Value.Month, 1);
             var endDate = startDate.AddMonths(1);
 
@@ -54,7 +62,7 @@ namespace TandemBooking.Controllers
             endDate = endDate.AddDays(6 - endWeekDay);
 
             var availabilities = _context.PilotAvailabilities
-                .Where(a => a.Pilot.Id == User.GetUserId())
+                .Where(a => a.Pilot.Id == userId)
                 .Where(a => a.Date >= startDate && a.Date <= endDate)
                 .OrderBy(a => a.Date)
                 .ToList();
@@ -62,29 +70,35 @@ namespace TandemBooking.Controllers
             return View(new PilotAvailabilityViewModel()
             {
                 Next = nextMonth,
-                Prev = prevMonth,   
-                MonthName = $"{_monthNames[date.Value.Month-1]} {date.Value.Year}",
+                Prev = prevMonth,
+                MonthName = $"{_monthNames[date.Value.Month - 1]} {date.Value.Year}",
                 StartDate = startDate,
                 EndDate = endDate,
-                Availabilities = availabilities
+                Availabilities = availabilities,
+                Pilot = user,
             });
         }
 
-        public ActionResult SetAvailability(DateTime date, bool available)
+        public ActionResult SetAvailability(DateTime date, bool available, string userId = null)
         {
+            if (userId == null || !User.IsAdmin())
+            {
+                userId = User.GetUserId();
+            }
+
             if (available)
             {
                 var pilotAvailability = new PilotAvailability()
                 {
                     Date = date.Date,
-                    Pilot = _context.Users.Single(u => u.Id == User.GetUserId())
+                    Pilot = _context.Users.Single(u => u.Id == userId)
                 };
                 _context.PilotAvailabilities.Add(pilotAvailability);
             }
             else
             {
                 var availabilities = _context.PilotAvailabilities
-                    .Where(a => a.Pilot.Id == User.GetUserId())
+                    .Where(a => a.Pilot.Id == userId)
                     .Where(a => a.Date >= date && a.Date < date.AddDays(1))
                     .ToList();
 

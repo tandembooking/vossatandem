@@ -29,7 +29,7 @@ namespace TandemBooking.Controllers
             _bookingCoordinatorSettings = bookingCoordinatorSettings;
         }
 
-        public ActionResult Index()
+        public ActionResult Index(string userId = null)
         {
             var bookingQuery = _context.Bookings
                 .Include(b => b.AssignedPilot)
@@ -37,8 +37,13 @@ namespace TandemBooking.Controllers
                 .OrderByDescending(u => u.BookingDate)
                 .AsQueryable();
 
-            var userId = User.GetUserId();
+            //non-admin users can only see their own bookings
             if (!User.IsAdmin())
+            {
+                userId = User.GetUserId();
+            }
+
+            if (userId != null)
             {
                 bookingQuery = bookingQuery.Where(b => b.AssignedPilot.Id == userId);
             }

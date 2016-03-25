@@ -12,5 +12,6 @@ namespace TandemBooking.ViewModels
         public DateTime Next { get; set; }
         public DateTime Prev { get; set; }
         public string MonthName { get; set; }
+        public ApplicationUser Pilot { get; set; }
     }
 }
