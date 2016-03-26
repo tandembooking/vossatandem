@@ -72,8 +72,19 @@ namespace TandemBooking.Controllers
                 return new HttpUnauthorizedResult();
             }
 
+            var vm = new BookingDetailsViewModel()
+            {
+                ErrorMessage = errorMessage,
+                Booking = booking
+            };
+
+            if (User.IsAdmin())
+            {
+                vm.AvailablePilots = _bookingService.FindAvailablePilots(booking.BookingDate, true);
+            }
+
             ViewBag.ErrorMessage = errorMessage;
-            return View(booking);
+            return View(vm);
         }
 
         [HttpPost]
@@ -111,7 +122,7 @@ namespace TandemBooking.Controllers
         }
 
 
-        public async Task<ActionResult> NewPilot(Guid id, string newPilotMessage)
+        public async Task<ActionResult> NewPilot(Guid id, NewPilotViewModel newPilot)
         {
             var booking = _context.Bookings
                 .Include(b => b.AssignedPilot)
@@ -125,6 +136,9 @@ namespace TandemBooking.Controllers
                 return RedirectToAction("Index");
             }
 
+            //get optional pilot id from 
+            var newPilotId = User.IsAdmin() ? newPilot.NewPilotUserId : null;
+
             var originalPilot = booking.AssignedPilot;
             string errorMessage = null;
 
@@ -132,15 +146,24 @@ namespace TandemBooking.Controllers
             if (booking.AssignedPilot != null)
             {
                 var removedMessage = $"Removed assigned pilot {booking.AssignedPilot} ({booking.AssignedPilot.PhoneNumber})";
-                if (!string.IsNullOrEmpty(newPilotMessage))
+                if (!string.IsNullOrEmpty(newPilot.NewPilotMessage))
                 {
-                    removedMessage = removedMessage + $" due to {newPilotMessage}";
+                    removedMessage = removedMessage + $" due to {newPilot.NewPilotMessage}";
                 }
                 _bookingService.AddEvent(booking, User, removedMessage);
             }
 
-            //try to find a new pilot (if none are available, set no pilot assigned
-            var assignedPilot = _bookingService.AssignNewPilot(booking);
+            ApplicationUser assignedPilot;
+            if (string.IsNullOrEmpty(newPilotId))
+            {
+                //try to find a new pilot (if none are available, set no pilot assigned)
+                assignedPilot = _bookingService.AssignNewPilot(booking);
+            }
+            else
+            {
+                assignedPilot = _context.Users.Single(u => u.Id == newPilotId);
+                _bookingService.AssignNewPilot(booking, assignedPilot);
+            }
             _context.SaveChanges();
 
             //notify pilot and passenger of the newly assigned pilot
@@ -155,7 +178,16 @@ namespace TandemBooking.Controllers
                     $"Your flight on {bookingDateString} has been assigned a new pilot. You will be contacted by {assignedPilot.Name} ({assignedPilot.PhoneNumber}) shortly.";
                 await _nexmo.SendSms("VossHPK", booking.PassengerPhone, passengerMessage);
 
-                _bookingService.AddEvent(booking, User, $"Assigned booking to {assignedPilot.Name} ({assignedPilot.PhoneNumber})");
+                if (string.IsNullOrEmpty(newPilotId))
+                {
+                    _bookingService.AddEvent(booking, User,
+                        $"Assigned booking to {assignedPilot.Name} ({assignedPilot.PhoneNumber})");
+                }
+                else
+                {
+                    _bookingService.AddEvent(booking, User,
+                        $"Admin forced booking to {assignedPilot.Name} ({assignedPilot.PhoneNumber})");
+                }
                 _bookingService.AddEvent(booking, User, $"Sent status update to passenger, {booking.PassengerName} ({booking.PassengerPhone})");
             }
             else if (originalPilot != null)
@@ -172,7 +204,7 @@ namespace TandemBooking.Controllers
                     $"No pilots available, sent message to tandem coordinator {_bookingCoordinatorSettings.Name} ({_bookingCoordinatorSettings.PhoneNumber})");
 
                 _bookingService.AddEvent(booking, User,
-                    $"Sent status update to {booking.PassengerName} ({booking.PassengerPhone})");
+                    $"Sent status update to passenger, {booking.PassengerName} ({booking.PassengerPhone})");
             }
             else
             {

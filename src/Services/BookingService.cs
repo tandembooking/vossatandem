@@ -11,6 +11,7 @@ namespace TandemBooking.Services
     {
         public ApplicationUser Pilot { get; set; }
         public int Priority { get; set; } 
+        public bool Available { get; set; }
     }
 
     public class BookingService
@@ -22,25 +23,32 @@ namespace TandemBooking.Services
             _context = context;
         }
 
-        public List<AvailablePilot> FindAvailablePilots(DateTime date)
+        public List<AvailablePilot> FindAvailablePilots(DateTime date, bool includeUnavailable = false)
         {
             //find list of available pilots pilots having the least amount of flights
             //during the last 30 days
-            return _context.PilotAvailabilities
-                .Where(pa => pa.Date.Date == date && pa.Pilot.IsPilot)
-                .Select(pa => new
+            var pilots = _context.Users
+                .Select(u => new
                 {
-                    Pilot = pa.Pilot,
-                    Bookings = pa.Pilot.Bookings.Where(b => b.Booking.BookingDate > DateTime.UtcNow.AddDays(-30) && !b.Booking.Canceled)
-                })
-                .ToList()
-                .Select(pa => new AvailablePilot()
-                {
-                    Pilot = pa.Pilot,
-                    Priority = pa.Bookings?.Count() ?? 0
+                    Availabilities = u.Availabilities.Where(a => a.Date.Date == date.Date),
+                    Pilot = u,
+                    Bookings =
+                        u.Bookings.Where(
+                            b => b.Booking.BookingDate > DateTime.UtcNow.AddDays(-30) && !b.Booking.Canceled),
                 })
                 .ToList();
 
+            var availablePilots = pilots
+                .Select(pa => new AvailablePilot()
+                {
+                    Pilot = pa.Pilot,
+                    Priority = pa.Bookings?.Count() ?? 0,
+                    Available = (pa.Availabilities?.Count() ?? 0) > 1
+                })
+                .Where(ap => ap.Available || includeUnavailable)
+                .ToList();
+
+            return availablePilots;
         }
 
         public ApplicationUser AssignNewPilot(Booking booking)
@@ -57,12 +65,21 @@ namespace TandemBooking.Services
                 ?.ToList() ?? new List<AvailablePilot>()
                 ;
 
-            if (prioritizedPilots.Count > 0)
-            {
-                var selectedPilot = prioritizedPilots[new Random().Next(prioritizedPilots.Count - 1)].Pilot;
+            var selectedPilot = prioritizedPilots.Count > 0 
+                ? prioritizedPilots[new Random().Next(prioritizedPilots.Count - 1)].Pilot
+                : null;
 
+            AssignNewPilot(booking, selectedPilot);
+
+            return null;
+        }
+
+        public void AssignNewPilot(Booking booking, ApplicationUser pilot)
+        {
+            if (pilot != null)
+            {
                 //set as currently assigned pilot
-                booking.AssignedPilot = selectedPilot;
+                booking.AssignedPilot = pilot;
 
                 //add to list of pilots assigned to this booking
                 if (booking.BookedPilots == null)
@@ -72,18 +89,16 @@ namespace TandemBooking.Services
                 booking.BookedPilots.Add(new BookedPilot()
                 {
                     AssignedDate = DateTime.UtcNow,
-                    Pilot = selectedPilot,
+                    Pilot = pilot,
                 });
-
-                return selectedPilot;
             }
             else
             {
                 booking.AssignedPilot = null;
             }
-
-            return null;
         }
+
+
 
         public void AddEvent(Booking booking, ClaimsPrincipal user, string message)
         {

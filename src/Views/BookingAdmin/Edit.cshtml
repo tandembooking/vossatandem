@@ -1,79 +1,88 @@
-@using System.Diagnostics.Tracing
-@model Booking
+@using TandemBooking.Services
+@model TandemBooking.ViewModels.BookingAdmin.BookingDetailsViewModel
 @{
     ViewData["Title"] = "Booking Details";
 }
 
 <h2>@ViewData["Title"]</h2>
 
-@if (ViewBag.ErrorMessage != null)
+@if (Model.ErrorMessage != null)
 {
-    <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
 }
+
+<style>
+    option.unavailable {
+        background-color: lightsalmon;
+    }
+    option.available {
+        background-color: lightgreen;
+    }
+</style>
 
 <div class="row">
     <div class="col-sm-12">
         <section>
             <h3>Booking Info</h3>
             <form asp-controller="Admin" asp-action="Edit" method="post" class="form-horizontal" role="form">
-                <input type="hidden" asp-for="Id"/>
+                <input type="hidden" asp-for="Booking.Id"/>
                 <div asp-validation-summary="ValidationSummary.All" class="text-danger"></div>
 
                 <div class="form-group">
-                    <label asp-for="BookingDate" class="col-sm-4 control-label">Booked Date</label>
+                    <label asp-for="Booking.BookingDate" class="col-sm-4 control-label">Booked Date</label>
                     <div class="col-sm-8 control-text">
-                        @Model.BookingDate.ToString("dd.MM.yyyy")
+                        @Model.Booking.BookingDate.ToString("dd.MM.yyyy")
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="BookingDate" class="col-sm-4 control-label">Registration Date</label>
+                    <label asp-for="Booking.BookingDate" class="col-sm-4 control-label">Registration Date</label>
                     <div class="col-sm-8 control-text">
-                        @Model.DateRegistered.ToString("dd.MM.yyyy HH:mm")
+                        @Model.Booking.DateRegistered.ToString("dd.MM.yyyy HH:mm")
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="BookingDate" class="col-sm-4 control-label">Canceled</label>
+                    <label asp-for="Booking.BookingDate" class="col-sm-4 control-label">Canceled</label>
                     <div class="col-sm-8 control-text">
-                        @(Model.Canceled ? "Yes" : "No")
+                        @(Model.Booking.Canceled ? "Yes" : "No")
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="PassengerName" class="col-sm-4 control-label">Passenger</label>
+                    <label asp-for="Booking.PassengerName" class="col-sm-4 control-label">Passenger</label>
                     <div class="col-sm-8 control-text">
-                        @Model.PassengerName
+                        @Model.Booking.PassengerName
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="PassengerPhone" class="col-sm-4 control-label">Passenger Email</label>
+                    <label asp-for="Booking.PassengerPhone" class="col-sm-4 control-label">Passenger Email</label>
                     <div class="col-sm-8 control-text">
-                        @Model.PassengerPhone
+                        @Model.Booking.PassengerPhone
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="PassengerEmail" class="col-sm-4 control-label">Passenger Email</label>
+                    <label asp-for="Booking.PassengerEmail" class="col-sm-4 control-label">Passenger Email</label>
                     <div class="col-sm-8 control-text">
-                        @Model.PassengerEmail
+                        @Model.Booking.PassengerEmail
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="Comment" class="col-sm-4 control-label">Passenger Comment</label>
+                    <label asp-for="Booking.Comment" class="col-sm-4 control-label">Passenger Comment</label>
                     <div class="col-sm-8 control-text">
-                        @Model.Comment
+                        @Model.Booking.Comment
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="Comment" class="col-sm-4 control-label">Assigned Pilot</label>
+                    <label asp-for="Booking.AssignedPilot" class="col-sm-4 control-label">Assigned Pilot</label>
                     <div class="col-sm-8 control-text">
-                        @if (Model.AssignedPilot != null)
+                        @if (Model.Booking.AssignedPilot != null)
                         {
-                            <text>@Model.AssignedPilot?.Name (@Model.AssignedPilot.PhoneNumber)</text>
+                            <text>@Model.Booking.AssignedPilot?.Name (@Model.Booking.AssignedPilot.PhoneNumber)</text>
                         }
                         else
                         {
@@ -94,7 +103,7 @@
                         <th>Message</th>
                         <th>User</th>
                     </tr>
-                    @foreach (var evt in Model.BookingEvents.OrderBy(e => e.EventDate))
+                    @foreach (var evt in Model.Booking.BookingEvents.OrderBy(e => e.EventDate))
                     {
                         <tr>
                             <td>@evt.EventDate.ToString("dd.MM.yyyy HH:mm")</td>
@@ -121,7 +130,7 @@
                 <p>Add message to the booking and optionally send the message to the passenger</p>
 
                 <form asp-controller="BookingAdmin" asp-action="AddMessage" class="form">
-                    <input type="hidden" name="Id" value="@Model.Id" />
+                    <input type="hidden" name="Id" value="@Model.Booking.Id" />
                     <div class="">
                         <div>
                             <textarea class="form-control" id="EventMessage" name="EventMessage" placeholder="Type message to add to booking"></textarea>
@@ -148,10 +157,29 @@
             <div class="col-sm-12">
                 <p>If the currently assign pilot is unable to make the flight, use this to find a new pilot from the available pilots to take the flight. A message is sent to the passenger notifying him of the new pilot. If no other pilots are available, the tandem coordinator is notified and tasked with finding a new pilot.</p>
                 <form asp-controller="BookingAdmin" asp-action="NewPilot" method="post" role="form" onsubmit="return submitNewPilot()">
-                    <input type="hidden" name="Id" value="@Model.Id" />
+                    <input type="hidden" name="Id" value="@Model.Booking.Id" />
                     <div class="form-group">
                         <textarea class="form-control" id="NewPilotMessage" name="NewPilotMessage" placeholder="Please enter a reason to assign a new pilot"></textarea>
                     </div>
+                    @if (User.IsAdmin())
+                    {
+                        <p>
+                            Select "Choose from available pilots" to make a fair selection of pilot based on priority. If no pilots are available, you can use this dropdown to select a pilot not marked as available (Remember to verify that the pilot can actually make the flight first). 
+                        </p>
+                        <div class="form-group">
+                            <select class="form-control" id="NewPilotUserId" name="NewPilotUserId" placeholder="Please enter a reason to assign a new pilot">
+                                <option value="">Choose from available pilots</option>
+                                @foreach (var pilot in Model.AvailablePilots.OrderByDescending(p => p.Available).ThenBy(p => p.Priority))
+                                {
+                                    <option class="@(pilot.Available ? "available" : "unavailable")" value="@pilot.Pilot.Id">
+                                        @pilot.Pilot.Name (@pilot.Pilot.PhoneNumber)
+                                        @(pilot.Available ? "Available" : "Unavailable")
+                                        Priority @(pilot.Priority)
+                                    </option>
+                                }
+                            </select>
+                        </div>
+                    }
                     <div class="form-group">
                         <button type="submit" class="btn btn-info">Assign new pilot</button>
                     </div>
@@ -166,9 +194,9 @@
 
             <div class="col-sm-12">
                 <p>Cancel the booking and send a message to the passenger. Use this if the booking cannot completed be due to weather, passenger not showing up or similar. Do not use this if the booking is moved to another date.</p>
-                <p>The passenger will receive a message on the form: "Unfortunately your flight on @Model.BookingDate.ToString("dd.MM.yyyy") has been canceled due to {cancel-message}"</p>
+                <p>The passenger will receive a message on the form: "Unfortunately your flight on @Model.Booking.BookingDate.ToString("dd.MM.yyyy") has been canceled due to {cancel-message}"</p>
                 <form asp-controller="BookingAdmin" asp-action="Cancel" method="post" role="form" onsubmit="return submitCancel()">
-                    <input type="hidden" name="Id" value="@Model.Id"/>
+                    <input type="hidden" name="Id" value="@Model.Booking.Id"/>
                     <div class="form-group">
                         <textarea class="form-control" id="CancelMessage" name="CancelMessage" placeholder="Please enter reason to cancel flight"></textarea>
                     </div>
