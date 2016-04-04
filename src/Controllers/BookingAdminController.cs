@@ -197,7 +197,7 @@ namespace TandemBooking.Controllers
                 await _nexmo.SendSms("VossHPK", _bookingCoordinatorSettings.PhoneNumber, message);
 
                 var passengerMessage =
-                    $"We're working on finding a pilot for your flight on {bookingDateString}. You will be contacted shortly. If you have any questions, you can contact the tandem booking coordinator, {_bookingCoordinatorSettings.Name} on ({_bookingCoordinatorSettings})";
+                    $"We're working on finding a pilot for your flight on {bookingDateString}. You will be contacted shortly. If you have any questions, you can contact the tandem booking coordinator, {_bookingCoordinatorSettings.Name} on ({_bookingCoordinatorSettings.PhoneNumber})";
                 await _nexmo.SendSms("VossHPK", booking.PassengerPhone, passengerMessage);
 
                 _bookingService.AddEvent(booking, User,
