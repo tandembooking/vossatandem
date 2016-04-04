@@ -30,11 +30,11 @@ namespace TandemBooking.Services
             var pilots = _context.Users
                 .Select(u => new
                 {
-                    Availabilities = u.Availabilities.Where(a => a.Date.Date == date.Date),
+                    Availabilities = u.Availabilities.Where(a => a.Date.Date == date.Date).ToList(),
                     Pilot = u,
                     Bookings =
                         u.Bookings.Where(
-                            b => b.Booking.BookingDate > DateTime.UtcNow.AddDays(-30) && !b.Booking.Canceled),
+                            b => b.Booking.BookingDate > DateTime.UtcNow.AddDays(-30) && !b.Canceled && !b.Booking.Canceled).ToList(),
                 })
                 .ToList();
 
@@ -43,7 +43,7 @@ namespace TandemBooking.Services
                 {
                     Pilot = pa.Pilot,
                     Priority = pa.Bookings?.Count() ?? 0,
-                    Available = (pa.Availabilities?.Count() ?? 0) > 1
+                    Available = (pa.Availabilities?.Count() ?? 0) > 0
                 })
                 .Where(ap => ap.Available || includeUnavailable)
                 .ToList();
@@ -71,13 +71,19 @@ namespace TandemBooking.Services
 
             AssignNewPilot(booking, selectedPilot);
 
-            return null;
+            return selectedPilot;
         }
 
         public void AssignNewPilot(Booking booking, ApplicationUser pilot)
         {
             if (pilot != null)
             {
+                //set all other booked pilots to canceled
+                foreach (var bookedPilot in _context.BookedPilots.Where(b => b.Booking.Id == booking.Id))
+                {
+                    bookedPilot.Canceled = true;
+                }
+
                 //set as currently assigned pilot
                 booking.AssignedPilot = pilot;
 

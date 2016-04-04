@@ -11,6 +11,7 @@ namespace TandemBooking.Models
     {
         public DbSet<Booking> Bookings { get; set; } 
         public DbSet<PilotAvailability> PilotAvailabilities { get; set; } 
+        public DbSet<BookedPilot> BookedPilots { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
