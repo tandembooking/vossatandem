@@ -5,10 +5,10 @@ var dh = dh || {};
         $(document).ready(function () {
             $("body").backstretch([
                 "/images/bg1.jpg",
-                "/images/b3.jpg",
-                "/images/b4.jpg",
-                "/images/b5.jpg",
-                "/images/b6.jpg"
+                "/images/bg3.jpg",
+                "/images/bg4.jpg",
+                "/images/bg5.jpg",
+                "/images/bg6.jpg"
             ], { duration: 4000, fade: 500 });
         });
     }

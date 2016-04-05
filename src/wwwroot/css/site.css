@@ -2,10 +2,6 @@
   height: 100%;
   width: 100%;
 }
-body {
-  padding-top: 50px;
-  padding-bottom: 20px;
-}
 /* Wrapping element */
 /* Set some basic padding to keep content from hitting the edges */
 .body-content {
@@ -46,6 +42,34 @@ tr.booking-canceled {
 .btn-action:hover {
   background: darker(#eca00f, 10%);
 }
+/**************** dh design *****************/
+h1,
+h2 {
+  text-transform: uppercase;
+  border-bottom: solid 4px #eca00f;
+  margin: 1em 0;
+}
+h3,
+h4,
+h5 {
+  margin-top: 2em;
+}
+.air-vertical {
+  margin: 2em 0;
+}
+.container.body-content {
+  background: rgba(255, 255, 255, 0.8);
+}
+.readwrap {
+  max-width: 590px;
+}
+body {
+  padding-top: 50px;
+  padding-bottom: 20px;
+  background: url(/images/bg1.jpg) no-repeat center top;
+  background-size: cover;
+  background-attachment: fixed;
+}
 /* home */
 body.home {
   height: 100%;
@@ -53,6 +77,7 @@ body.home {
   display: table;
 }
 body.home .container.body-content {
+  background: none;
   display: table-cell;
   vertical-align: middle;
   margin: 0;
@@ -70,6 +95,62 @@ body.home .middlebar .teaser {
 }
 body.home .middlebar h1 {
   display: inline-block;
-  text-transform: uppercase;
-  border-bottom: solid 4px #eca00f;
+}
+/* booking */
+body.booking {
+  /* datepicker */
+}
+body.booking #datepicker .datepicker-days {
+  border: solid 2px #fff;
+  border-radius: 10px;
+}
+body.booking #datepicker thead tr:nth-child(2) {
+  background: #efefef;
+}
+body.booking #datepicker thead tr:nth-child(2) th.prev {
+  border-radius: 6px 0 0 0;
+}
+body.booking #datepicker thead tr:nth-child(2) th.next {
+  border-radius: 0 6px 0 0;
+}
+body.booking #datepicker thead tr:nth-child(3) {
+  background: #fff;
+  color: #eca00f;
+}
+body.booking #datepicker tbody td.day {
+  border-top: solid 1px #fff;
+  border-left: solid 1px #fff;
+  border-bottom: 0;
+  font-weight: bold;
+  padding: 10px;
+}
+body.booking #datepicker tbody td.day:first-child {
+  border-left: none;
+}
+body.booking #datepicker td,
+body.booking #datepicker th {
+  border-radius: 0;
+}
+body.booking .info-text {
+  background: url(/images/i.png) no-repeat 10px center #eca00f;
+  color: #fff;
+  border-radius: 10px;
+  padding: 1em 1em 1em 3em;
+  font-style: italic;
+}
+body.booking .details {
+  margin-top: 2em;
+}
+body.booking .form-group {
+  margin-top: 0;
+}
+body.booking .form-group .form-control {
+  border-radius: 6px;
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
+  max-width: none;
+}
+@media (min-width: 1200px) {
+  .container {
+    width: 970px;
+  }
 }
