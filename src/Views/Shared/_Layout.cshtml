@@ -9,7 +9,7 @@
         <link rel="stylesheet" href="~/lib/bootstrap-datepicker/dist/css/bootstrap-datepicker.css" />
         <link rel="stylesheet" href="~/css/site.css" />
     </head>
-    <body>
+    <body class="@ViewData["CssClass"]">
         <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="container">
                 <div class="navbar-header">
@@ -23,7 +23,6 @@
                 </div>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
-                        <li><a asp-controller="Home" asp-action="Index">Home</a></li>
                         <li><a asp-controller="Booking" asp-action="Index">Booking</a></li>
                         <li><a asp-controller="Home" asp-action="Faq">FAQ</a></li>
                         <li><a asp-controller="Home" asp-action="Contact">Contact</a></li>
@@ -34,16 +33,13 @@
         </div>
         <div class="container body-content">
             @RenderBody()
-            <hr />
-            <footer>
-                <p>&copy; @DateTime.Now.Year Voss hang og paragliderklubb</p>
-            </footer>
         </div>
 
         <script src="~/lib/jquery/dist/jquery.js"></script>
         <script src=""></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
         <script src="~/lib/bootstrap-datepicker/dist/js/bootstrap-datepicker.js"></script>
+        <script src="~/lib/jquery.backstretch.min.js"></script>
         <script src="~/js/site.js"></script>
 
         @RenderSection("scripts", required: false)

@@ -45,3 +45,7 @@ gulp.task("min:css", function () {
 });
 
 gulp.task("min", ["min:js", "min:css"]);
+
+gulp.task('watch', function () {
+    gulp.watch([paths.js], ["min:js"]);
+});
