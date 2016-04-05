@@ -151,6 +151,20 @@ body.booking .form-group .form-control {
   box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
   max-width: none;
 }
+.faq-wrap {
+  border-radius: 6px;
+  border-left: solid 1em #eca00f;
+  margin-bottom: 1em;
+  background: #fff;
+  background: -webkit-gradient(linear, left top, right top, from(#fff), to(rgba(255, 255, 255, 0.2)));
+  background: -webkit-linear-gradient(left, #fff, rgba(255, 255, 255, 0.2));
+  background: -moz-linear-gradient(left, #fff, rgba(255, 255, 255, 0.2));
+  background: -ms-linear-gradient(left, #fff, rgba(255, 255, 255, 0.2));
+  background: -o-linear-gradient(left, #fff, rgba(255, 255, 255, 0.2));
+}
+.faq-inner {
+  padding: 1em;
+}
 @media (min-width: 1200px) {
   .container {
     width: 970px;

@@ -1,5 +1,14 @@
 ﻿@highlight: #eca00f;
 
+.h-gradient (@startColor: #eee, @endColor: white) {
+ 	background: @startColor;
+	background: -webkit-gradient(linear, left top, right top, from(@startColor), to(@endColor));
+	background: -webkit-linear-gradient(left, @startColor, @endColor);
+	background: -moz-linear-gradient(left, @startColor, @endColor);
+	background: -ms-linear-gradient(left, @startColor, @endColor);
+	background: -o-linear-gradient(left, @startColor, @endColor);
+}
+
 html{
     height:100%;
     width:100%;
@@ -162,6 +171,15 @@ body.booking{
             max-width:none;
         }
     }
+}
+.faq-wrap{
+    border-radius:6px;
+    border-left:solid 1em @highlight;
+    margin-bottom:1em;
+    .h-gradient(#fff, rgba(255,255,255,0.2));
+}
+.faq-inner{
+    padding:1em;
 }
 
 @media (min-width: 1200px){
