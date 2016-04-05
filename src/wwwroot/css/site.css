@@ -59,11 +59,14 @@ h5 {
 }
 .container.body-content {
   background: rgba(255, 255, 255, 0.8);
+  height: 100%;
 }
 .readwrap {
   max-width: 590px;
 }
 body {
+  height: 100%;
+  width: 100%;
   padding-top: 50px;
   padding-bottom: 20px;
   background: url(/images/bg1.jpg) no-repeat center top;
@@ -72,8 +75,6 @@ body {
 }
 /* home */
 body.home {
-  height: 100%;
-  width: 100%;
   display: table;
 }
 body.home .container.body-content {
@@ -91,9 +92,10 @@ body.home .middlebar {
 }
 body.home .middlebar .teaser {
   max-width: 450px;
-  padding: 2em 3em 4em;
+  padding: 2em;
 }
 body.home .middlebar h1 {
+  margin: 0;
   display: inline-block;
 }
 /* booking */
