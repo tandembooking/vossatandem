@@ -76,16 +76,13 @@ h3,h4,h5{
 }
 .container.body-content{
     background: rgba(255,255,255,0.8);
-    height:100%;
+    padding-bottom: 2em;
 }
 .readwrap{
     max-width: 590px;
 }
 body{    
-    height:100%;
-    width:100%;
     padding-top: 50px;
-    padding-bottom: 20px;
     background: url(/images/bg1.jpg) no-repeat center top;
     background-size:cover;
     background-attachment:fixed;
@@ -93,6 +90,8 @@ body{
 /* home */
 body.home{
     display:table; 
+    width:100%;
+    height:100%;
 
     .container.body-content{
         background:none;
@@ -172,14 +171,26 @@ body.booking{
         }
     }
 }
+/*faq*/
 .faq-wrap{
     border-radius:6px;
     border-left:solid 1em @highlight;
     margin-bottom:1em;
     .h-gradient(#fff, rgba(255,255,255,0.2));
+
+    .faq-inner{
+        padding:1em;
+    }
 }
-.faq-inner{
-    padding:1em;
+
+/* contact */
+.contact{
+    a{
+        color:#000;
+    }
+    strong{
+        color:@highlight;
+    }
 }
 
 @media (min-width: 1200px){

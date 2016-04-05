@@ -59,16 +59,13 @@ h5 {
 }
 .container.body-content {
   background: rgba(255, 255, 255, 0.8);
-  height: 100%;
+  padding-bottom: 2em;
 }
 .readwrap {
   max-width: 590px;
 }
 body {
-  height: 100%;
-  width: 100%;
   padding-top: 50px;
-  padding-bottom: 20px;
   background: url(/images/bg1.jpg) no-repeat center top;
   background-size: cover;
   background-attachment: fixed;
@@ -76,6 +73,8 @@ body {
 /* home */
 body.home {
   display: table;
+  width: 100%;
+  height: 100%;
 }
 body.home .container.body-content {
   background: none;
@@ -151,6 +150,7 @@ body.booking .form-group .form-control {
   box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
   max-width: none;
 }
+/*faq*/
 .faq-wrap {
   border-radius: 6px;
   border-left: solid 1em #eca00f;
@@ -162,8 +162,15 @@ body.booking .form-group .form-control {
   background: -ms-linear-gradient(left, #fff, rgba(255, 255, 255, 0.2));
   background: -o-linear-gradient(left, #fff, rgba(255, 255, 255, 0.2));
 }
-.faq-inner {
+.faq-wrap .faq-inner {
   padding: 1em;
+}
+/* contact */
+.contact a {
+  color: #000;
+}
+.contact strong {
+  color: #eca00f;
 }
 @media (min-width: 1200px) {
   .container {
