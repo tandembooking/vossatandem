@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using TandemBooking.Models;
+using Microsoft.Data.Entity;
 
 namespace TandemBooking.Services
 {
@@ -33,8 +34,13 @@ namespace TandemBooking.Services
                     Availabilities = u.Availabilities.Where(a => a.Date.Date == date.Date).ToList(),
                     Pilot = u,
                     Bookings =
-                        u.Bookings.Where(
+                        u.Bookings
+                            .Where(
                             b => b.Booking.BookingDate > DateTime.UtcNow.AddDays(-30) && !b.Canceled && !b.Booking.Canceled).ToList(),
+                    BookingsToday =
+                        u.Bookings
+                            .Where(
+                            b => b.Booking.BookingDate.Date == date.Date && !b.Canceled && !b.Booking.Canceled).ToList(),
                 })
                 .ToList();
 
@@ -42,7 +48,8 @@ namespace TandemBooking.Services
                 .Select(pa => new AvailablePilot()
                 {
                     Pilot = pa.Pilot,
-                    Priority = pa.Bookings?.Count() ?? 0,
+                    Priority = (pa.Bookings?.Count() ?? 0) 
+                        + (1000 * pa.BookingsToday?.Count() ?? 0), // a booking the same day are weighted more heavily to avoid pilots getting too many flights a day
                     Available = (pa.Availabilities?.Count() ?? 0) > 0
                 })
                 .Where(ap => ap.Available || includeUnavailable)
