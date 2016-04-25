@@ -13,21 +13,50 @@
     <div asp-validation-summary="ValidationSummary.All" class="text-danger"></div>
 
     <form id="BookingForm" asp-controller="Booking" asp-action="Index" method="post">
-                <div class="form-group">
-                    <h5>
-                        <label asp-for="Date">
-                            When would you like to fly?
-                        </label>
-                    </h5>
-                    <div id="datepicker" data-date='@Model.Date?.ToString("MM/dd/yyyy")'></div>
-                    <input type="hidden" asp-for="Date" />
-                    <p>
-                        <span asp-validation-for="Date" class="text-danger"></span>
-                    </p>
-                </div>
+        <div class="form-group">
+            <h5>
+                <label asp-for="Date">
+                    When would you like to fly?
+                </label>
+            </h5>
+            <div id="datepicker" data-date='@Model.Date?.ToString("MM/dd/yyyy")'></div>
+            <input type="hidden" asp-for="Date"/>
+            <p>
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </p>
+        </div>
+
         <div class="info-text air-vertical">
             Please note that paragliding is very dependent on weather. Safety is paramount, and we will only fly if the weather conditions permit it. If the selected day turns out to be unflyable, your pilot will contact you to cancel the flight. You will of course not pay anything if we're unable to fly.
         </div>
+
+        <p class="readwrap">
+            <strong>Current prices</strong>
+            <table class="table">
+                <tr>
+                    <td>Regular price</td>
+                    <td class="text-right">1 700,-</td>
+                </tr>
+                <tr>
+                    <td>Extra for flights out of town</td>
+                    <td class="text-right">800,-</td>
+                </tr>
+                <tr>
+                    <td>Extra for flights out of town</td>
+                    <td class="text-right">800,-</td>
+                </tr>
+                <tr>
+                    <td>Extra for boat-tow launch</td>
+                    <td class="text-right">100,-</td>
+                </tr>
+                <tr>
+                    <td>Extra for photos/video using the pilots equipment</td>
+                    <td class="text-right">100,-</td>
+                </tr>
+            </table>
+            All prices are in norwegian kroner (NOK), and are payed to the pilot.
+        </p>
+
         <div class="details">
             <strong>Your details</strong>
             <div class="form-group">
