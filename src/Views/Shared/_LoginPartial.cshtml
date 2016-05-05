@@ -5,23 +5,29 @@
 {
     <form asp-controller="Account" asp-action="LogOff" method="post" id="logoutForm" class="navbar-right">
         <ul class="nav navbar-nav navbar-right">
-            @if (User.IsAdmin())
-            {
-                <li><a asp-controller="UserAdmin" asp-action="Index">Pilots</a></li>
-            }
-            @if (User.IsPilot())
-            {
-                <li><a asp-controller="PilotAvailability" asp-action="Index">Availability</a></li>
-            }
-            @if (User.IsPilot() || User.IsAdmin())
-            {
-                <li><a asp-controller="BookingAdmin" asp-action="Index">Bookings</a></li>
-            }
             <li>
-                <a asp-controller="Manage" asp-action="Index" title="Manage">@User.GetUserName()</a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Manage<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    @if (User.IsAdmin())
+                    {
+                        <li><a asp-controller="UserAdmin" asp-action="Index">Pilots</a></li>
+                    }
+                    @if (User.IsPilot())
+                    {
+                        <li><a asp-controller="PilotAvailability" asp-action="Index">Availability</a></li>
+                    }
+                    @if (User.IsPilot() || User.IsAdmin())
+                    {
+                        <li><a asp-controller="BookingAdmin" asp-action="Index">Bookings</a></li>
+                    }
+                </ul>
             </li>
             <li>
-                <button type="submit" class="btn btn-link navbar-btn navbar-link">Log off</button>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">@User.GetUserName()<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a asp-controller="Manage" asp-action="Index" title="Manage">Account Settings</a></li>
+                    <li><button type="submit" class="btn btn-link navbar-btn navbar-link">Log off</button></li>
+                </ul>
             </li>
         </ul>
     </form>
