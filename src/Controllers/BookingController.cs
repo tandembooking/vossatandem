@@ -19,13 +19,15 @@ namespace TandemBooking.Controllers
         private readonly TandemBookingContext _context;
         private readonly BookingService _bookingService;
         private readonly BookingCoordinatorSettings _bookingCoordinatorSettings;
+        private readonly MessageService _messageService;
 
-        public BookingController(NexmoService nexmo, TandemBookingContext context, BookingCoordinatorSettings bookingCoordinatorSettings, ILoggerFactory loggerFactory, BookingService bookingService)
+        public BookingController(NexmoService nexmo, TandemBookingContext context, BookingCoordinatorSettings bookingCoordinatorSettings, ILoggerFactory loggerFactory, BookingService bookingService, MessageService messageService)
         {
             _nexmo = nexmo;
             _context = context;
             _bookingCoordinatorSettings = bookingCoordinatorSettings;
             _bookingService = bookingService;
+            _messageService = messageService;
             _logger = loggerFactory.CreateLogger<BookingController>();
         }
 
@@ -53,8 +55,11 @@ namespace TandemBooking.Controllers
                         ModelState.AddModelError("PhoneNumber", "Please enter a valid phone number");
                         return View(input);
                     }
-
-                    var date = input.Date.Value.Date;
+                    if (input.Date == null)
+                    {
+                        ModelState.AddModelError("Date", "Please select a date");
+                        return View(input);
+                    }
 
                     var booking = new Booking()
                     {
@@ -68,41 +73,10 @@ namespace TandemBooking.Controllers
                     };
                     _context.Add(booking);
 
-                    var selectedPilot = _bookingService.AssignNewPilot(booking);
+                    _bookingService.AssignNewPilot(booking);
                     _context.SaveChanges();
 
-                    //send message to pilot or booking coordinator
-                    var bookingDateString = booking.BookingDate.ToString("dd.MM.yyyy");
-                    if (selectedPilot != null)
-                    {
-                        var message =
-                            $"You have a new flight on {bookingDateString}: {booking.PassengerName}, {booking.PassengerEmail}, {booking.PassengerPhone}, {booking.Comment}.";
-                        await _nexmo.SendSms("VossHPK", selectedPilot.PhoneNumber, message);
-
-                        var passengerMessage =
-                            $"Awesome! Your tandem flight on  is confirmed. You will be contacted by {selectedPilot.Name} ({selectedPilot.PhoneNumber}) shortly.";
-                        await _nexmo.SendSms("VossHPK", booking.PassengerPhone, passengerMessage);
-
-                        _bookingService.AddEvent(booking, null, $"Assigned to {selectedPilot.Name} ({selectedPilot.PhoneNumber})");
-                        _bookingService.AddEvent(booking, null, $"Sent confirmation message to {booking.PassengerName} ({booking.PassengerPhone})");
-                    }
-                    else
-                    {
-                        var message =
-                            $"Please find a pilot on {bookingDateString}: {booking.PassengerName}, {booking.PassengerEmail}, {booking.PassengerPhone}, {booking.Comment}";
-                        await _nexmo.SendSms("VossHPK", _bookingCoordinatorSettings.PhoneNumber, message);
-
-                        var passengerMessage =
-                            $"Awesome! We will try to find a pilot who can take you flying on {bookingDateString}. You will be contacted shortly.";
-                        await _nexmo.SendSms("VossHPK", booking.PassengerPhone, passengerMessage);
-
-                        _bookingService.AddEvent(booking, null,
-                            $"No pilots available, sent message to tandem coordinator {_bookingCoordinatorSettings.Name} ({_bookingCoordinatorSettings.PhoneNumber})");
-
-                        _bookingService.AddEvent(booking, null,
-                            $"Sent confirmation message to {booking.PassengerName} ({booking.PassengerPhone})");
-                    }
-                    _context.SaveChanges();
+                    await _messageService.SendNewBookingMessage(booking);
 
                     return RedirectToAction("Confirm", new {bookingId = booking.Id});
                 }

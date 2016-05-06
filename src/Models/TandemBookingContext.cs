@@ -12,6 +12,8 @@ namespace TandemBooking.Models
         public DbSet<Booking> Bookings { get; set; } 
         public DbSet<PilotAvailability> PilotAvailabilities { get; set; } 
         public DbSet<BookedPilot> BookedPilots { get; set; }
+        public DbSet<SentSmsMessage> SentSmsMessages { get; set; }
+        public DbSet<SentSmsMessagePart> SentSmsMessageParts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -21,6 +23,11 @@ namespace TandemBooking.Models
             builder.Entity<PilotAvailability>();
             builder.Entity<BookingEvent>();
             builder.Entity<BookedPilot>();
+            builder.Entity<SentSmsMessage>();
+            var sentSmsMessagePartBuilder = builder.Entity<SentSmsMessagePart>();
+            sentSmsMessagePartBuilder.Property(t => t.GatewayMessageId)
+                .HasMaxLength(255);
+            sentSmsMessagePartBuilder.HasIndex(t => t.GatewayMessageId);
         }
     }
 }

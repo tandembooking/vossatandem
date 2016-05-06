@@ -1,20 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
-using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
-using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace TandemBooking.Services
 {
+    public class NexmoSmsResult
+    {
+        [JsonProperty("message-count")]
+        public int MessageCount { get; set; }
+        public List<NexmoSmsResultMessage> Messages { get; set; }
+    }
+
+    public class NexmoSmsResultMessage
+    {
+        public string Status { get; set; }
+        [JsonProperty("message-id")]
+        public string MessageId { get; set; }
+        public string To { get; set; }
+        [JsonProperty("client-ref")]
+        public string ClientRef { get; set; }
+        [JsonProperty("remaining-balance")]
+        public string RemainingBalance { get; set; }
+        [JsonProperty("error-text")]
+        public string ErrorText { get; set; }
+    }
+
+    public class NexmoDeliveryReport
+    {
+        public string To { get; set; } // set SenderId
+        public string NetworkCode { get; set; }
+        public string MessageId { get; set; }
+        public string Msisdn { get; set; } //recipient phone number
+        public string Status { get; set; }
+        public string ErrCode { get; set; }
+        public string ClientRef { get; set; }
+    }
+
     public class NexmoService
     {
         private const string RestUrl = "https://rest.nexmo.com";
@@ -56,14 +85,13 @@ namespace TandemBooking.Services
             return data;
         }
 
-        public async Task<JObject> SendSms(string from, string to, string text)
+        public async Task<NexmoSmsResult> SendSms(string from, string to, string text)
         {
-            return await Post($"{RestUrl}/sms/json", new
+            var response = await Post($"{RestUrl}/sms/json", new
             {
-                from = from,
-                to = to,
-                text = text,
+                from, to, text
             });
+            return response.ToObject<NexmoSmsResult>();
         }
 
         public async Task<string> FormatPhoneNumber(string phoneNumber, string countryCode = "NO")
@@ -71,7 +99,7 @@ namespace TandemBooking.Services
             var result = await Post($"{ApiUrl}/number/format/json", new
             {
                 number = phoneNumber,
-                country = countryCode,
+                country = countryCode
             });
 
             int status = result.Value<int>("status");
@@ -87,7 +115,7 @@ namespace TandemBooking.Services
             var result = await Post($"{ApiUrl}/number/lookup/json", new
             {
                 number = phoneNumber,
-                country = countryCode,
+                country = countryCode
             });
 
             return result;

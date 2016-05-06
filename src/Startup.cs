@@ -87,6 +87,8 @@ namespace TandemBooking
                     });
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
+            services.AddTransient<SmsService>();
+            services.AddTransient<MessageService>();
 
             services.AddTransient<BookingService>();
 

@@ -17,15 +17,15 @@ namespace TandemBooking.Controllers
     public class BookingAdminController : Controller
     {
         private readonly TandemBookingContext _context;
-        private readonly NexmoService _nexmo;
         private readonly BookingService _bookingService;
+        private readonly MessageService _messageService;
         private readonly BookingCoordinatorSettings _bookingCoordinatorSettings;
 
-        public BookingAdminController(TandemBookingContext context, NexmoService nexmo, BookingService bookingService, BookingCoordinatorSettings bookingCoordinatorSettings)
+        public BookingAdminController(TandemBookingContext context, NexmoService nexmo, BookingService bookingService, MessageService messageService, BookingCoordinatorSettings bookingCoordinatorSettings)
         {
             _context = context;
-            _nexmo = nexmo;
             _bookingService = bookingService;
+            _messageService = messageService;
             _bookingCoordinatorSettings = bookingCoordinatorSettings;
         }
 
@@ -114,13 +114,12 @@ namespace TandemBooking.Controllers
             booking.Canceled = true;
             _bookingService.AddEvent(booking, User, $"Canceled due to {cancelMessage}");
 
-            await _nexmo.SendSms("VossHPK", booking.PassengerPhone, $"Unfortunately, your flight on {booking.BookingDate.ToString("dd.MM.yyyy")} has been canceled due to {cancelMessage}");
+            await _messageService.SendCancelMessage(cancelMessage, booking);
 
             _context.SaveChanges();
 
             return RedirectToAction("Index");
         }
-
 
         public async Task<ActionResult> NewPilot(Guid id, NewPilotViewModel newPilot)
         {
@@ -170,49 +169,29 @@ namespace TandemBooking.Controllers
             var bookingDateString = booking.BookingDate.ToString("dd.MM.yyyy");
             if (assignedPilot != null)
             {
-                var message =
-                    $"You have a new flight on {bookingDateString}: {booking.PassengerName}, {booking.PassengerEmail}, {booking.PassengerPhone}, {booking.Comment}.";
-                await _nexmo.SendSms("VossHPK", assignedPilot.PhoneNumber, message);
-
-                var passengerMessage =
-                    $"Your flight on {bookingDateString} has been assigned a new pilot. You will be contacted by {assignedPilot.Name} ({assignedPilot.PhoneNumber}) shortly.";
-                await _nexmo.SendSms("VossHPK", booking.PassengerPhone, passengerMessage);
+                await _messageService.SendNewPilotMessage(bookingDateString, booking);
 
                 if (string.IsNullOrEmpty(newPilotId))
                 {
-                    _bookingService.AddEvent(booking, User,
-                        $"Assigned booking to {assignedPilot.Name} ({assignedPilot.PhoneNumber})");
+                    _bookingService.AddEvent(booking, User, $"Assigned booking to {assignedPilot.Name} ({assignedPilot.PhoneNumber})");
                 }
                 else
                 {
-                    _bookingService.AddEvent(booking, User,
-                        $"Admin forced booking to {assignedPilot.Name} ({assignedPilot.PhoneNumber})");
+                    _bookingService.AddEvent(booking, User, $"Admin forced booking to {assignedPilot.Name} ({assignedPilot.PhoneNumber})");
                 }
                 _bookingService.AddEvent(booking, User, $"Sent status update to passenger, {booking.PassengerName} ({booking.PassengerPhone})");
             }
             else if (originalPilot != null)
             {
-                var message =
-                    $"Please find a pilot on {bookingDateString}: {booking.PassengerName}, {booking.PassengerEmail}, {booking.PassengerPhone}, {booking.Comment}";
-                await _nexmo.SendSms("VossHPK", _bookingCoordinatorSettings.PhoneNumber, message);
-
-                var passengerMessage =
-                    $"We're working on finding a pilot for your flight on {bookingDateString}. You will be contacted shortly. If you have any questions, you can contact the tandem booking coordinator, {_bookingCoordinatorSettings.Name} on ({_bookingCoordinatorSettings.PhoneNumber})";
-                await _nexmo.SendSms("VossHPK", booking.PassengerPhone, passengerMessage);
-
-                _bookingService.AddEvent(booking, User,
-                    $"No pilots available, sent message to tandem coordinator {_bookingCoordinatorSettings.Name} ({_bookingCoordinatorSettings.PhoneNumber})");
-
-                _bookingService.AddEvent(booking, User,
-                    $"Sent status update to passenger, {booking.PassengerName} ({booking.PassengerPhone})");
+                await _messageService.SendMissingPilotMessage(bookingDateString, booking);
+                _bookingService.AddEvent(booking, User, $"No pilots available, sent message to tandem coordinator {_bookingCoordinatorSettings.Name} ({_bookingCoordinatorSettings.PhoneNumber})");
+                _bookingService.AddEvent(booking, User, $"Sent status update to passenger, {booking.PassengerName} ({booking.PassengerPhone})");
             }
             else
             {
                 errorMessage = "No pilots available. Please select pilot manually";
             }
             _context.SaveChanges();
-
-
 
             return RedirectToAction("Edit", new { Id = booking.Id, errorMessage });
         }
@@ -240,7 +219,7 @@ namespace TandemBooking.Controllers
 
             if (input.SendToPassenger)
             {
-                await _nexmo.SendSms("VossHPK", booking.PassengerPhone, input.EventMessage);
+                await _messageService.SendPassengerMessage(input, booking);
             }
 
             return RedirectToAction("Edit", new {Id = booking.Id});
