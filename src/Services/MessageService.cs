@@ -37,19 +37,11 @@ namespace TandemBooking.Services
             var bookingDateString = booking.BookingDate.ToString("dd.MM.yyyy");
             if (assignedPilot != null)
             {
-                //send sms
+                //send message to pilot
                 if (assignedPilot.SmsNotification) { 
                     var message = $"You have a new flight on {bookingDateString}: {booking.PassengerName}, {booking.PassengerEmail}, {booking.PassengerPhone}, {booking.Comment}.";
                     await SendPilotMessage(assignedPilot, "New Booking", message, booking);
                 }
-
-                var passengerMessage = $"Awesome! Your tandem flight on  is confirmed. You will be contacted by {assignedPilot.Name} ({assignedPilot.PhoneNumber}) shortly.";
-                await _smsService.Send(booking.PassengerPhone, passengerMessage, booking);
-
-                var bookingCoordinatorMessage = $"New flight on {bookingDateString} assigned to {assignedPilot.Name}, {booking.Comment}";
-                await _smsService.Send(_bookingCoordinatorSettings.PhoneNumber, bookingCoordinatorMessage, booking);
-
-                //send mails
                 if (assignedPilot.EmailNotification)
                 {
                     var subject = $"New flight on {bookingDateString}";
@@ -70,6 +62,14 @@ Booking Coordinator
 ";
                     await _mailService.Send(assignedPilot.Email, subject, message);
                 }
+
+                //send message to passenger
+                var passengerMessage = $"Awesome! Your tandem flight on  is confirmed. You will be contacted by {assignedPilot.Name} ({assignedPilot.PhoneNumber}) shortly.";
+                await _smsService.Send(booking.PassengerPhone, passengerMessage, booking);
+
+                //send message to booking coordinator
+                var bookingCoordinatorMessage = $"New flight on {bookingDateString} assigned to {assignedPilot.Name}, {booking.Comment}";
+                await _smsService.Send(_bookingCoordinatorSettings.PhoneNumber, bookingCoordinatorMessage, booking);
 
                 _bookingService.AddEvent(booking, null, $"Assigned to {assignedPilot.Name} ({assignedPilot.PhoneNumber})");
                 _bookingService.AddEvent(booking, null, $"Sent confirmation message to {booking.PassengerName} ({booking.PassengerPhone})");
@@ -97,19 +97,15 @@ Booking Coordinator
             await _smsService.Send(booking.PassengerPhone, passengerMessage, booking);
         }
 
-        public async Task SendNewPilotMessage(string bookingDateString, Booking booking)
+        public async Task SendNewPilotMessage(string bookingDateString, Booking booking, ApplicationUser previousPilot)
         {
+            //send message to new pilot
             var assignedPilot = booking.AssignedPilot;
             if (assignedPilot.SmsNotification)
             {
                 var message = $"You have a new flight on {bookingDateString}: {booking.PassengerName}, {booking.PassengerEmail}, {booking.PassengerPhone}, {booking.Comment}.";
                 await SendPilotMessage(assignedPilot, "Assigned Booking", message, booking);
             }
-
-            var passengerMessage = $"Your flight on {bookingDateString} has been assigned a new pilot. You will be contacted by {assignedPilot.Name} ({assignedPilot.PhoneNumber}) shortly.";
-            await _smsService.Send(booking.PassengerPhone, passengerMessage, booking);
-
-            //send mails
             if (assignedPilot.EmailNotification)
             {
                 var subject = $"New flight on {bookingDateString}";
@@ -131,6 +127,35 @@ Booking Coordinator
                 await _mailService.Send(assignedPilot.Email, subject, message);
             }
 
+            //send message to passenger
+            var passengerMessage = $"Your flight on {bookingDateString} has been assigned a new pilot. You will be contacted by {assignedPilot.Name} ({assignedPilot.PhoneNumber}) shortly.";
+            await _smsService.Send(booking.PassengerPhone, passengerMessage, booking);
+        }
+
+        public async Task SendPilotUnassignedMessage(Booking booking, ApplicationUser previousPilot)
+        {
+            var bookingDateString = booking.BookingDate.ToString("dd.MM.yyyy");
+
+            if (previousPilot.SmsNotification)
+            {
+                var message = $"Your booking on {bookingDateString} has been reassigned to another pilot";
+                await SendPilotMessage(previousPilot, "Booking reassigned", message, booking);
+            }
+            if (previousPilot.EmailNotification)
+            {
+                var message =
+                    $@"Hi {previousPilot.Name},
+
+Your flight on {bookingDateString} has been assigned another pilot.
+
+Booking Url: http://vossatandem.no/BookingAdmin/Edit/{booking
+                        .Id}
+
+fly safe!
+Booking Coordinator
+";
+                await _mailService.Send(previousPilot.Email, $"Booking on {bookingDateString} reassigned", message);
+            }
         }
 
         public async Task SendCancelMessage(string cancelMessage, Booking booking)

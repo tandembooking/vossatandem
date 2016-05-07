@@ -171,6 +171,10 @@ namespace TandemBooking.Controllers
             if (assignedPilot != null)
             {
                 await _messageService.SendNewPilotMessage(bookingDateString, booking, originalPilot);
+                if (originalPilot != null)
+                {
+                    await _messageService.SendPilotUnassignedMessage(booking, originalPilot);
+                }
 
                 if (string.IsNullOrEmpty(newPilotId))
                 {
@@ -185,6 +189,7 @@ namespace TandemBooking.Controllers
             else if (originalPilot != null)
             {
                 await _messageService.SendMissingPilotMessage(bookingDateString, booking);
+                await _messageService.SendPilotUnassignedMessage(booking, originalPilot);
                 _bookingService.AddEvent(booking, User, $"No pilots available, sent message to tandem coordinator {_bookingCoordinatorSettings.Name} ({_bookingCoordinatorSettings.PhoneNumber})");
                 _bookingService.AddEvent(booking, User, $"Sent status update to passenger, {booking.PassengerName} ({booking.PassengerPhone})");
             }
