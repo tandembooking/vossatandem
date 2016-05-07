@@ -11,6 +11,7 @@ namespace TandemBooking.ViewModels.BookingAdmin
         public string ErrorMessage { get; set; }
         public Models.Booking Booking { get; set; } 
         public List<AvailablePilot> AvailablePilots { get; set; }
+        public bool Editable { get; set; }
     }
 }
     

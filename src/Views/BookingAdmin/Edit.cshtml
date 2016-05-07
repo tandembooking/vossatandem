@@ -122,90 +122,92 @@
             </div>
         </section>
 
+        @if (Model.Editable)
+        {
+            <section>
+                <h3>Add message</h3>
 
-        <section>
-            <h3>Add message</h3>
+                <div class="col-sm-12">
+                    <p>Add message to the booking and optionally send the message to the passenger</p>
 
-            <div class="col-sm-12">
-                <p>Add message to the booking and optionally send the message to the passenger</p>
-
-                <form asp-controller="BookingAdmin" asp-action="AddMessage" class="form">
-                    <input type="hidden" name="Id" value="@Model.Booking.Id" />
-                    <div class="">
-                        <div>
-                            <textarea class="form-control" id="EventMessage" name="EventMessage" placeholder="Type message to add to booking"></textarea>
+                    <form asp-controller="BookingAdmin" asp-action="AddMessage" class="form">
+                        <input type="hidden" name="Id" value="@Model.Booking.Id"/>
+                        <div class="">
+                            <div>
+                                <textarea class="form-control" id="EventMessage" name="EventMessage" placeholder="Type message to add to booking"></textarea>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="checkbox checkbox-inline">
-                            <input type="checkbox" name="SendToPassenger" id="SendToPassenger" value="true"/>
-                            <label class="control-label" for="SendToPassenger">
-                                Send message to passenger via SMS
-                            </label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary">Add Message</button>
-                    </div>
-                </form>
-            </div>
-        </section>
-
-        <section>
-            <h3>Assign new pilot</h3>
-
-            <div class="col-sm-12">
-                <p>If the currently assign pilot is unable to make the flight, use this to find a new pilot from the available pilots to take the flight. A message is sent to the passenger notifying him of the new pilot. If no other pilots are available, the tandem coordinator is notified and tasked with finding a new pilot.</p>
-                <form asp-controller="BookingAdmin" asp-action="NewPilot" method="post" role="form" onsubmit="return submitNewPilot()">
-                    <input type="hidden" name="Id" value="@Model.Booking.Id" />
-                    <div class="form-group">
-                        <textarea class="form-control" id="NewPilotMessage" name="NewPilotMessage" placeholder="Please enter a reason to assign a new pilot"></textarea>
-                    </div>
-                    @if (User.IsAdmin())
-                    {
-                        <p>
-                            Select "Choose from available pilots" to make a fair selection of pilot based on priority. If no pilots are available, you can use this dropdown to select a pilot not marked as available (Remember to verify that the pilot can actually make the flight first). 
-                        </p>
                         <div class="form-group">
-                            <select class="form-control" id="NewPilotUserId" name="NewPilotUserId" placeholder="Please enter a reason to assign a new pilot">
-                                <option value="">Choose from available pilots</option>
-                                @foreach (var pilot in Model.AvailablePilots.OrderByDescending(p => p.Available).ThenBy(p => p.Priority))
-                                {
-                                    <option class="@(pilot.Available ? "available" : "unavailable")" value="@pilot.Pilot.Id">
-                                        @pilot.Pilot.Name (@pilot.Pilot.PhoneNumber)
-                                        @(pilot.Available ? "Available" : "Unavailable")
-                                        Priority @(pilot.Priority)
-                                    </option>
-                                }
-                            </select>
+                            <div class="checkbox checkbox-inline">
+                                <input type="checkbox" name="SendToPassenger" id="SendToPassenger" value="true"/>
+                                <label class="control-label" for="SendToPassenger">
+                                    Send message to passenger via SMS
+                                </label>
+                            </div>
                         </div>
-                    }
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-info">Assign new pilot</button>
-                    </div>
-                </form>
-            </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">Add Message</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
 
-        </section>
+            <section>
+                <h3>Assign new pilot</h3>
+
+                <div class="col-sm-12">
+                    <p>If the currently assign pilot is unable to make the flight, use this to find a new pilot from the available pilots to take the flight. A message is sent to the passenger notifying him of the new pilot. If no other pilots are available, the tandem coordinator is notified and tasked with finding a new pilot.</p>
+                    <form asp-controller="BookingAdmin" asp-action="NewPilot" method="post" role="form" onsubmit="return submitNewPilot()">
+                        <input type="hidden" name="Id" value="@Model.Booking.Id"/>
+                        <div class="form-group">
+                            <textarea class="form-control" id="NewPilotMessage" name="NewPilotMessage" placeholder="Please enter a reason to assign a new pilot"></textarea>
+                        </div>
+                        @if (User.IsAdmin())
+                        {
+                            <p>
+                                Select "Choose from available pilots" to make a fair selection of pilot based on priority. If no pilots are available, you can use this dropdown to select a pilot not marked as available (Remember to verify that the pilot can actually make the flight first).
+                            </p>
+                            <div class="form-group">
+                                <select class="form-control" id="NewPilotUserId" name="NewPilotUserId" placeholder="Please enter a reason to assign a new pilot">
+                                    <option value="">Choose from available pilots</option>
+                                    @foreach (var pilot in Model.AvailablePilots.OrderByDescending(p => p.Available).ThenBy(p => p.Priority))
+                                    {
+                                        <option class="@(pilot.Available ? "available" : "unavailable")" value="@pilot.Pilot.Id">
+                                            @pilot.Pilot.Name (@pilot.Pilot.PhoneNumber)
+                                            @(pilot.Available ? "Available" : "Unavailable")
+                                            Priority @(pilot.Priority)
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+                        }
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-info">Assign new pilot</button>
+                        </div>
+                    </form>
+                </div>
+
+            </section>
 
 
-        <section>
-            <h3>Cancel Booking</h3>
+            <section>
+                <h3>Cancel Booking</h3>
 
-            <div class="col-sm-12">
-                <p>Cancel the booking and send a message to the passenger. Use this if the booking cannot completed be due to weather, passenger not showing up or similar. Do not use this if the booking is moved to another date.</p>
-                <p>The passenger will receive a message on the form: "Unfortunately your flight on @Model.Booking.BookingDate.ToString("dd.MM.yyyy") has been canceled due to {cancel-message}"</p>
-                <form asp-controller="BookingAdmin" asp-action="Cancel" method="post" role="form" onsubmit="return submitCancel()">
-                    <input type="hidden" name="Id" value="@Model.Booking.Id"/>
-                    <div class="form-group">
-                        <textarea class="form-control" id="CancelMessage" name="CancelMessage" placeholder="Please enter reason to cancel flight"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-danger">Cancel Booking</button>
-                    </div>
-                </form>
-            </div>
-        </section>
+                <div class="col-sm-12">
+                    <p>Cancel the booking and send a message to the passenger. Use this if the booking cannot completed be due to weather, passenger not showing up or similar. Do not use this if the booking is moved to another date.</p>
+                    <p>The passenger will receive a message on the form: "Unfortunately your flight on @Model.Booking.BookingDate.ToString("dd.MM.yyyy") has been canceled due to {cancel-message}"</p>
+                    <form asp-controller="BookingAdmin" asp-action="Cancel" method="post" role="form" onsubmit="return submitCancel()">
+                        <input type="hidden" name="Id" value="@Model.Booking.Id"/>
+                        <div class="form-group">
+                            <textarea class="form-control" id="CancelMessage" name="CancelMessage" placeholder="Please enter reason to cancel flight"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-danger">Cancel Booking</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        }
     </div>
 </div>
 
