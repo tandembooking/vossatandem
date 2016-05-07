@@ -17,5 +17,8 @@ namespace TandemBooking.ViewModels.Manage
         public bool TwoFactor { get; set; }
 
         public bool BrowserRemembered { get; set; }
+
+        public bool SmsNotification { get; set; }
+        public bool EmailNotification { get; set; }
     }
 }

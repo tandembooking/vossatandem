@@ -9,6 +9,8 @@ namespace TandemBooking.Models
         public string Name { get; set; }
         public bool IsPilot { get; set; }
         public bool IsAdmin { get; set; }
+        public bool EmailNotification { get; set; }
+        public bool SmsNotification { get; set; }
 
         public ICollection<BookedPilot> Bookings { get; set; }
         public ICollection<PilotAvailability> Availabilities { get; set; }

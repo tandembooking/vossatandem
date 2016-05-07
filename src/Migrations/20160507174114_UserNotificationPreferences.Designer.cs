@@ -8,9 +8,10 @@ using TandemBooking.Models;
 namespace tandembooking.Migrations
 {
     [DbContext(typeof(TandemBookingContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20160507174114_UserNotificationPreferences")]
+    partial class UserNotificationPreferences
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "7.0.0-rc1-16348")

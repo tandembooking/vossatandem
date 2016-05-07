@@ -8,15 +8,17 @@ namespace TandemBooking.Services
     public class AuthMessageSender : IEmailSender, ISmsSender
     {
         private readonly NexmoService _nexmo;
+        private readonly MailService _mailService;
 
-        public AuthMessageSender(NexmoService nexmo)
+        public AuthMessageSender(NexmoService nexmo, MailService mailService)
         {
             _nexmo = nexmo;
+            _mailService = mailService;
         }
 
-        public Task SendEmailAsync(string email, string subject, string message)
+        public async Task SendEmailAsync(string email, string subject, string message)
         {
-            return Task.FromResult(0);
+            await _mailService.Send(email, subject, message);
         }
 
         public async Task SendSmsAsync(string number, string message)

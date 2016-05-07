@@ -57,7 +57,9 @@ namespace TandemBooking.Controllers
                 PhoneNumber = await _userManager.GetPhoneNumberAsync(user),
                 TwoFactor = await _userManager.GetTwoFactorEnabledAsync(user),
                 Logins = await _userManager.GetLoginsAsync(user),
-                BrowserRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user)
+                BrowserRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
+                SmsNotification = user.SmsNotification,
+                EmailNotification = user.EmailNotification,
             };
             return View(model);
         }
@@ -80,6 +82,18 @@ namespace TandemBooking.Controllers
                 }
             }
             return RedirectToAction(nameof(ManageLogins), new { Message = message });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> UpdateNotifications(IndexViewModel input)
+        {
+            var user = await GetCurrentUserAsync();
+            user.EmailNotification = input.EmailNotification;
+            user.SmsNotification = input.SmsNotification || !user.EmailNotification;
+            await _userManager.UpdateAsync(user);
+
+            return RedirectToAction(nameof(Index));
         }
 
         //

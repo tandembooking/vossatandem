@@ -85,10 +85,20 @@ namespace TandemBooking
                         Name = Configuration["BookingCoordinator:Name"],
                         PhoneNumber = Configuration["BookingCoordinator:PhoneNumber"]
                     });
+            services.AddTransient(provider => new MailSettings()
+            {
+                SmtpUser = Configuration["Mail:SmtpUser"],
+                SmtpPassword = Configuration["Mail:SmtpPassword"],
+                SmtpServer = Configuration["Mail:SmtpServer"],
+                SmtpPort = int.Parse(Configuration["Mail:SmtpPort"]),
+                FromName = Configuration["Mail:FromName"],
+                FromAddress = Configuration["Mail:FromAddress"],
+            });
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
             services.AddTransient<SmsService>();
             services.AddTransient<MessageService>();
+            services.AddTransient<MailService>();
 
             services.AddTransient<BookingService>();
 

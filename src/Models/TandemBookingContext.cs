@@ -19,6 +19,10 @@ namespace TandemBooking.Models
         {
             base.OnModelCreating(builder);
 
+            var userBuilder = builder.Entity<ApplicationUser>();
+            userBuilder.Property(p => p.EmailNotification).HasDefaultValue(true);
+            userBuilder.Property(p => p.SmsNotification).HasDefaultValue(true);
+
             builder.Entity<Booking>();
             builder.Entity<PilotAvailability>();
             builder.Entity<BookingEvent>();
