@@ -1,0 +1,106 @@
+@using System.Security.Claims
+@using TandemBooking.ViewModels.AvailabilityOverview
+@model AvailabilityOverviewViewModel
+
+@{
+    ViewData["Title"] = $"Availability Overview";
+}
+
+<style>
+    .available {
+        background-color: lightgreen;
+    }
+
+    .unavailable {
+        background-color: lightsalmon;
+    }
+
+    .table {
+        background-color: white;
+    }
+
+    .past {
+        opacity: 0.8;
+    }
+
+    .pilot-availability a {
+        color: inherit;
+    }
+
+    .day {
+        opacity: .3;
+        font-size: x-small;
+        text-align: right;
+    }
+
+</style>
+
+<h2>@ViewData["Title"]</h2>
+
+<p>
+    Overview of how pilot availability by day
+</p>
+
+<div class="row">
+    <div class="col-xs-2">
+        <h2><a href="@Url.Action("Index", new {date = Model.Prev.Date})">&lt;</a></h2>
+    </div>
+    <div class="col-xs-8 text-center">
+        <h2>@Model.MonthName</h2>
+    </div>
+    <div class="col-xs-2 text-right">
+        <h2><a href="@Url.Action("Index", new {date = Model.Next.Date})">&gt;</a></h2>
+    </div>
+</div>
+
+<table class="table table-bordered pilot-availability" style="width: 100%; table-layout: fixed;">
+    <tr>
+        <th>Mon</th>
+        <th>Tue</th>
+        <th>Wed</th>
+        <th>Thu</th>
+        <th>Fri</th>
+        <th>Sat</th>
+        <th>Sun</th>
+    </tr>
+    @{
+        int dayIndex = 0;
+    }
+    @while (dayIndex < Model.Days.Count)
+    {
+        <tr>
+            @for (int weekDay = 0; weekDay < 7 && dayIndex < Model.Days.Count; weekDay++)
+            {
+                var dayInfo = Model.Days[dayIndex];
+                <text>
+                    <td class="" style="position: relative; height: 50px">
+                        <div class="day">@dayInfo.Date.Day</div>
+                        <div>@dayInfo.Availabilities.Count available pilots</div>
+                        <div>@(dayInfo.PilotBookings.Count + dayInfo.UnassignedBookings.Count) bookings</div>
+                        <div>@dayInfo.FreePilots.Count free pilots</div>
+                        <ul class="list-unstyled" style="margin-top: 10px">
+                            @foreach (var pilot in dayInfo.Availabilities.Select(a => a.Pilot))
+                            {
+                                <li>@pilot.Name: @dayInfo.PilotBookings.Count(b => b.Pilot == pilot)</li>
+                            }
+                            @if (dayInfo.UnassignedBookings.Count > 0)
+                            {
+                                <li>Unassigned: @dayInfo.UnassignedBookings.Count</li>
+                            }
+                        </ul>
+                    </td>
+                </text>
+                dayIndex++;
+            }
+        </tr>
+    }
+</table>
+
+<script>
+    function postAvailability(url) {
+        $.post(url, {}, function () {
+            window.location.reload();
+        });
+    }
+
+</script>

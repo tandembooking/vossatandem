@@ -16,6 +16,10 @@
                     {
                         <li><a asp-controller="PilotAvailability" asp-action="Index">Availability</a></li>
                     }
+                    @if (User.IsAdmin())
+                    {
+                        <li><a asp-controller="AvailabilityOverview" asp-action="Index">Availability Overview</a></li>
+                    }
                     @if (User.IsPilot() || User.IsAdmin())
                     {
                         <li><a asp-controller="BookingAdmin" asp-action="Index">Bookings</a></li>
