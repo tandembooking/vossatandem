@@ -27,6 +27,10 @@
         </div>
 
         <div class="info-text air-vertical">
+            During <a href="https://ekstremsportveko.com">ekstremsportveko</a>, the online booking is unavailable. Instead visit the tandem booking booth on prestegardslandet, and we'll get you flying!
+        </div>
+
+        <div class="info-text air-vertical">
             Please note that paragliding is very dependent on weather. Safety is paramount, and we will only fly if the weather conditions permit it. If the selected day turns out to be unflyable, your pilot will contact you to cancel the flight. You will of course not pay anything if we're unable to fly.
         </div>
 
@@ -193,21 +197,26 @@
 
     <script>
         function isValidDate(date) {
-            var today = new Date();
+            date = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+            //should be in the future            
+            var now = new Date();
+            var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            if (date < today) {
+                return false;
+            }
             
-            if (today.getYear() < date.getYear()) {
-                return true;
+            //should not be during veko
+            var vekoStart = new Date(2016, 6-1, 27);
+            var vekoEnd = new Date(2016, 7-1, 2);
+            if (date >= vekoStart && date <= vekoEnd) {
+                return {
+                    enabled: false,
+                    tooltip: 'Please visit the tandem booking booth during ekstremsportveko'
+                };
             }
-            if (today.getYear() > date.getYear()) {
-                return false;
-            }
-            if (today.getMonth() < date.getMonth()) {
-                return true;
-            }
-            if (today.getMonth() > date.getMonth()) {
-                return false;
-            }
-            return today.getDate() <= date.getDate();
+
+            return true;
         }
 
         function isValidMonth(date) {
