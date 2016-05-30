@@ -59,6 +59,7 @@ namespace TandemBooking
                     options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]);
                 });
 
+            services.AddDataProtection();
 
             services
                 .AddIdentity<ApplicationUser, IdentityRole>(options =>
