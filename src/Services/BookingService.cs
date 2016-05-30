@@ -27,7 +27,7 @@ namespace TandemBooking.Services
         public List<AvailablePilot> FindAvailablePilots(DateTime date, bool includeUnavailable = false)
         {
             //find list of available pilots pilots having the least amount of flights
-            //during the last 30 days
+            //during the 30 days prior to and 14 days after the booking date
             var pilots = _context.Users
                 .Select(u => new
                 {
@@ -35,12 +35,19 @@ namespace TandemBooking.Services
                     Pilot = u,
                     Bookings =
                         u.Bookings
-                            .Where(
-                            b => b.Booking.BookingDate > DateTime.UtcNow.AddDays(-30) && !b.Canceled && !b.Booking.Canceled).ToList(),
+                            .Where(b =>
+                                b.Booking.BookingDate > DateTime.UtcNow.AddDays(-30)
+                                && b.Booking.BookingDate < DateTime.UtcNow.AddDays(14)
+                                && !b.Canceled 
+                                && !b.Booking.Canceled
+                            ).ToList(),
                     BookingsToday =
                         u.Bookings
-                            .Where(
-                            b => b.Booking.BookingDate.Date == date.Date && !b.Canceled && !b.Booking.Canceled).ToList(),
+                            .Where(b => 
+                                b.Booking.BookingDate.Date == date.Date 
+                                && !b.Canceled 
+                                && !b.Booking.Canceled
+                            ).ToList(),
                 })
                 .ToList();
 
