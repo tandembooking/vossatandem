@@ -98,11 +98,12 @@ namespace TandemBooking.Controllers
         public async Task<ActionResult> Cancel(Guid id, string cancelMessage)
         {
             var booking = _context.Bookings
+                .Include(b => b.AssignedPilot)
                 .Include(b => b.BookingEvents)
                 .FirstOrDefault(b => b.Id == id);
 
             var userId = User.GetUserId();
-            if (!User.IsAdmin() && booking.AssignedPilot.Id != userId)
+            if (!User.IsAdmin() && booking.AssignedPilot?.Id != userId)
             {
                 return RedirectToAction("Index");
             }
@@ -206,6 +207,7 @@ namespace TandemBooking.Controllers
         public async Task<ActionResult> AddMessage(Guid id, SendMessageViewModel input)
         {
             var booking = _context.Bookings
+                .Include(b => b.AssignedPilot)
                 .Include(b => b.BookingEvents)
                 .FirstOrDefault(b => b.Id == id);
 
