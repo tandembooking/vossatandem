@@ -139,6 +139,24 @@ namespace TandemBooking
                 catch { }
             }
 
+            //force domain name
+            if (!string.IsNullOrEmpty(Configuration["Server:Host"]))
+            {
+                var host = Configuration["Server:Host"];
+                app.Use(async (context, next) =>
+                {
+                    if (context.Request.Host.Value == host)
+                    {
+                        await next();
+                    }
+                    else
+                    {
+                        var url = context.Request.Scheme + "://" + host + context.Request.Path + context.Request.QueryString;
+                        context.Response.Redirect(url);
+                    }
+                });
+            }
+
             app.UseIISPlatformHandler(options => options.AuthenticationDescriptions.Clear());
             app.UseStaticFiles();
             app.UseIdentity();
