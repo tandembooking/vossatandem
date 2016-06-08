@@ -78,7 +78,7 @@ namespace TandemBooking
             services.AddMvc();
 
             // Add application services.
-            services.AddTransient(provider => new NexmoService(Configuration["Nexmo:ApiKey"], Configuration["Nexmo:ApiSecret"]));
+            services.AddTransient(provider => new NexmoService(Configuration["Nexmo:Enable"] == "True", Configuration["Nexmo:ApiKey"], Configuration["Nexmo:ApiSecret"]));
             services.AddTransient(
                 provider =>
                     new BookingCoordinatorSettings()
@@ -88,6 +88,7 @@ namespace TandemBooking
                     });
             services.AddTransient(provider => new MailSettings()
             {
+                Enable = Configuration["Mail:Enable"] == "True",
                 SmtpUser = Configuration["Mail:SmtpUser"],
                 SmtpPassword = Configuration["Mail:SmtpPassword"],
                 SmtpServer = Configuration["Mail:SmtpServer"],

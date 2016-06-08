@@ -50,11 +50,13 @@ namespace TandemBooking.Services
         private const string ApiUrl = "https://api.nexmo.com";
 
         private readonly HttpClient _client;
+        private readonly bool _enable;
         private readonly string _apiKey;
         private readonly string _apiSecret;
 
-        public NexmoService(string apiKey, string apiSecret)
+        public NexmoService(bool enable, string apiKey, string apiSecret)
         {
+            _enable = enable;
             _apiKey = apiKey;
             _apiSecret = apiSecret;
 
@@ -87,6 +89,15 @@ namespace TandemBooking.Services
 
         public async Task<NexmoSmsResult> SendSms(string from, string to, string text)
         {
+            if (!_enable)
+            {
+                return new NexmoSmsResult()
+                {
+                    MessageCount = 0,
+                    Messages = new List<NexmoSmsResultMessage>(),
+                };
+            }
+
             var response = await Post($"{RestUrl}/sms/json", new
             {
                 from, to, text
@@ -96,6 +107,11 @@ namespace TandemBooking.Services
 
         public async Task<string> FormatPhoneNumber(string phoneNumber, string countryCode = "NO")
         {
+            if (!_enable)
+            {
+                return phoneNumber;
+            }
+
             var result = await Post($"{ApiUrl}/number/format/json", new
             {
                 number = phoneNumber,

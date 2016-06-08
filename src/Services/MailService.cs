@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using MailKit.Net.Smtp;
-using MailKit.Security;
 using MimeKit;
 
 namespace TandemBooking.Services
@@ -19,8 +15,12 @@ namespace TandemBooking.Services
 
         public async Task Send(string recipient, string subject, string body)
         {
-            var emailMessage = new MimeMessage();
+            if (!_settings.Enable)
+            {
+                return;
+            }
 
+            var emailMessage = new MimeMessage();
             emailMessage.From.Add(new MailboxAddress(_settings.FromName, _settings.FromAddress));
             emailMessage.To.Add(new MailboxAddress("", recipient));
             emailMessage.Subject = subject;

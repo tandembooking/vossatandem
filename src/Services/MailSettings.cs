@@ -7,6 +7,8 @@ namespace TandemBooking.Services
 {
     public class MailSettings
     {
+        public bool Enable { get; set; }
+
         public string SmtpServer { get; set; }
         public int SmtpPort { get; set; }
         public string SmtpUser { get; set; }
