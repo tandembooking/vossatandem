@@ -139,7 +139,7 @@
                         </div>
                         <div class="form-group">
                             <div class="checkbox checkbox-inline">
-                                <input type="checkbox" name="SendToPassenger" id="SendToPassenger" value="true"/>
+                                <input type="checkbox" name="SendToPassenger" id="SendToPassenger" value="true" checked="checked"/>
                                 <label class="control-label" for="SendToPassenger">
                                     Send message to passenger via SMS
                                 </label>
@@ -162,25 +162,36 @@
                         <div class="form-group">
                             <textarea class="form-control" id="NewPilotMessage" name="NewPilotMessage" placeholder="Please enter a reason to assign a new pilot"></textarea>
                         </div>
-                        @if (User.IsAdmin())
-                        {
-                            <p>
-                                Select "Choose from available pilots" to make a fair selection of pilot based on priority. If no pilots are available, you can use this dropdown to select a pilot not marked as available (Remember to verify that the pilot can actually make the flight first).
-                            </p>
-                            <div class="form-group">
-                                <select class="form-control" id="NewPilotUserId" name="NewPilotUserId" placeholder="Please enter a reason to assign a new pilot">
-                                    <option value="">Choose from available pilots</option>
-                                    @foreach (var pilot in Model.AvailablePilots.OrderByDescending(p => p.Available).ThenBy(p => p.Priority))
-                                    {
-                                        <option class="@(pilot.Available ? "available" : "unavailable")" value="@pilot.Pilot.Id">
-                                            @pilot.Pilot.Name (@pilot.Pilot.PhoneNumber)
-                                            @(pilot.Available ? "Available" : "Unavailable")
-                                            Priority @(pilot.Priority)
-                                        </option>
-                                    }
-                                </select>
+
+                        <p>
+                            Select "Choose from available pilots" to make a fair selection of pilot based on priority. If no pilots are available, you can use this dropdown to select a pilot not marked as available (Remember to verify that the pilot can actually make the flight first).
+                        </p>
+                        <div class="form-group">
+                            <select class="form-control" id="NewPilotUserId" name="NewPilotUserId" placeholder="Please enter a reason to assign a new pilot">
+                                <option value="">Choose from available pilots</option>
+                                @foreach (var pilot in Model.AvailablePilots.OrderByDescending(p => p.Available).ThenBy(p => p.Priority))
+                                {
+                                    <option class="@(pilot.Available ? "available" : "unavailable")" value="@pilot.Pilot.Id">
+                                        @pilot.Pilot.Name (@pilot.Pilot.PhoneNumber)
+                                        @(pilot.Available ? "Available" : "Unavailable")
+                                        Priority @(pilot.Priority)
+                                    </option>
+                                }
+                            </select>
+                        </div>
+
+                        <p>
+                            You can uncheck the "send message to passenger" checkbox if you are changing the pilot after the flight was performed in order to make the booking reflect reality (i.e. another pilot got the flight in the end). 
+                        </p>
+                        <div class="form-group">
+                            <div class="checkbox checkbox-inline">
+                                <input type="checkbox" name="NewPilotNotifyPassenger" id="NewPilotNotifyPassenger" value="true" checked="checked" />
+                                <label class="control-label" for="NewPilotNotifyPassenger">
+                                    Send message to passenger via SMS
+                                </label>
                             </div>
-                        }
+                        </div>
+
                         <div class="form-group">
                             <button type="submit" class="btn btn-info">Assign new pilot</button>
                         </div>

@@ -97,7 +97,7 @@ Booking Coordinator
             await _smsService.Send(booking.PassengerPhone, passengerMessage, booking);
         }
 
-        public async Task SendNewPilotMessage(string bookingDateString, Booking booking, ApplicationUser previousPilot)
+        public async Task SendNewPilotMessage(string bookingDateString, Booking booking, ApplicationUser previousPilot, bool notifyPassenger)
         {
             //send message to new pilot
             var assignedPilot = booking.AssignedPilot;
@@ -128,8 +128,11 @@ Booking Coordinator
             }
 
             //send message to passenger
-            var passengerMessage = $"Your flight on {bookingDateString} has been assigned a new pilot. You will be contacted by {assignedPilot.Name} ({assignedPilot.PhoneNumber}) shortly.";
-            await _smsService.Send(booking.PassengerPhone, passengerMessage, booking);
+            if (notifyPassenger)
+            {
+                var passengerMessage = $"Your flight on {bookingDateString} has been assigned a new pilot. You will be contacted by {assignedPilot.Name} ({assignedPilot.PhoneNumber}) shortly.";
+                await _smsService.Send(booking.PassengerPhone, passengerMessage, booking);
+            }
         }
 
         public async Task SendPilotUnassignedMessage(Booking booking, ApplicationUser previousPilot)

@@ -29,6 +29,7 @@ namespace TandemBooking.Services
             //find list of available pilots pilots having the least amount of flights
             //during the 30 days prior to and 14 days after the booking date
             var pilots = _context.Users
+                .Where(u => u.IsPilot)
                 .Select(u => new
                 {
                     Availabilities = u.Availabilities.Where(a => a.Date.Date == date.Date).ToList(),

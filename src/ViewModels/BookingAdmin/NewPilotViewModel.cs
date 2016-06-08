@@ -9,5 +9,6 @@ namespace TandemBooking.ViewModels.BookingAdmin
     {
         public string NewPilotMessage { get; set; }
         public string NewPilotUserId { get; set; }
+        public bool NewPilotNotifyPassenger { get; set; }
     }
 }
