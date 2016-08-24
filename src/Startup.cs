@@ -1,18 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Hosting;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.Data.Entity;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using TandemBooking.Models;
 using TandemBooking.Services;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Serilog;
 
 namespace TandemBooking
 {
@@ -20,13 +23,14 @@ namespace TandemBooking
     {
         private DateTime _startTime;
 
-        public Startup(IHostingEnvironment env, IApplicationEnvironment appEnv)
+        public Startup(IHostingEnvironment env, IHostingEnvironment appEnv)
         {
             _startTime = DateTime.UtcNow;
             Console.WriteLine("Startup");
 
             // Set up configuration sources.
             var builder = new ConfigurationBuilder()
+                .SetBasePath(appEnv.ContentRootPath)
                 .AddJsonFile("appsettings.json")
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddJsonFile($"appsettings.local.json", optional: true);
@@ -40,6 +44,12 @@ namespace TandemBooking
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
 
+            Log.Logger = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .WriteTo.LiterateConsole()
+                .WriteTo.RollingFile("log/tandembooking-{Date}.log")
+                .CreateLogger();
+
             Console.WriteLine($"Configuration Loaded {(DateTime.UtcNow - _startTime).TotalSeconds}");
         }
 
@@ -51,8 +61,7 @@ namespace TandemBooking
             Console.WriteLine($"Configure Services Start {(DateTime.UtcNow - _startTime).TotalSeconds}");
 
             // Add framework services.
-            services.AddEntityFramework()
-                .AddSqlServer()
+            services.AddEntityFrameworkSqlServer()
                 //.AddSqlite()
                 .AddDbContext<TandemBookingContext>(options =>
                 {
@@ -66,7 +75,7 @@ namespace TandemBooking
                 {
                     options.Password.RequireDigit = false;
                     options.Password.RequireLowercase = false;
-                    options.Password.RequireNonLetterOrDigit = false;
+                    options.Password.RequireNonAlphanumeric = false;
                     options.Password.RequireUppercase = false;
                     options.Password.RequiredLength = 6;
                     options.User.RequireUniqueEmail = true;
@@ -102,21 +111,22 @@ namespace TandemBooking
             services.AddTransient<MessageService>();
             services.AddTransient<MailService>();
 
+            services.AddTransient<BookingServiceDb>();
             services.AddTransient<BookingService>();
 
             Console.WriteLine($"Configure Services Done {(DateTime.UtcNow - _startTime).TotalSeconds}");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IApplicationLifetime appLifetime)
         {
             Console.WriteLine($"Configure App Start {(DateTime.UtcNow - _startTime).TotalSeconds}");
 
             CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US");
             CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("en-US");
 
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
+            loggerFactory.AddSerilog();
+            appLifetime.ApplicationStopped.Register(Log.CloseAndFlush);
 
             if (env.IsDevelopment())
             {
@@ -134,10 +144,13 @@ namespace TandemBooking
                         .CreateScope())
                     {
                         serviceScope.ServiceProvider.GetService<TandemBookingContext>()
-                             .Database.Migrate();
+                            .Database.Migrate();
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Log.Logger.Error(ex, "Unable to migrate database");
+                }
             }
 
             //force domain name
@@ -158,7 +171,6 @@ namespace TandemBooking
                 });
             }
 
-            app.UseIISPlatformHandler(options => options.AuthenticationDescriptions.Clear());
             app.UseStaticFiles();
             app.UseIdentity();
 
@@ -173,6 +185,16 @@ namespace TandemBooking
         }
 
         // Entry point for the application.
-        public static void Main(string[] args) => Microsoft.AspNet.Hosting.WebApplication.Run<Startup>(args);
+        public static void Main(string[] args)
+        {
+            var host = new WebHostBuilder()
+                .UseKestrel()
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseIISIntegration()
+                .UseStartup<Startup>()
+                .Build();
+
+            host.Run();
+        } 
     }
 }

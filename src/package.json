@@ -1,6 +1,6 @@
 {
-  "name": "TandemBooking",
-  "version": "0.0.0",
+  "name": "tandembooking",
+  "version": "1.0.0",
   "devDependencies": {
     "gulp": "^3.9.0",
     "gulp-concat": "2.5.2",

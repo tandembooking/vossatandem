@@ -4,10 +4,10 @@ using System.Net.Http;
 using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TandemBooking.Models;
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using TandemBooking.Services;
 using TandemBooking.ViewModels.BookingAdmin;
 
@@ -36,7 +36,7 @@ namespace TandemBooking.Controllers
             };
             await _smsService.HandleDeliveryReport(deliveryReport);
 
-            return new HttpOkResult();
+            return new OkResult();
         }
     }
 }

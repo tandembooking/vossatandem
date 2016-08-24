@@ -4,11 +4,10 @@ using System.Net.Http;
 using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TandemBooking.Models;
-using Microsoft.Data.Entity;
-using Org.BouncyCastle.Bcpg.OpenPgp;
+using Microsoft.EntityFrameworkCore;
 using TandemBooking.Services;
 using TandemBooking.ViewModels.BookingAdmin;
 
@@ -21,20 +20,22 @@ namespace TandemBooking.Controllers
         private readonly BookingService _bookingService;
         private readonly MessageService _messageService;
         private readonly BookingCoordinatorSettings _bookingCoordinatorSettings;
+        private readonly UserManager _userManager;
 
-        public BookingAdminController(TandemBookingContext context, NexmoService nexmo, BookingService bookingService, MessageService messageService, BookingCoordinatorSettings bookingCoordinatorSettings)
+        public BookingAdminController(TandemBookingContext context, NexmoService nexmo, BookingService bookingService, MessageService messageService, BookingCoordinatorSettings bookingCoordinatorSettings, UserManager userManager)
         {
             _context = context;
             _bookingService = bookingService;
             _messageService = messageService;
             _bookingCoordinatorSettings = bookingCoordinatorSettings;
+            _userManager = userManager;
         }
 
         public ActionResult Index(string userId = null)
         {
             if (!User.IsAdmin() && !User.IsPilot())
             {
-                return new HttpUnauthorizedResult();
+                return new UnauthorizedResult();
             }
 
             var bookingQuery = _context.Bookings
@@ -69,14 +70,14 @@ namespace TandemBooking.Controllers
 
             if (!User.IsAdmin() && !User.IsPilot())
             {
-                return new HttpUnauthorizedResult();
+                return new UnauthorizedResult();
             }
 
             var vm = new BookingDetailsViewModel()
             {
                 ErrorMessage = errorMessage,
                 Booking = booking,
-                Editable = User.IsAdmin() || booking.AssignedPilot?.Id == User.GetUserId(),
+                Editable = User.IsAdmin() || booking.AssignedPilot?.Id == _userManager.GetUserId(User),
             };
 
             vm.AvailablePilots = _bookingService.FindAvailablePilots(booking.BookingDate, true);
@@ -99,7 +100,7 @@ namespace TandemBooking.Controllers
                 .Include(b => b.BookingEvents)
                 .FirstOrDefault(b => b.Id == id);
 
-            var userId = User.GetUserId();
+            var userId = _userManager.GetUserId(User);
             if (!User.IsAdmin() && booking.AssignedPilot?.Id != userId)
             {
                 return RedirectToAction("Index");
@@ -128,7 +129,7 @@ namespace TandemBooking.Controllers
                 .Include(b => b.BookedPilots).ThenInclude(bp => bp.Pilot)
                 .FirstOrDefault(b => b.Id == id);
 
-            var userId = User.GetUserId();
+            var userId = _userManager.GetUserId(User);
             if (!User.IsAdmin() && booking.AssignedPilot.Id != userId)
             {
                 return RedirectToAction("Index");
@@ -217,7 +218,7 @@ namespace TandemBooking.Controllers
                 return RedirectToAction("Edit", new { Id = booking.Id });
             }
 
-            var userId = User.GetUserId();
+            var userId = _userManager.GetUserId(User);
             if (!User.IsAdmin() && booking.AssignedPilot.Id != userId)
             {
                 return RedirectToAction("Index");

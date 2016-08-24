@@ -5,11 +5,10 @@ using System.Net.Http;
 using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TandemBooking.Models;
-using Microsoft.Data.Entity;
-using Org.BouncyCastle.Bcpg.OpenPgp;
+using Microsoft.EntityFrameworkCore;
 using TandemBooking.Services;
 using TandemBooking.ViewModels.AvailabilityOverview;
 using TandemBooking.ViewModels.BookingAdmin;
@@ -46,7 +45,7 @@ namespace TandemBooking.Controllers
         { 
             if (!User.IsAdmin() && !User.IsPilot())
             {
-                return new HttpUnauthorizedResult();
+                return new UnauthorizedResult();
             }
 
             if (date == null)

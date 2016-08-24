@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace TandemBooking.Models
 {
@@ -15,4 +15,6 @@ namespace TandemBooking.Models
         public ICollection<BookedPilot> Bookings { get; set; }
         public ICollection<PilotAvailability> Availabilities { get; set; }
     }
+
+    
 }

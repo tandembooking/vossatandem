@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using TandemBooking.Models;
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace TandemBooking.Services
 {
@@ -123,7 +123,7 @@ namespace TandemBooking.Services
 
         public void AddEvent(Booking booking, ClaimsPrincipal user, string message)
         {
-            var userId = user?.GetUserId();
+            var userId = user == null ? null : _userManager.GetUserId(user);
             booking.BookingEvents.Add(new BookingEvent()
             {
                 User = _context.Users.FirstOrDefault(u => u.Id == userId),

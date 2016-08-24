@@ -3,33 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Identity;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 using TandemBooking.Models;
 
 namespace TandemBooking.Services
 {
     public class UserManager : UserManager<ApplicationUser>
     {
-        public UserManager(
-            IUserStore<ApplicationUser> store,
-            IOptions<IdentityOptions> optionsAccessor,
-            IPasswordHasher<ApplicationUser> passwordHasher,
-            IEnumerable<IUserValidator<ApplicationUser>> userValidators,
-            IEnumerable<IPasswordValidator<ApplicationUser>> passwordValidators,
-            ILookupNormalizer keyNormalizer,
-            IdentityErrorDescriber errors,
-            IServiceProvider services,
-            ILogger<UserManager<ApplicationUser>> logger,
-            IHttpContextAccessor contextAccessor
-            )
-            : base(
-                store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors,
-                services, logger, contextAccessor)
+        public UserManager(IUserStore<ApplicationUser> store, IOptions<IdentityOptions> optionsAccessor, IPasswordHasher<ApplicationUser> passwordHasher, IEnumerable<IUserValidator<ApplicationUser>>  userValidators, IEnumerable<PasswordValidator<ApplicationUser>>  passwordValidators, ILookupNormalizer keyNormalizer, IdentityErrorDescriber errors, IServiceProvider services, Microsoft.Extensions.Logging.ILogger<UserManager<ApplicationUser>> logger)
+            : base(store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger)
         {
-
         }
 
         public override async Task<IList<Claim>> GetClaimsAsync(ApplicationUser user)

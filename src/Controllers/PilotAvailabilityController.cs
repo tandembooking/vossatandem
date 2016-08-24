@@ -2,8 +2,8 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TandemBooking.Models;
 using TandemBooking.ViewModels;
 using TandemBooking.Services;
@@ -30,10 +30,12 @@ namespace TandemBooking.Controllers
         };
 
         private readonly TandemBookingContext _context;
+        private readonly UserManager _userManager;
 
-        public PilotAvailabilityController(TandemBookingContext context)
+        public PilotAvailabilityController(TandemBookingContext context, UserManager userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         public ActionResult Index(DateTime? date = null, string userId=null)
@@ -45,7 +47,7 @@ namespace TandemBooking.Controllers
 
             if (userId == null || !User.IsAdmin())
             {
-                userId = User.GetUserId();
+                userId = _userManager.GetUserId(User);
             }
             var user = _context.Users.Single(u => u.Id == userId);
 
@@ -83,7 +85,7 @@ namespace TandemBooking.Controllers
         {
             if (userId == null || !User.IsAdmin())
             {
-                userId = User.GetUserId();
+                userId = _userManager.GetUserId(User);
             }
 
             if (available)

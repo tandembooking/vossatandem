@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.Data.Entity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using TandemBooking.Services;
 
 namespace TandemBooking.Models
 {
@@ -15,8 +18,19 @@ namespace TandemBooking.Models
         public DbSet<SentSmsMessage> SentSmsMessages { get; set; }
         public DbSet<SentSmsMessagePart> SentSmsMessageParts { get; set; }
 
+
+
+        public TandemBookingContext(DbContextOptions<TandemBookingContext> options) : base(options)
+        {
+        }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            foreach (var entity in builder.Model.GetEntityTypes())
+            {
+                entity.Relational().TableName = entity.DisplayName();
+            }
+
             base.OnModelCreating(builder);
 
             var userBuilder = builder.Entity<ApplicationUser>();
