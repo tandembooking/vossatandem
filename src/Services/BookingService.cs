@@ -18,52 +18,30 @@ namespace TandemBooking.Services
     public class BookingService
     {
         private readonly TandemBookingContext _context;
+        private readonly UserManager _userManager;
+        private readonly BookingServiceDb _bookingServiceDb;
 
-        public BookingService(TandemBookingContext context)
+        public BookingService(TandemBookingContext context, UserManager userManager, BookingServiceDb bookingServiceDb)
         {
             _context = context;
+            _userManager = userManager;
+            _bookingServiceDb = bookingServiceDb;
         }
 
         public List<AvailablePilot> FindAvailablePilots(DateTime date, bool includeUnavailable = false)
         {
-            //find list of available pilots pilots having the least amount of flights
-            //during the 30 days prior to and 14 days after the booking date
-            var pilots = _context.Users
-                .Where(u => u.IsPilot)
-                .Select(u => new
-                {
-                    Availabilities = u.Availabilities.Where(a => a.Date.Date == date.Date).ToList(),
-                    Pilot = u,
-                    Bookings =
-                        u.Bookings
-                            .Where(b =>
-                                b.Booking.BookingDate > DateTime.UtcNow.AddDays(-30)
-                                && b.Booking.BookingDate < DateTime.UtcNow.AddDays(14)
-                                && !b.Canceled 
-                                && !b.Booking.Canceled
-                            ).ToList(),
-                    BookingsToday =
-                        u.Bookings
-                            .Where(b => 
-                                b.Booking.BookingDate.Date == date.Date 
-                                && !b.Canceled 
-                                && !b.Booking.Canceled
-                            ).ToList(),
-                })
-                .ToList();
-
-            var availablePilots = pilots
-                .Select(pa => new AvailablePilot()
-                {
-                    Pilot = pa.Pilot,
-                    Priority = (pa.Bookings?.Count() ?? 0) 
-                        + (1000 * pa.BookingsToday?.Count() ?? 0), // a booking the same day are weighted more heavily to avoid pilots getting too many flights a day
-                    Available = (pa.Availabilities?.Count() ?? 0) > 0
-                })
-                .Where(ap => ap.Available || includeUnavailable)
-                .ToList();
-
-            return availablePilots;
+            var task = _bookingServiceDb.GetAvailablePilotsAsync(date);
+            task.Wait();
+            if (includeUnavailable)
+            {
+                return task.Result;
+            }
+            else
+            {
+                return task.Result
+                    .Where(a => a.Available)
+                    .ToList();
+            }
         }
 
         public ApplicationUser AssignNewPilot(Booking booking)
