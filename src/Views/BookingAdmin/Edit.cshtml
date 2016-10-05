@@ -11,15 +11,6 @@
     <div class="alert alert-danger">@Model.ErrorMessage</div>
 }
 
-<style>
-    option.unavailable {
-        background-color: lightsalmon;
-    }
-    option.available {
-        background-color: lightgreen;
-    }
-</style>
-
 <div class="row">
     <div class="col-sm-12">
         <section>
@@ -57,9 +48,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="Booking.PassengerPhone" class="col-sm-4 control-label">Passenger Email</label>
+                    <label asp-for="Booking.PassengerPhone" class="col-sm-4 control-label">Passenger Phone</label>
                     <div class="col-sm-8 control-text">
-                        @Model.Booking.PassengerPhone
+                        @Model.Booking.PassengerPhone.AsPhoneNumber()
                     </div>
                 </div>
 
@@ -82,7 +73,7 @@
                     <div class="col-sm-8 control-text">
                         @if (Model.Booking.AssignedPilot != null)
                         {
-                            <text>@Model.Booking.AssignedPilot?.Name (@Model.Booking.AssignedPilot.PhoneNumber)</text>
+                            <text>@Model.Booking.AssignedPilot?.Name (@Model.Booking.AssignedPilot.PhoneNumber.AsPhoneNumber())</text>
                         }
                         else
                         {
@@ -113,7 +104,7 @@
                             <td>
                                 @if (evt.User != null)
                                 {
-                                    <text>@evt.User.Name (@evt.User.PhoneNumber):</text>
+                                    <text>@evt.User.Name (@evt.User.PhoneNumber.AsPhoneNumber()):</text>
                                 }
                             </td>
                         </tr>
@@ -172,7 +163,7 @@
                                 @foreach (var pilot in Model.AvailablePilots.OrderByDescending(p => p.Available).ThenBy(p => p.Priority))
                                 {
                                     <option class="@(pilot.Available ? "available" : "unavailable")" value="@pilot.Pilot.Id">
-                                        @pilot.Pilot.Name (@pilot.Pilot.PhoneNumber)
+                                        @pilot.Pilot.Name (@pilot.Pilot.PhoneNumber.AsPhoneNumber())
                                         @(pilot.Available ? "Available" : "Unavailable")
                                         Priority @(pilot.Priority)
                                     </option>

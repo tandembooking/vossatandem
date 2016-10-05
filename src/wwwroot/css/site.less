@@ -23,7 +23,8 @@ html{
 /* Set widths on the form inputs since otherwise they're 100% wide */
 input,
 select,
-textarea {
+textarea,
+.input-width {
     max-width: 280px;
 }
 
@@ -193,8 +194,17 @@ body.booking{
     }
 }
 
+/* Admin */
+option.unavailable {
+    background-color: lightsalmon;
+}
+option.available {
+    background-color: lightgreen;
+}
+
 @media (min-width: 1200px){
     .container {
         width: 970px;
     }
 }
+

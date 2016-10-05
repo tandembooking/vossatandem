@@ -29,7 +29,7 @@ namespace TandemBooking.Services
             await _smsService.Send(user.PhoneNumber, message, booking);
         }
 
-        public async Task SendNewBookingMessage(Booking booking)
+        public async Task SendNewBookingMessage(Booking booking, bool notifyPassenger, bool notifyPilot)
         {
             var assignedPilot = booking.AssignedPilot;
 
@@ -37,20 +37,24 @@ namespace TandemBooking.Services
             var bookingDateString = booking.BookingDate.ToString("dd.MM.yyyy");
             if (assignedPilot != null)
             {
+                _bookingService.AddEvent(booking, null, $"Assigned to {assignedPilot.Name} ({assignedPilot.PhoneNumber.AsPhoneNumber()})");
+
                 //send message to pilot
-                if (assignedPilot.SmsNotification) { 
-                    var message = $"You have a new flight on {bookingDateString}: {booking.PassengerName}, {booking.PassengerEmail}, {booking.PassengerPhone}, {booking.Comment}.";
-                    await SendPilotMessage(assignedPilot, "New Booking", message, booking);
-                }
-                if (assignedPilot.EmailNotification)
+                if (notifyPilot)
                 {
-                    var subject = $"New flight on {bookingDateString}";
-                    var message = $@"Hi {assignedPilot.Name},
+                    if (assignedPilot.SmsNotification) { 
+                        var message = $"You have a new flight on {bookingDateString}: {booking.PassengerName}, {booking.PassengerEmail}, {booking.PassengerPhone.AsPhoneNumber()}, {booking.Comment}.";
+                        await SendPilotMessage(assignedPilot, "New Booking", message, booking);
+                    }
+                    if (assignedPilot.EmailNotification)
+                    {
+                        var subject = $"New flight on {bookingDateString}";
+                        var message = $@"Hi {assignedPilot.Name},
 
 You have been assigned a new flight:
 Date:            {bookingDateString}. 
 Passenger Name:  {booking.PassengerName},
-Passenger Phone: {booking.PassengerPhone},
+Passenger Phone: {booking.PassengerPhone.AsPhoneNumber()},
 Passenger Email: {booking.PassengerEmail ?? "not specified"}
 Comments:
 {booking.Comment}
@@ -60,40 +64,47 @@ Booking Url: http://vossatandem.no/BookingAdmin/Edit/{booking.Id}
 fly safe!
 Booking Coordinator
 ";
-                    await _mailService.Send(assignedPilot.Email, subject, message);
+                        await _mailService.Send(assignedPilot.Email, subject, message);
+                    }
                 }
 
+
                 //send message to passenger
-                var passengerMessage = $"Awesome! Your tandem flight on  is confirmed. You will be contacted by {assignedPilot.Name} ({assignedPilot.PhoneNumber}) shortly.";
-                await _smsService.Send(booking.PassengerPhone, passengerMessage, booking);
+                if (notifyPassenger)
+                {
+                    var passengerMessage = $"Awesome! Your tandem flight on  is confirmed. You will be contacted by {assignedPilot.Name} ({assignedPilot.PhoneNumber.AsPhoneNumber()}) shortly.";
+                    await _smsService.Send(booking.PassengerPhone, passengerMessage, booking);
+                    _bookingService.AddEvent(booking, null, $"Sent confirmation message to {booking.PassengerName} ({booking.PassengerPhone.AsPhoneNumber()})");
+                }
 
                 //send message to booking coordinator
                 var bookingCoordinatorMessage = $"New flight on {bookingDateString} assigned to {assignedPilot.Name}, {booking.Comment}";
                 await _smsService.Send(_bookingCoordinatorSettings.PhoneNumber, bookingCoordinatorMessage, booking);
-
-                _bookingService.AddEvent(booking, null, $"Assigned to {assignedPilot.Name} ({assignedPilot.PhoneNumber})");
-                _bookingService.AddEvent(booking, null, $"Sent confirmation message to {booking.PassengerName} ({booking.PassengerPhone})");
             }
             else
             {
-                var message = $"Please find a pilot on {bookingDateString}: {booking.PassengerName}, {booking.PassengerEmail}, {booking.PassengerPhone}, {booking.Comment}";
+                _bookingService.AddEvent(booking, null, $"No pilots available, sent message to tandem coordinator {_bookingCoordinatorSettings.Name} ({_bookingCoordinatorSettings.PhoneNumber.AsPhoneNumber()})");
+
+                var message = $"Please find a pilot on {bookingDateString}: {booking.PassengerName}, {booking.PassengerEmail}, {booking.PassengerPhone.AsPhoneNumber()}, {booking.Comment}";
                 await _smsService.Send(_bookingCoordinatorSettings.PhoneNumber, message, booking);
 
-                var passengerMessage = $"Awesome! We will try to find a pilot who can take you flying on {bookingDateString}. You will be contacted shortly.";
-                await _smsService.Send(booking.PassengerPhone, passengerMessage, booking);
+                if (notifyPassenger)
+                {
+                    var passengerMessage = $"Awesome! We will try to find a pilot who can take you flying on {bookingDateString}. You will be contacted shortly.";
+                    await _smsService.Send(booking.PassengerPhone, passengerMessage, booking);
+                    _bookingService.AddEvent(booking, null, $"Sent confirmation message to {booking.PassengerName} ({booking.PassengerPhone.AsPhoneNumber()})");
+                }
 
-                _bookingService.AddEvent(booking, null, $"No pilots available, sent message to tandem coordinator {_bookingCoordinatorSettings.Name} ({_bookingCoordinatorSettings.PhoneNumber})");
-                _bookingService.AddEvent(booking, null, $"Sent confirmation message to {booking.PassengerName} ({booking.PassengerPhone})");
             }
             _context.SaveChanges();
         }
 
         public async Task SendMissingPilotMessage(string bookingDateString, Booking booking)
         {
-            var message = $"Please find a pilot on {bookingDateString}: {booking.PassengerName}, {booking.PassengerEmail}, {booking.PassengerPhone}, {booking.Comment}";
+            var message = $"Please find a pilot on {bookingDateString}: {booking.PassengerName}, {booking.PassengerEmail}, {booking.PassengerPhone.AsPhoneNumber()}, {booking.Comment}";
             await _smsService.Send(_bookingCoordinatorSettings.PhoneNumber, message, booking);
 
-            var passengerMessage = $"We're working on finding a pilot for your flight on {bookingDateString}. You will be contacted shortly. If you have any questions, you can contact the tandem booking coordinator, {_bookingCoordinatorSettings.Name} on ({_bookingCoordinatorSettings.PhoneNumber})";
+            var passengerMessage = $"We're working on finding a pilot for your flight on {bookingDateString}. You will be contacted shortly. If you have any questions, you can contact the tandem booking coordinator, {_bookingCoordinatorSettings.Name} on ({_bookingCoordinatorSettings.PhoneNumber.AsPhoneNumber()})";
             await _smsService.Send(booking.PassengerPhone, passengerMessage, booking);
         }
 
@@ -103,7 +114,7 @@ Booking Coordinator
             var assignedPilot = booking.AssignedPilot;
             if (assignedPilot.SmsNotification)
             {
-                var message = $"You have a new flight on {bookingDateString}: {booking.PassengerName}, {booking.PassengerEmail}, {booking.PassengerPhone}, {booking.Comment}.";
+                var message = $"You have a new flight on {bookingDateString}: {booking.PassengerName}, {booking.PassengerEmail}, {booking.PassengerPhone.AsPhoneNumber()}, {booking.Comment}.";
                 await SendPilotMessage(assignedPilot, "Assigned Booking", message, booking);
             }
             if (assignedPilot.EmailNotification)
@@ -114,7 +125,7 @@ Booking Coordinator
 You have been assigned a flight:
 Date:            {bookingDateString}. 
 Passenger Name:  {booking.PassengerName},
-Passenger Phone: +{booking.PassengerPhone},
+Passenger Phone: {booking.PassengerPhone.AsPhoneNumber()},
 Passenger Email: {booking.PassengerEmail ?? "not specified"}
 Comments:
 {booking.Comment}
@@ -130,7 +141,7 @@ Booking Coordinator
             //send message to passenger
             if (notifyPassenger)
             {
-                var passengerMessage = $"Your flight on {bookingDateString} has been assigned a new pilot. You will be contacted by {assignedPilot.Name} ({assignedPilot.PhoneNumber}) shortly.";
+                var passengerMessage = $"Your flight on {bookingDateString} has been assigned a new pilot. You will be contacted by {assignedPilot.Name} ({assignedPilot.PhoneNumber.AsPhoneNumber()}) shortly.";
                 await _smsService.Send(booking.PassengerPhone, passengerMessage, booking);
             }
         }

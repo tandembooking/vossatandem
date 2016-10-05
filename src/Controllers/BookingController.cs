@@ -76,7 +76,7 @@ namespace TandemBooking.Controllers
                     _bookingService.AssignNewPilot(booking);
                     _context.SaveChanges();
 
-                    await _messageService.SendNewBookingMessage(booking);
+                    await _messageService.SendNewBookingMessage(booking, true, true);
 
                     return RedirectToAction("Confirm", new {bookingId = booking.Id});
                 }
@@ -84,7 +84,7 @@ namespace TandemBooking.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(0, $"Error creating booking, {ex.Message}, {ex}");
-                ModelState.AddModelError("", $"An unexpected error occured during booking, please contact the booking coordinator, {_bookingCoordinatorSettings.Name}, on {_bookingCoordinatorSettings.PhoneNumber}");
+                ModelState.AddModelError("", $"An unexpected error occured during booking, please contact the booking coordinator, {_bookingCoordinatorSettings.Name}, on {_bookingCoordinatorSettings.PhoneNumber.AsPhoneNumber()}");
             }
 
             return View(input);
