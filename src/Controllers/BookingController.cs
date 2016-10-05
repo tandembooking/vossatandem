@@ -14,21 +14,21 @@ namespace TandemBooking.Controllers
 {
     public class BookingController: Controller
     {
-        private readonly ILogger _logger;
+        private readonly ILogger<BookingController> _logger;
         private readonly NexmoService _nexmo;
         private readonly TandemBookingContext _context;
         private readonly BookingService _bookingService;
         private readonly BookingCoordinatorSettings _bookingCoordinatorSettings;
         private readonly MessageService _messageService;
 
-        public BookingController(NexmoService nexmo, TandemBookingContext context, BookingCoordinatorSettings bookingCoordinatorSettings, ILoggerFactory loggerFactory, BookingService bookingService, MessageService messageService)
+        public BookingController(NexmoService nexmo, TandemBookingContext context, BookingCoordinatorSettings bookingCoordinatorSettings, BookingService bookingService, MessageService messageService, ILogger<BookingController> logger)
         {
             _nexmo = nexmo;
             _context = context;
             _bookingCoordinatorSettings = bookingCoordinatorSettings;
             _bookingService = bookingService;
             _messageService = messageService;
-            _logger = loggerFactory.CreateLogger<BookingController>();
+            _logger = logger;
         }
 
         [HttpGet]

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.WebSockets;
@@ -8,6 +9,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TandemBooking.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Org.BouncyCastle.Asn1;
 using TandemBooking.Services;
 using TandemBooking.ViewModels.BookingAdmin;
 
@@ -16,20 +19,27 @@ namespace TandemBooking.Controllers
     [Authorize]
     public class BookingAdminController : Controller
     {
+        private readonly ILogger<BookingAdminController> _logger;
         private readonly TandemBookingContext _context;
         private readonly BookingService _bookingService;
         private readonly MessageService _messageService;
         private readonly BookingCoordinatorSettings _bookingCoordinatorSettings;
         private readonly UserManager _userManager;
+        private readonly NexmoService _nexmo;
 
-        public BookingAdminController(TandemBookingContext context, NexmoService nexmo, BookingService bookingService, MessageService messageService, BookingCoordinatorSettings bookingCoordinatorSettings, UserManager userManager)
+        public BookingAdminController(TandemBookingContext context, NexmoService nexmo, BookingService bookingService,
+            MessageService messageService, BookingCoordinatorSettings bookingCoordinatorSettings,
+            UserManager userManager, ILogger<BookingAdminController> logger)
         {
             _context = context;
             _bookingService = bookingService;
             _messageService = messageService;
             _bookingCoordinatorSettings = bookingCoordinatorSettings;
             _userManager = userManager;
+            _logger = logger;
+            _nexmo = nexmo;
         }
+
 
         public ActionResult Index(string userId = null)
         {

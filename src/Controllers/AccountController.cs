@@ -22,7 +22,7 @@ namespace TandemBooking.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
-        private readonly ILogger _logger;
+        private readonly ILogger<AccountController> _logger;
         private readonly NexmoService _nexmo;
 
         public AccountController(
@@ -30,15 +30,15 @@ namespace TandemBooking.Controllers
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ISmsSender smsSender,
-            ILoggerFactory loggerFactory, 
-            NexmoService nexmo)
+            NexmoService nexmo, 
+            ILogger<AccountController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _smsSender = smsSender;
             _nexmo = nexmo;
-            _logger = loggerFactory.CreateLogger<AccountController>();
+            _logger = logger;
         }
 
         //
