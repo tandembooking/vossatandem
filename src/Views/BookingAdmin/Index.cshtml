@@ -1,3 +1,4 @@
+@using TandemBooking.Services
 @model List<Booking>
 @{
     ViewData["Title"] = "Booked flights";
@@ -6,7 +7,14 @@
 <h2>@ViewData["Title"]</h2>
 
 <div>
-    <a href="@Url.Action("Create")">New Booking</a>
+    <ul class="nav navbar-nav">
+        <li class=""><a href="@Url.Action("Create")">New Booking</a></li>
+        @if (User.IsAdmin())
+        {
+            <li><a href="@Url.Action("CompletedBookings", "Report")">Completed bookings</a></li>
+            <li><a href="@Url.Action("BookingsByPilot", "Report")">Completed bookings per pilot</a></li>
+        }
+    </ul>
 </div>
 
 <table class="table">

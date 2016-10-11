@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using TandemBooking.Models;
 using TandemBooking.Services;
@@ -29,6 +30,7 @@ namespace TandemBooking.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "IsAdmin")]
         public ActionResult EditUser(string id)
         {
             var user = _context.Users.First(u => u.Id == id);
@@ -36,6 +38,7 @@ namespace TandemBooking.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "IsAdmin")]
         public async Task<ActionResult> EditUser(string id, ApplicationUser input)
         {
             if (ModelState.IsValid)

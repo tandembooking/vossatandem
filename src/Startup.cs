@@ -84,6 +84,13 @@ namespace TandemBooking
                 .AddUserManager<UserManager>()
                 .AddDefaultTokenProviders();
 
+            services
+                .AddAuthorization(options =>
+                {
+                    options.AddPolicy("IsAdmin", policy => policy.RequireClaim(ClaimsPrincipalExtensions.AdminClaim));
+                    options.AddPolicy("IsPilot", policy => policy.RequireClaim(ClaimsPrincipalExtensions.PilotClaim));
+                });
+
             services.AddMvc();
 
             // Add application services.

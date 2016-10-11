@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -32,9 +32,9 @@ namespace tandembooking.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedName")
-                        .HasAnnotation("Relational:Name", "RoleNameIndex");
+                        .HasName("RoleNameIndex");
 
-                    b.HasAnnotation("Relational:TableName", "AspNetRoles");
+                    b.ToTable("AspNetRoles");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFramework.IdentityRoleClaim<string>", b =>
@@ -51,7 +51,9 @@ namespace tandembooking.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAnnotation("Relational:TableName", "AspNetRoleClaims");
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFramework.IdentityUserClaim<string>", b =>
@@ -68,7 +70,9 @@ namespace tandembooking.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAnnotation("Relational:TableName", "AspNetUserClaims");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFramework.IdentityUserLogin<string>", b =>
@@ -84,7 +88,9 @@ namespace tandembooking.Migrations
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
-                    b.HasAnnotation("Relational:TableName", "AspNetUserLogins");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFramework.IdentityUserRole<string>", b =>
@@ -95,7 +101,11 @@ namespace tandembooking.Migrations
 
                     b.HasKey("UserId", "RoleId");
 
-                    b.HasAnnotation("Relational:TableName", "AspNetUserRoles");
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserRoles");
                 });
 
             modelBuilder.Entity("TandemBooking.Models.ApplicationUser", b =>
@@ -113,7 +123,7 @@ namespace tandembooking.Migrations
                     b.Property<bool>("EmailConfirmed");
 
                     b.Property<bool>("EmailNotification")
-                        .HasAnnotation("Relational:DefaultValue", "True")
+                        .HasDefaultValue("True")
                         .HasAnnotation("Relational:DefaultValueType", "System.Boolean");
 
                     b.Property<bool>("IsAdmin");
@@ -141,7 +151,7 @@ namespace tandembooking.Migrations
                     b.Property<string>("SecurityStamp");
 
                     b.Property<bool>("SmsNotification")
-                        .HasAnnotation("Relational:DefaultValue", "True")
+                        .HasDefaultValue("True")
                         .HasAnnotation("Relational:DefaultValueType", "System.Boolean");
 
                     b.Property<bool>("TwoFactorEnabled");
@@ -152,12 +162,12 @@ namespace tandembooking.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
-                        .HasAnnotation("Relational:Name", "EmailIndex");
+                        .HasName("EmailIndex");
 
                     b.HasIndex("NormalizedUserName")
-                        .HasAnnotation("Relational:Name", "UserNameIndex");
+                        .HasName("UserNameIndex");
 
-                    b.HasAnnotation("Relational:TableName", "AspNetUsers");
+                    b.ToTable("AspNetUsers");
                 });
 
             modelBuilder.Entity("TandemBooking.Models.BookedPilot", b =>
@@ -176,6 +186,12 @@ namespace tandembooking.Migrations
                     b.Property<string>("PilotId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BookingId");
+
+                    b.HasIndex("PilotId");
+
+                    b.ToTable("TandemBooking.Models.BookedPilot");
                 });
 
             modelBuilder.Entity("TandemBooking.Models.Booking", b =>
@@ -200,6 +216,10 @@ namespace tandembooking.Migrations
                     b.Property<string>("PassengerPhone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AssignedPilotId");
+
+                    b.ToTable("TandemBooking.Models.Booking");
                 });
 
             modelBuilder.Entity("TandemBooking.Models.BookingEvent", b =>
@@ -216,6 +236,12 @@ namespace tandembooking.Migrations
                     b.Property<string>("UserId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BookingId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TandemBooking.Models.BookingEvent");
                 });
 
             modelBuilder.Entity("TandemBooking.Models.PilotAvailability", b =>
@@ -228,6 +254,10 @@ namespace tandembooking.Migrations
                     b.Property<string>("PilotId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PilotId");
+
+                    b.ToTable("TandemBooking.Models.PilotAvailability");
                 });
 
             modelBuilder.Entity("TandemBooking.Models.SentSmsMessage", b =>
@@ -250,6 +280,10 @@ namespace tandembooking.Migrations
                     b.Property<DateTime>("SentDate");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BookingId");
+
+                    b.ToTable("TandemBooking.Models.SentSmsMessage");
                 });
 
             modelBuilder.Entity("TandemBooking.Models.SentSmsMessagePart", b =>
@@ -275,6 +309,10 @@ namespace tandembooking.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("GatewayMessageId");
+
+                    b.HasIndex("MessageId");
+
+                    b.ToTable("TandemBooking.Models.SentSmsMessagePart");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFramework.IdentityRoleClaim<string>", b =>
