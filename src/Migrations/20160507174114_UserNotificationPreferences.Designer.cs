@@ -14,351 +14,410 @@ namespace tandembooking.Migrations
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0-rc1-16348")
+                .HasAnnotation("ProductVersion", "1.0.1")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFramework.IdentityRole", b =>
-                {
-                    b.Property<string>("Id");
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole", b =>
+            {
+                b.Property<string>("Id");
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken();
+                b.Property<string>("ConcurrencyStamp")
+                    .IsConcurrencyToken();
 
-                    b.Property<string>("Name")
-                        .HasAnnotation("MaxLength", 256);
+                b.Property<string>("Name")
+                    .HasAnnotation("MaxLength", 256);
 
-                    b.Property<string>("NormalizedName")
-                        .HasAnnotation("MaxLength", 256);
+                b.Property<string>("NormalizedName")
+                    .HasAnnotation("MaxLength", 256);
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("NormalizedName")
-                        .HasAnnotation("Relational:Name", "RoleNameIndex");
+                b.HasIndex("NormalizedName")
+                    .HasName("RoleNameIndex");
 
-                    b.HasAnnotation("Relational:TableName", "AspNetRoles");
-                });
+                b.ToTable("AspNetRoles");
+            });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFramework.IdentityRoleClaim<string>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<string>", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd();
 
-                    b.Property<string>("ClaimType");
+                b.Property<string>("ClaimType");
 
-                    b.Property<string>("ClaimValue");
+                b.Property<string>("ClaimValue");
 
-                    b.Property<string>("RoleId")
-                        .IsRequired();
+                b.Property<string>("RoleId")
+                    .IsRequired();
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasAnnotation("Relational:TableName", "AspNetRoleClaims");
-                });
+                b.HasIndex("RoleId");
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFramework.IdentityUserClaim<string>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                b.ToTable("AspNetRoleClaims");
+            });
 
-                    b.Property<string>("ClaimType");
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserClaim<string>", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd();
 
-                    b.Property<string>("ClaimValue");
+                b.Property<string>("ClaimType");
 
-                    b.Property<string>("UserId")
-                        .IsRequired();
+                b.Property<string>("ClaimValue");
 
-                    b.HasKey("Id");
+                b.Property<string>("UserId")
+                    .IsRequired();
 
-                    b.HasAnnotation("Relational:TableName", "AspNetUserClaims");
-                });
+                b.HasKey("Id");
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFramework.IdentityUserLogin<string>", b =>
-                {
-                    b.Property<string>("LoginProvider");
+                b.HasIndex("UserId");
 
-                    b.Property<string>("ProviderKey");
+                b.ToTable("AspNetUserClaims");
+            });
 
-                    b.Property<string>("ProviderDisplayName");
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserLogin<string>", b =>
+            {
+                b.Property<string>("LoginProvider");
 
-                    b.Property<string>("UserId")
-                        .IsRequired();
+                b.Property<string>("ProviderKey");
 
-                    b.HasKey("LoginProvider", "ProviderKey");
+                b.Property<string>("ProviderDisplayName");
 
-                    b.HasAnnotation("Relational:TableName", "AspNetUserLogins");
-                });
+                b.Property<string>("UserId")
+                    .IsRequired();
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFramework.IdentityUserRole<string>", b =>
-                {
-                    b.Property<string>("UserId");
+                b.HasKey("LoginProvider", "ProviderKey");
 
-                    b.Property<string>("RoleId");
+                b.HasIndex("UserId");
 
-                    b.HasKey("UserId", "RoleId");
+                b.ToTable("AspNetUserLogins");
+            });
 
-                    b.HasAnnotation("Relational:TableName", "AspNetUserRoles");
-                });
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserRole<string>", b =>
+            {
+                b.Property<string>("UserId");
+
+                b.Property<string>("RoleId");
+
+                b.HasKey("UserId", "RoleId");
+
+                b.HasIndex("RoleId");
+
+                b.HasIndex("UserId");
+
+                b.ToTable("AspNetUserRoles");
+            });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserToken<string>", b =>
+            {
+                b.Property<string>("UserId");
+
+                b.Property<string>("LoginProvider");
+
+                b.Property<string>("Name");
+
+                b.Property<string>("Value");
+
+                b.HasKey("UserId", "LoginProvider", "Name");
+
+                b.ToTable("AspNetUserTokens");
+            });
 
             modelBuilder.Entity("TandemBooking.Models.ApplicationUser", b =>
-                {
-                    b.Property<string>("Id");
+            {
+                b.Property<string>("Id");
 
-                    b.Property<int>("AccessFailedCount");
+                b.Property<int>("AccessFailedCount");
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken();
+                b.Property<string>("ConcurrencyStamp")
+                    .IsConcurrencyToken();
 
-                    b.Property<string>("Email")
-                        .HasAnnotation("MaxLength", 256);
+                b.Property<string>("Email")
+                    .HasAnnotation("MaxLength", 256);
 
-                    b.Property<bool>("EmailConfirmed");
+                b.Property<bool>("EmailConfirmed");
 
-                    b.Property<bool>("EmailNotification")
-                        .HasAnnotation("Relational:DefaultValue", "True")
-                        .HasAnnotation("Relational:DefaultValueType", "System.Boolean");
+                b.Property<bool>("EmailNotification")
+                    .ValueGeneratedOnAdd()
+                    .HasDefaultValue(true);
 
-                    b.Property<bool>("IsAdmin");
+                b.Property<bool>("IsAdmin");
 
-                    b.Property<bool>("IsPilot");
+                b.Property<bool>("IsPilot");
 
-                    b.Property<bool>("LockoutEnabled");
+                b.Property<bool>("LockoutEnabled");
 
-                    b.Property<DateTimeOffset?>("LockoutEnd");
+                b.Property<DateTimeOffset?>("LockoutEnd");
 
-                    b.Property<string>("Name");
+                b.Property<string>("Name");
 
-                    b.Property<string>("NormalizedEmail")
-                        .HasAnnotation("MaxLength", 256);
+                b.Property<string>("NormalizedEmail")
+                    .HasAnnotation("MaxLength", 256);
 
-                    b.Property<string>("NormalizedUserName")
-                        .HasAnnotation("MaxLength", 256);
+                b.Property<string>("NormalizedUserName")
+                    .HasAnnotation("MaxLength", 256);
 
-                    b.Property<string>("PasswordHash");
+                b.Property<string>("PasswordHash");
 
-                    b.Property<string>("PhoneNumber");
+                b.Property<string>("PhoneNumber");
 
-                    b.Property<bool>("PhoneNumberConfirmed");
+                b.Property<bool>("PhoneNumberConfirmed");
 
-                    b.Property<string>("SecurityStamp");
+                b.Property<string>("SecurityStamp");
 
-                    b.Property<bool>("SmsNotification")
-                        .HasAnnotation("Relational:DefaultValue", "True")
-                        .HasAnnotation("Relational:DefaultValueType", "System.Boolean");
+                b.Property<bool>("SmsNotification")
+                    .ValueGeneratedOnAdd()
+                    .HasDefaultValue(true);
 
-                    b.Property<bool>("TwoFactorEnabled");
+                b.Property<bool>("TwoFactorEnabled");
 
-                    b.Property<string>("UserName")
-                        .HasAnnotation("MaxLength", 256);
+                b.Property<string>("UserName")
+                    .HasAnnotation("MaxLength", 256);
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("NormalizedEmail")
-                        .HasAnnotation("Relational:Name", "EmailIndex");
+                b.HasIndex("NormalizedEmail")
+                    .HasName("EmailIndex");
 
-                    b.HasIndex("NormalizedUserName")
-                        .HasAnnotation("Relational:Name", "UserNameIndex");
+                b.HasIndex("NormalizedUserName")
+                    .IsUnique()
+                    .HasName("UserNameIndex");
 
-                    b.HasAnnotation("Relational:TableName", "AspNetUsers");
-                });
+                b.ToTable("AspNetUsers");
+            });
 
             modelBuilder.Entity("TandemBooking.Models.BookedPilot", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("AssignedDate");
+                b.Property<DateTime>("AssignedDate");
 
-                    b.Property<Guid?>("BookingId");
+                b.Property<Guid?>("BookingId");
 
-                    b.Property<bool>("Canceled");
+                b.Property<bool>("Canceled");
 
-                    b.Property<bool>("Confirmed");
+                b.Property<bool>("Confirmed");
 
-                    b.Property<string>("PilotId");
+                b.Property<string>("PilotId");
 
-                    b.HasKey("Id");
-                });
+                b.HasKey("Id");
+
+                b.HasIndex("BookingId");
+
+                b.HasIndex("PilotId");
+
+                b.ToTable("BookedPilots");
+            });
 
             modelBuilder.Entity("TandemBooking.Models.Booking", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd();
 
-                    b.Property<string>("AssignedPilotId");
+                b.Property<string>("AssignedPilotId");
 
-                    b.Property<DateTime>("BookingDate");
+                b.Property<DateTime>("BookingDate");
 
-                    b.Property<bool>("Canceled");
+                b.Property<bool>("Canceled");
 
-                    b.Property<string>("Comment");
+                b.Property<string>("Comment");
 
-                    b.Property<DateTime>("DateRegistered");
+                b.Property<DateTime>("DateRegistered");
 
-                    b.Property<string>("PassengerEmail");
+                b.Property<string>("PassengerEmail");
 
-                    b.Property<string>("PassengerName");
+                b.Property<string>("PassengerName");
 
-                    b.Property<string>("PassengerPhone");
+                b.Property<string>("PassengerPhone");
 
-                    b.HasKey("Id");
-                });
+                b.HasKey("Id");
+
+                b.HasIndex("AssignedPilotId");
+
+                b.ToTable("Bookings");
+            });
 
             modelBuilder.Entity("TandemBooking.Models.BookingEvent", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd();
 
-                    b.Property<Guid?>("BookingId");
+                b.Property<Guid?>("BookingId");
 
-                    b.Property<DateTime>("EventDate");
+                b.Property<DateTime>("EventDate");
 
-                    b.Property<string>("EventMessage");
+                b.Property<string>("EventMessage");
 
-                    b.Property<string>("UserId");
+                b.Property<string>("UserId");
 
-                    b.HasKey("Id");
-                });
+                b.HasKey("Id");
+
+                b.HasIndex("BookingId");
+
+                b.HasIndex("UserId");
+
+                b.ToTable("BookingEvent");
+            });
 
             modelBuilder.Entity("TandemBooking.Models.PilotAvailability", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("Date");
+                b.Property<DateTime>("Date");
 
-                    b.Property<string>("PilotId");
+                b.Property<string>("PilotId");
 
-                    b.HasKey("Id");
-                });
+                b.HasKey("Id");
+
+                b.HasIndex("PilotId");
+
+                b.ToTable("PilotAvailabilities");
+            });
 
             modelBuilder.Entity("TandemBooking.Models.SentSmsMessage", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd();
 
-                    b.Property<Guid?>("BookingId");
+                b.Property<Guid?>("BookingId");
 
-                    b.Property<DateTime>("LastRetryDate");
+                b.Property<DateTime>("LastRetryDate");
 
-                    b.Property<string>("MessageText");
+                b.Property<string>("MessageText");
 
-                    b.Property<DateTime>("NextRetryDate");
+                b.Property<DateTime>("NextRetryDate");
 
-                    b.Property<string>("RecipientNumber");
+                b.Property<string>("RecipientNumber");
 
-                    b.Property<int>("RetryCount");
+                b.Property<int>("RetryCount");
 
-                    b.Property<DateTime>("SentDate");
+                b.Property<DateTime>("SentDate");
 
-                    b.HasKey("Id");
-                });
+                b.HasKey("Id");
+
+                b.HasIndex("BookingId");
+
+                b.ToTable("SentSmsMessages");
+            });
 
             modelBuilder.Entity("TandemBooking.Models.SentSmsMessagePart", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime?>("DeliveryReportDate");
+                b.Property<DateTime?>("DeliveryReportDate");
 
-                    b.Property<string>("DeliveryReportErrorCode");
+                b.Property<string>("DeliveryReportErrorCode");
 
-                    b.Property<string>("DeliveryReportStatus");
+                b.Property<string>("DeliveryReportStatus");
 
-                    b.Property<string>("GatewayMessageId")
-                        .HasAnnotation("MaxLength", 255);
+                b.Property<string>("GatewayMessageId")
+                    .HasAnnotation("MaxLength", 255);
 
-                    b.Property<Guid?>("MessageId");
+                b.Property<Guid?>("MessageId");
 
-                    b.Property<string>("StatusCode");
+                b.Property<string>("StatusCode");
 
-                    b.Property<string>("StatusText");
+                b.Property<string>("StatusText");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GatewayMessageId");
-                });
+                b.HasIndex("GatewayMessageId");
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFramework.IdentityRoleClaim<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.EntityFramework.IdentityRole")
-                        .WithMany()
-                        .HasForeignKey("RoleId");
-                });
+                b.HasIndex("MessageId");
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFramework.IdentityUserClaim<string>", b =>
-                {
-                    b.HasOne("TandemBooking.Models.ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-                });
+                b.ToTable("SentSmsMessageParts");
+            });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFramework.IdentityUserLogin<string>", b =>
-                {
-                    b.HasOne("TandemBooking.Models.ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-                });
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<string>", b =>
+            {
+                b.HasOne("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole")
+                    .WithMany("Claims")
+                    .HasForeignKey("RoleId")
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFramework.IdentityUserRole<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.EntityFramework.IdentityRole")
-                        .WithMany()
-                        .HasForeignKey("RoleId");
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserClaim<string>", b =>
+            {
+                b.HasOne("TandemBooking.Models.ApplicationUser")
+                    .WithMany("Claims")
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
 
-                    b.HasOne("TandemBooking.Models.ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-                });
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserLogin<string>", b =>
+            {
+                b.HasOne("TandemBooking.Models.ApplicationUser")
+                    .WithMany("Logins")
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserRole<string>", b =>
+            {
+                b.HasOne("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole")
+                    .WithMany("Users")
+                    .HasForeignKey("RoleId")
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                b.HasOne("TandemBooking.Models.ApplicationUser")
+                    .WithMany("Roles")
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
 
             modelBuilder.Entity("TandemBooking.Models.BookedPilot", b =>
-                {
-                    b.HasOne("TandemBooking.Models.Booking")
-                        .WithMany()
-                        .HasForeignKey("BookingId");
+            {
+                b.HasOne("TandemBooking.Models.Booking", "Booking")
+                    .WithMany("BookedPilots")
+                    .HasForeignKey("BookingId");
 
-                    b.HasOne("TandemBooking.Models.ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("PilotId");
-                });
+                b.HasOne("TandemBooking.Models.ApplicationUser", "Pilot")
+                    .WithMany("Bookings")
+                    .HasForeignKey("PilotId");
+            });
 
             modelBuilder.Entity("TandemBooking.Models.Booking", b =>
-                {
-                    b.HasOne("TandemBooking.Models.ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("AssignedPilotId");
-                });
+            {
+                b.HasOne("TandemBooking.Models.ApplicationUser", "AssignedPilot")
+                    .WithMany()
+                    .HasForeignKey("AssignedPilotId");
+            });
 
             modelBuilder.Entity("TandemBooking.Models.BookingEvent", b =>
-                {
-                    b.HasOne("TandemBooking.Models.Booking")
-                        .WithMany()
-                        .HasForeignKey("BookingId");
+            {
+                b.HasOne("TandemBooking.Models.Booking", "Booking")
+                    .WithMany("BookingEvents")
+                    .HasForeignKey("BookingId");
 
-                    b.HasOne("TandemBooking.Models.ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-                });
+                b.HasOne("TandemBooking.Models.ApplicationUser", "User")
+                    .WithMany()
+                    .HasForeignKey("UserId");
+            });
 
             modelBuilder.Entity("TandemBooking.Models.PilotAvailability", b =>
-                {
-                    b.HasOne("TandemBooking.Models.ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("PilotId");
-                });
+            {
+                b.HasOne("TandemBooking.Models.ApplicationUser", "Pilot")
+                    .WithMany("Availabilities")
+                    .HasForeignKey("PilotId");
+            });
 
             modelBuilder.Entity("TandemBooking.Models.SentSmsMessage", b =>
-                {
-                    b.HasOne("TandemBooking.Models.Booking")
-                        .WithMany()
-                        .HasForeignKey("BookingId");
-                });
+            {
+                b.HasOne("TandemBooking.Models.Booking", "Booking")
+                    .WithMany()
+                    .HasForeignKey("BookingId");
+            });
 
             modelBuilder.Entity("TandemBooking.Models.SentSmsMessagePart", b =>
-                {
-                    b.HasOne("TandemBooking.Models.SentSmsMessage")
-                        .WithMany()
-                        .HasForeignKey("MessageId");
-                });
+            {
+                b.HasOne("TandemBooking.Models.SentSmsMessage", "Message")
+                    .WithMany("SmsMessageParts")
+                    .HasForeignKey("MessageId");
+            });
         }
     }
 }

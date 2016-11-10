@@ -8,9 +8,10 @@ using TandemBooking.Models;
 namespace tandembooking.Migrations
 {
     [DbContext(typeof(TandemBookingContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20161110141456_FixedNamesForRTM")]
+    partial class FixedNamesForRTM
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1")
