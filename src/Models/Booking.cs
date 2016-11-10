@@ -16,6 +16,9 @@ namespace TandemBooking.Models
 
         public ApplicationUser AssignedPilot { get; set; }
 
+        public Booking PrimaryBooking { get; set; }
+        public ICollection<Booking> AdditionalBookings { get; set; }
+
         public ICollection<BookedPilot> BookedPilots { get; set; }
         public ICollection<BookingEvent> BookingEvents { get; set; }
     }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using TandemBooking.Services;
 
@@ -26,18 +27,16 @@ namespace TandemBooking.Models
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            foreach (var entity in builder.Model.GetEntityTypes())
-            {
-                entity.Relational().TableName = entity.DisplayName();
-            }
-
             base.OnModelCreating(builder);
 
             var userBuilder = builder.Entity<ApplicationUser>();
             userBuilder.Property(p => p.EmailNotification).HasDefaultValue(true);
             userBuilder.Property(p => p.SmsNotification).HasDefaultValue(true);
 
-            builder.Entity<Booking>();
+            var bookingBuilder = builder.Entity<Booking>();
+            bookingBuilder.HasOne(t => t.PrimaryBooking)
+                .WithMany(u => u.AdditionalBookings);
+
             builder.Entity<PilotAvailability>();
             builder.Entity<BookingEvent>();
             builder.Entity<BookedPilot>();

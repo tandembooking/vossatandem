@@ -4,6 +4,8 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using TandemBooking.Models;
 
 namespace TandemBooking.Services
@@ -22,49 +24,52 @@ namespace TandemBooking.Services
         public async Task<List<AvailablePilot>> GetAvailablePilotsAsync(DateTime date)
         {
             var availablePilots = new List<AvailablePilot>();
-            var conn = (SqlConnection) _context.Database.GetDbConnection();
+            var relConn = _context.Database.GetService<IRelationalConnection>();
+            var conn = (SqlConnection) relConn.DbConnection;
             await _context.Database.OpenConnectionAsync();
 
             var sql = @"
                 DECLARE @Date date = CONVERT(date, @DateParam)
 
-                SELECT Pilot.Id PilotId, COALESCE(AvailabilityCount, 0) AvailabilityCount, COALESCE(Bookings.BookingCount, 0) BookingCount, COALESCE(BookingsToday.BookingCount, 0) BookingCountToday
-	                FROM AspNetUsers Pilot
+                SELECT Pilots.Id PilotId, COALESCE(AvailabilityCount, 0) AvailabilityCount, COALESCE(Bookings.BookingCount, 0) BookingCount, COALESCE(BookingsToday.BookingCount, 0) BookingCountToday
+	                FROM AspNetUsers Pilots
 	                LEFT OUTER JOIN (
-		                SELECT PilotId, COUNT(Id) AvailabilityCount FROM PilotAvailability
+		                SELECT PilotId, COUNT(Id) AvailabilityCount FROM PilotAvailabilities
 		                WHERE
-			                CONVERT(date, PilotAvailability.[Date]) = @Date
+			                CONVERT(date, PilotAvailabilities.[Date]) = @Date
 		                GROUP BY PilotId 
-	                ) Availabilities ON Pilot.Id = Availabilities.PilotId
+	                ) Availabilities ON Pilots.Id = Availabilities.PilotId
 	                LEFT OUTER JOIN (
-		                SELECT PilotId, COUNT(BookedPilot.Id) BookingCount
-			                FROM BookedPilot 
-			                INNER JOIN Booking ON BookedPilot.BookingId = Booking.Id
+		                SELECT PilotId, COUNT(BookedPilots.Id) BookingCount
+			                FROM BookedPilots 
+			                INNER JOIN Bookings ON BookedPilots.BookingId = Bookings.Id
 			                WHERE
-				                BookedPilot.Canceled = 0
-				                AND Booking.Canceled = 0
-				                AND Booking.BookingDate BETWEEN DATEADD(day, -30, @Date) AND DATEADD(day, 14, @Date)
+				                BookedPilots.Canceled = 0
+				                AND Bookings.Canceled = 0
+				                AND Bookings.BookingDate BETWEEN DATEADD(day, -30, @Date) AND DATEADD(day, 14, @Date)
 			                GROUP BY PilotId
-	                ) Bookings ON Pilot.Id = Bookings.PilotId
+	                ) Bookings ON Pilots.Id = Bookings.PilotId
 	                LEFT OUTER JOIN (
-		                SELECT PilotId, COUNT(BookedPilot.Id) BookingCount
-			                FROM BookedPilot 
-			                INNER JOIN Booking ON BookedPilot.BookingId = Booking.Id
+		                SELECT PilotId, COUNT(BookedPilots.Id) BookingCount
+			                FROM BookedPilots 
+			                INNER JOIN Bookings ON BookedPilots.BookingId = Bookings.Id
 			                WHERE
-				                BookedPilot.Canceled = 0
-				                AND Booking.Canceled = 0
-				                AND CONVERT(date, Booking.BookingDate) = @Date
+				                BookedPilots.Canceled = 0
+				                AND Bookings.Canceled = 0
+				                AND CONVERT(date, Bookings.BookingDate) = @Date
 			                GROUP BY PilotId
-	                ) BookingsToday ON Pilot.Id = BookingsToday.PilotId
+	                ) BookingsToday ON Pilots.Id = BookingsToday.PilotId
 
 	                WHERE
-		                Pilot.IsPilot = 1
+		                Pilots.IsPilot = 1
             ";
 
             var users = _context.Users.ToList();
 
-            using (var cmd = new SqlCommand(sql, conn))
+            using (var cmd = conn.CreateCommand())
             {
+                cmd.Transaction = relConn.CurrentTransaction?.GetDbTransaction() as SqlTransaction;
+                cmd.CommandText = sql;
                 cmd.Parameters.AddWithValue("DateParam", date);
 
                 using (var rd = cmd.ExecuteReader())

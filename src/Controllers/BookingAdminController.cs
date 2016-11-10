@@ -131,7 +131,7 @@ namespace TandemBooking.Controllers
                     }
                     _context.SaveChanges();
 
-                    await _messageService.SendNewBookingMessage(booking, input.NotifyPassenger, input.NotifyPilot);
+                    await _messageService.SendNewBookingMessage(booking, new Booking[] {}, input.NotifyPassenger, input.NotifyPilot);
 
                     //redirect to edit action
                     return RedirectToAction("Edit", new {id = booking.Id});

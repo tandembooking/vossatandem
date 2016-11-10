@@ -60,23 +60,71 @@ namespace TandemBooking.Controllers
                         ModelState.AddModelError("Date", "Please select a date");
                         return View(input);
                     }
-
-                    var booking = new Booking()
+                    if (input.AdditionalPassengers?.Any(string.IsNullOrWhiteSpace) ?? false)
                     {
-                        BookingDate = input.Date.Value.Date,
-                        DateRegistered = DateTime.UtcNow,
-                        PassengerEmail = input.Email,
-                        PassengerName = input.Name,
-                        PassengerPhone = phoneNumber,
-                        Comment = input.Comment,
-                        BookingEvents = new List<BookingEvent>(),
-                    };
-                    _context.Add(booking);
+                        ModelState.AddModelError("AdditionalPassengers", "Please enter the name of the additional passengers");
+                        return View(input);
+                    }
 
-                    _bookingService.AssignNewPilot(booking);
-                    _context.SaveChanges();
+                    Booking booking;
+                    Booking[] additionalBookings;
+                    using (var tx = _context.Database.BeginTransaction())
+                    {
+                        booking = new Booking()
+                        {
+                            BookingDate = input.Date.Value.Date,
+                            DateRegistered = DateTime.UtcNow,
+                            PassengerEmail = input.Email,
+                            PassengerName = input.Name,
+                            PassengerPhone = phoneNumber,
+                            Comment = input.Comment,
+                            BookingEvents = new List<BookingEvent>(),
+                        };
+                        _context.Add(booking);
 
-                    await _messageService.SendNewBookingMessage(booking, true, true);
+                        _bookingService.AssignNewPilot(booking);
+                        _context.SaveChanges();
+
+                        var additionalPassengers = (input.AdditionalPassengers ?? new string[] {})
+                            .Where(p => !string.IsNullOrEmpty(p))
+                            .Select((name, i) => new
+                            {
+                                Name = name,
+                                Index = i + 1,
+                            })
+                            .ToList();
+                                                   
+                        //Create separate bookings for the additional passengers
+                        additionalBookings = additionalPassengers.Select(additionalPassenger =>
+                            {
+                                var commentExtra = booking.AssignedPilot != null
+                                    ? $"booking {additionalPassenger.Index + 1}/{additionalPassengers.Count() + 1}, coordinate with {booking.AssignedPilot.Name} ({booking.AssignedPilot.PhoneNumber.AsPhoneNumber()}) "
+                                    : $"booking {additionalPassenger.Index + 1}/{additionalPassengers.Count() + 1}";
+
+                                var additionalBooking = new Booking()
+                                {
+                                    BookingDate = input.Date.Value.Date,
+                                    PrimaryBooking = booking,
+                                    DateRegistered = DateTime.UtcNow,
+                                    PassengerEmail = input.Email,
+                                    PassengerName = additionalPassenger.Name,
+                                    PassengerPhone = phoneNumber,
+                                    Comment = $"{input.Comment} {commentExtra}",
+                                    BookingEvents = new List<BookingEvent>(),
+                                };
+                                _context.Add(additionalBooking);
+
+                                _bookingService.AssignNewPilot(additionalBooking);
+                                _context.SaveChanges();
+
+                                return additionalBooking;
+                            })
+                            .ToArray();
+
+                        tx.Commit();
+                    }
+
+                    await _messageService.SendNewBookingMessage(booking, additionalBookings, true, true);
 
                     return RedirectToAction("Confirm", new {bookingId = booking.Id});
                 }

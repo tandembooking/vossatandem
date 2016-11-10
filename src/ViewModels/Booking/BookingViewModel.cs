@@ -16,6 +16,8 @@ namespace TandemBooking.ViewModels.Booking
         [Required(ErrorMessage = "Please enter your name")]
         public string Name { get; set; }
 
+        public string[] AdditionalPassengers { get; set; }
+
         [Phone(ErrorMessage = "We need a phone number to contact you about your flight. Please enter valid phone number.")]
         [Required(ErrorMessage = "We need a phone number to contact you about your flight. Please enter valid phone number.")]
         public string PhoneNumber { get; set; }

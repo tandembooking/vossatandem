@@ -10,7 +10,19 @@
         the form below, and one of our pilots will contact you and arrange the details.
     </p>
 
-    <div asp-validation-summary="All" class="text-danger"></div>
+    @* All of this instead of @Html.ValidationSummary(false) due to a bug in ASP.NET Core 1.0 (probably fixed in 1.1) *@
+    @if (!@ViewData.ModelState.IsValid)
+    {
+        var errors = ViewData.ModelState.Values.Select(item => item.Errors.FirstOrDefault()?.ErrorMessage).Where(item => item != null);
+        <div class="alert alert-danger">
+            <ul>
+                @foreach (var error in errors)
+                {
+                    <li>@error</li>
+                }
+            </ul>
+        </div>
+    }
 
     <form id="BookingForm" asp-controller="Booking" asp-action="Index" method="post">
         <div class="form-group">
@@ -59,7 +71,7 @@
 
         <div class="details">
             <strong>Your details</strong>
-            <div class="form-group">
+            <div class="form-group" id="primary-passenger-group">
                 <label asp-for="Name" class="small">
                     Please enter your name
                 </label>
@@ -71,9 +83,11 @@
                     </div>
                 </div>
                 <p>
-                    <span asp-validation-for="Name" class="text-danger small"></span>
+                    <span asp-validation-for="Name" class="text-danger small">
+                    </span>
                 </p>
             </div>
+            
 
             <div class="form-group">
                 <label asp-for="PhoneNumber" class="small">
@@ -109,23 +123,6 @@
                 </p>
             </div>
 
-            @*<div class="form-group">
-                <label asp-for="Passengers">
-                    Number of passengers
-                </label>
-                <div class="row">
-                    <div class="col-sm-4">
-                        <input type="number" asp-for="Passengers" class="form-control"/>
-                    </div>
-                    <p class="col-sm-8">
-                        Are you a group wanting to experience paragliding together? Enter the number of people wanting to fly, and we'll find a suitable number pilots.
-                    </p>
-                </div>
-                <p>
-                    <span asp-validation-for="Passengers" class="text-danger"></span>
-                </p>
-            </div>*@
-
             <div class="form-group">
                 <label asp-for="Comment">
                     Message to pilot
@@ -144,9 +141,61 @@
             </div>
 
             <p class="small">
-                If you are a group of people wanting to fly together, please make one booking for each person, adding a note that you are a group of x who would like to fly together.
+                If you are a group of people wanting to fly together, please use the "add passenger"-button below and enter their names. That way we can find enough pilots so you can all fly toghether.
             </p>
-
+            
+            <p class="small">
+                If you are a booking on behalf of somebody else (e.g. birthday or hen/stag party), enter the name of the passenger in the name field above, and use your own phone number. Also, please add a comment about the circumstances of the flight.
+            </p>
+            
+            @* add additional passengers on a postback with invalid model *@
+            @foreach (var additionalPassenger in Model.AdditionalPassengers ?? new string[] { })
+            {
+                <div class="form-group">
+                    <label class="small">
+                        Name of additional passenger
+                    </label>
+                    <div class="row">
+                        <div class="col-sm-5 col-xs-8">
+                            <input type="text" name="AdditionalPassengers" class="form-control" placeholder="Please enter your name" value="@additionalPassenger" />
+                        </div>
+                        <div class="info col-sm-7 col-xs-4">
+                            <button class="btn remove-passenger-button" type="button">Remove</button>
+                        </div>
+                    </div>
+                </div>
+            }
+            
+            @* template used when adding additional passengers dynamically *@
+            <template id="add-passenger-template">
+                <div class="form-group">
+                    <label asp-for="AdditionalPassengers" class="small">
+                        Name of additional passenger
+                    </label>
+                    <div class="row">
+                        <div class="col-sm-5 col-xs-8">
+                            <input type="text" asp-for="AdditionalPassengers" class="form-control" placeholder="Please enter your name" value="" />
+                        </div>
+                        <div class="info col-sm-7 col-xs-4">
+                            <button class="btn remove-passenger-button" type="button">Remove</button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+            
+            <div class="form-group">
+                <p>
+                    <span asp-validation-for="AdditionalPassengers" class="text-danger small"></span>
+                </p>
+            </div>
+            
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <button class="btn btn-secondary" type="button" id="add-passenger-button">Add Passenger</button>
+                    </div>
+                </div>
+            </div>
 
             <p class="small">
                 When you click the submit button below, we will try to find an available pilot who can give you a tandem flight. The pilot will call you to discuss the exact time and place you'll fly. If you enter an email address, we'll send you a confirmation email with name and phone number to your pilot.
@@ -196,6 +245,19 @@
     </script>
 
     <script>
+        var addPassengerButton = document.getElementById("add-passenger-button");
+        var addPassengerTemplate = document.getElementById("add-passenger-template");
+        $(addPassengerButton).on("click", function () {
+            $($(addPassengerTemplate).html()).insertBefore(addPassengerTemplate);
+        });
+        
+        $(document).on("click", ".remove-passenger-button", function (e) {
+            $(e.target).closest(".form-group").remove();
+        });
+    
+    </script>
+
+    <script>
         function isValidDate(date) {
             date = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
@@ -207,8 +269,8 @@
             }
             
             //should not be during veko
-            var vekoStart = new Date(2016, 6-1, 27);
-            var vekoEnd = new Date(2016, 7-1, 2);
+            var vekoStart = new Date(2017, 6-1, 26);
+            var vekoEnd = new Date(2017, 7-1, 1);
             if (date >= vekoStart && date <= vekoEnd) {
                 return {
                     enabled: false,
