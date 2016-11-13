@@ -166,7 +166,8 @@ namespace tandembooking.Migrations
 
                     b.Property<bool>("Confirmed");
 
-                    b.Property<string>("PilotId");
+                    b.Property<string>("PilotId")
+                        .HasMaxLength(450);
 
                     b.HasKey("Id");
                 });
@@ -214,7 +215,8 @@ namespace tandembooking.Migrations
 
                     b.Property<DateTime>("Date");
 
-                    b.Property<string>("PilotId");
+                    b.Property<string>("PilotId")
+                        .HasMaxLength(450);
 
                     b.HasKey("Id");
                 });

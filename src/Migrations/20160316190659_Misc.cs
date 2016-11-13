@@ -20,7 +20,7 @@ namespace tandembooking.Migrations
                     Id = table.Column<Guid>(nullable: false),
                     BookingId = table.Column<Guid>(nullable: true),
                     Confirmed = table.Column<bool>(nullable: false),
-                    PilotId = table.Column<string>(nullable: true)
+                    PilotId = table.Column<string>(nullable: true, maxLength: 450)
                 },
                 constraints: table =>
                 {

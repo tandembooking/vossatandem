@@ -16,7 +16,8 @@ namespace tandembooking.Migrations
             migrationBuilder.AddColumn<string>(
                 name: "UserId",
                 table: "BookingEvent",
-                nullable: true);
+                nullable: true, 
+                maxLength: 450);
             migrationBuilder.AddForeignKey(
                 name: "FK_IdentityRoleClaim<string>_IdentityRole_RoleId",
                 table: "AspNetRoleClaims",

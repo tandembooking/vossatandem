@@ -20,7 +20,6 @@ namespace TandemBooking.Models
         public DbSet<SentSmsMessagePart> SentSmsMessageParts { get; set; }
 
 
-
         public TandemBookingContext(DbContextOptions<TandemBookingContext> options) : base(options)
         {
         }
@@ -34,12 +33,23 @@ namespace TandemBooking.Models
             userBuilder.Property(p => p.SmsNotification).HasDefaultValue(true);
 
             var bookingBuilder = builder.Entity<Booking>();
+            bookingBuilder.Property(t => t.AssignedPilotId)
+                .HasMaxLength(450);
             bookingBuilder.HasOne(t => t.PrimaryBooking)
                 .WithMany(u => u.AdditionalBookings);
 
-            builder.Entity<PilotAvailability>();
-            builder.Entity<BookingEvent>();
-            builder.Entity<BookedPilot>();
+            var availabilityBuilder = builder.Entity<PilotAvailability>();
+            availabilityBuilder.Property(ab => ab.PilotId)
+                .HasMaxLength(450);
+
+            var bookingEventBuilder = builder.Entity<BookingEvent>();
+            bookingEventBuilder.Property(t => t.UserId)
+                .HasMaxLength(450);
+
+            var bookedPilotBuilder = builder.Entity<BookedPilot>();
+            bookedPilotBuilder.Property(t => t.PilotId)
+                .HasMaxLength(450);
+
             builder.Entity<SentSmsMessage>();
             var sentSmsMessagePartBuilder = builder.Entity<SentSmsMessagePart>();
             sentSmsMessagePartBuilder.Property(t => t.GatewayMessageId)

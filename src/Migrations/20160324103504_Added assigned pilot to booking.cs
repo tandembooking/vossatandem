@@ -16,7 +16,8 @@ namespace tandembooking.Migrations
             migrationBuilder.AddColumn<string>(
                 name: "AssignedPilotId",
                 table: "Booking",
-                nullable: true);
+                nullable: true,
+                maxLength: 450);
             migrationBuilder.AddColumn<DateTime>(
                 name: "AssignedDate",
                 table: "BookedPilot",

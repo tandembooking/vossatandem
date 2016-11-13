@@ -14,6 +14,7 @@ namespace TandemBooking.Models
         public string PassengerPhone {get;set;} 
         public string Comment {get;set;}
 
+        public string AssignedPilotId { get; set; }
         public ApplicationUser AssignedPilot { get; set; }
 
         public Booking PrimaryBooking { get; set; }

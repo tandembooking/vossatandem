@@ -44,7 +44,7 @@ namespace tandembooking.Migrations
                     DeliveryReportDate = table.Column<DateTime>(nullable: true),
                     DeliveryReportErrorCode = table.Column<string>(nullable: true),
                     DeliveryReportStatus = table.Column<string>(nullable: true),
-                    GatewayMessageId = table.Column<string>(nullable: true),
+                    GatewayMessageId = table.Column<string>(nullable: true, maxLength: 255),
                     MessageId = table.Column<Guid>(nullable: true),
                     StatusCode = table.Column<string>(nullable: true),
                     StatusText = table.Column<string>(nullable: true)
