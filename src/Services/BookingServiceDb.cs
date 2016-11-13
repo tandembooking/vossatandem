@@ -4,8 +4,8 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
+using TandemBooking.Controllers;
 using TandemBooking.Models;
 
 namespace TandemBooking.Services
@@ -24,8 +24,7 @@ namespace TandemBooking.Services
         public async Task<List<AvailablePilot>> GetAvailablePilotsAsync(DateTime date)
         {
             var availablePilots = new List<AvailablePilot>();
-            var relConn = _context.Database.GetService<IRelationalConnection>();
-            var conn = (SqlConnection) relConn.DbConnection;
+            var conn = (SqlConnection) _context.Database.GetDbConnection();
             await _context.Database.OpenConnectionAsync();
 
             var sql = @"
@@ -68,7 +67,7 @@ namespace TandemBooking.Services
 
             using (var cmd = conn.CreateCommand())
             {
-                cmd.Transaction = relConn.CurrentTransaction?.GetDbTransaction() as SqlTransaction;
+                cmd.Transaction = _context.Database.GetExistingTransaction()?.GetDbTransaction() as SqlTransaction;
                 cmd.CommandText = sql;
                 cmd.Parameters.AddWithValue("DateParam", date);
 

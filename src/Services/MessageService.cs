@@ -11,12 +11,12 @@ namespace TandemBooking.Services
     public class MessageService
     {
         private readonly SmsService _smsService;
-        private readonly MailService _mailService;
+        private readonly IMailService _mailService;
         private readonly TandemBookingContext _context;
         private readonly BookingService _bookingService;
         private readonly BookingCoordinatorSettings _bookingCoordinatorSettings;
 
-        public MessageService(SmsService smsService, TandemBookingContext context, BookingService bookingService, BookingCoordinatorSettings bookingCoordinatorSettings, MailService mailService)
+        public MessageService(SmsService smsService, TandemBookingContext context, BookingService bookingService, BookingCoordinatorSettings bookingCoordinatorSettings, IMailService mailService)
         {
             _smsService = smsService;
             _context = context;

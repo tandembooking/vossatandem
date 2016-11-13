@@ -4,7 +4,7 @@ using MimeKit;
 
 namespace TandemBooking.Services
 {
-    public class MailService
+    public class MailService : IMailService
     {
         private readonly MailSettings _settings;
 

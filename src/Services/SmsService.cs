@@ -9,9 +9,9 @@ namespace TandemBooking.Services
     public class SmsService
     {
         private readonly TandemBookingContext _context;
-        private readonly NexmoService _nexmoService;
+        private readonly INexmoService _nexmoService;
 
-        public SmsService(NexmoService nexmoService, TandemBookingContext context)
+        public SmsService(INexmoService nexmoService, TandemBookingContext context)
         {
             _nexmoService = nexmoService;
             _context = context;

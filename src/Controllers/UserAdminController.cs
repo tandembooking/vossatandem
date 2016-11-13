@@ -12,9 +12,9 @@ namespace TandemBooking.Controllers
     public class UserAdminController : Controller
     {
         private readonly TandemBookingContext _context;
-        private readonly NexmoService _nexmo;
+        private readonly INexmoService _nexmo;
 
-        public UserAdminController(TandemBookingContext context, NexmoService nexmo)
+        public UserAdminController(TandemBookingContext context, INexmoService nexmo)
         {
             _context = context;
             _nexmo = nexmo;

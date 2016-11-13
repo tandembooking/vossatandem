@@ -23,14 +23,14 @@ namespace TandemBooking.Controllers
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
         private readonly ILogger<AccountController> _logger;
-        private readonly NexmoService _nexmo;
+        private readonly INexmoService _nexmo;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ISmsSender smsSender,
-            NexmoService nexmo, 
+            INexmoService nexmo, 
             ILogger<AccountController> logger)
         {
             _userManager = userManager;

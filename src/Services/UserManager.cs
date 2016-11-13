@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -14,8 +12,13 @@ namespace TandemBooking.Services
 {
     public class UserManager : UserManager<ApplicationUser>
     {
-        public UserManager(IUserStore<ApplicationUser> store, IOptions<IdentityOptions> optionsAccessor, IPasswordHasher<ApplicationUser> passwordHasher, IEnumerable<IUserValidator<ApplicationUser>>  userValidators, IEnumerable<PasswordValidator<ApplicationUser>>  passwordValidators, ILookupNormalizer keyNormalizer, IdentityErrorDescriber errors, IServiceProvider services, Microsoft.Extensions.Logging.ILogger<UserManager<ApplicationUser>> logger)
-            : base(store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger)
+        public UserManager(IUserStore<ApplicationUser> store, IOptions<IdentityOptions> optionsAccessor,
+            IPasswordHasher<ApplicationUser> passwordHasher, IEnumerable<IUserValidator<ApplicationUser>> userValidators,
+            IEnumerable<PasswordValidator<ApplicationUser>> passwordValidators, ILookupNormalizer keyNormalizer,
+            IdentityErrorDescriber errors, IServiceProvider services, ILogger<UserManager<ApplicationUser>> logger)
+            : base(
+                store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors,
+                services, logger)
         {
         }
 
@@ -26,13 +29,9 @@ namespace TandemBooking.Services
 
             //Add custom claims
             if (user.IsAdmin)
-            {
                 claims.Add(new Claim(ClaimsPrincipalExtensions.AdminClaim, "true"));
-            }
             if (user.IsPilot)
-            {
                 claims.Add(new Claim(ClaimsPrincipalExtensions.PilotClaim, "true"));
-            }
 
             return claims;
         }

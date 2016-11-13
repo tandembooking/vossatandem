@@ -12,6 +12,13 @@ using Newtonsoft.Json.Linq;
 
 namespace TandemBooking.Services
 {
+    public class NexmoSettings
+    {
+        public bool Enable { get; set; }
+        public string ApiKey { get; set; }
+        public string ApiSecret { get; set; }
+    }
+
     public class NexmoSmsResult
     {
         [JsonProperty("message-count")]
@@ -44,26 +51,21 @@ namespace TandemBooking.Services
         public string ClientRef { get; set; }
     }
 
-    public class NexmoService
+    public class NexmoService: INexmoService
     {
         private const string RestUrl = "https://rest.nexmo.com";
         private const string ApiUrl = "https://api.nexmo.com";
 
         private readonly HttpClient _client;
-        private readonly bool _enable;
-        private readonly string _apiKey;
-        private readonly string _apiSecret;
+        private readonly NexmoSettings _settings;
 
-        public NexmoService(bool enable, string apiKey, string apiSecret)
+        public NexmoService(NexmoSettings settings)
         {
-            _enable = enable;
-            _apiKey = apiKey;
-            _apiSecret = apiSecret;
-
+            _settings = settings;
             _client = new HttpClient();
 
             //set auth header
-            var byteArray = Encoding.ASCII.GetBytes($"{apiKey}:{apiSecret}");
+            var byteArray = Encoding.ASCII.GetBytes($"{_settings.ApiKey}:{_settings.ApiSecret}");
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
         }
 
@@ -71,8 +73,8 @@ namespace TandemBooking.Services
         {
             var qs = new QueryString();
 
-            qs = qs.Add("api_key", _apiKey);
-            qs = qs.Add("api_secret", _apiSecret);
+            qs = qs.Add("api_key", _settings.ApiKey);
+            qs = qs.Add("api_secret", _settings.ApiSecret);
             qs = qs.Add(
                 QueryString.Create(messageObject.GetType()
                     .GetProperties()
@@ -89,7 +91,7 @@ namespace TandemBooking.Services
 
         public async Task<NexmoSmsResult> SendSms(string from, string to, string text)
         {
-            if (!_enable)
+            if (_settings.Enable)
             {
                 return new NexmoSmsResult()
                 {
@@ -107,7 +109,7 @@ namespace TandemBooking.Services
 
         public async Task<string> FormatPhoneNumber(string phoneNumber, string countryCode = "NO")
         {
-            if (!_enable)
+            if (_settings.Enable)
             {
                 return phoneNumber;
             }

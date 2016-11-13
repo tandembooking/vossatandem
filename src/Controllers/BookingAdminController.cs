@@ -25,9 +25,9 @@ namespace TandemBooking.Controllers
         private readonly MessageService _messageService;
         private readonly BookingCoordinatorSettings _bookingCoordinatorSettings;
         private readonly UserManager _userManager;
-        private readonly NexmoService _nexmo;
+        private readonly INexmoService _nexmo;
 
-        public BookingAdminController(TandemBookingContext context, NexmoService nexmo, BookingService bookingService,
+        public BookingAdminController(TandemBookingContext context, INexmoService nexmo, BookingService bookingService,
             MessageService messageService, BookingCoordinatorSettings bookingCoordinatorSettings,
             UserManager userManager, ILogger<BookingAdminController> logger)
         {

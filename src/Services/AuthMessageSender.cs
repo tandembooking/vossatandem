@@ -7,10 +7,10 @@ namespace TandemBooking.Services
 {
     public class AuthMessageSender : IEmailSender, ISmsSender
     {
-        private readonly NexmoService _nexmo;
-        private readonly MailService _mailService;
+        private readonly INexmoService _nexmo;
+        private readonly IMailService _mailService;
 
-        public AuthMessageSender(NexmoService nexmo, MailService mailService)
+        public AuthMessageSender(INexmoService nexmo, IMailService mailService)
         {
             _nexmo = nexmo;
             _mailService = mailService;

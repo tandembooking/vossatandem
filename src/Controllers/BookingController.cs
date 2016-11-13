@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -15,13 +16,13 @@ namespace TandemBooking.Controllers
     public class BookingController: Controller
     {
         private readonly ILogger<BookingController> _logger;
-        private readonly NexmoService _nexmo;
+        private readonly INexmoService _nexmo;
         private readonly TandemBookingContext _context;
         private readonly BookingService _bookingService;
         private readonly BookingCoordinatorSettings _bookingCoordinatorSettings;
         private readonly MessageService _messageService;
 
-        public BookingController(NexmoService nexmo, TandemBookingContext context, BookingCoordinatorSettings bookingCoordinatorSettings, BookingService bookingService, MessageService messageService, ILogger<BookingController> logger)
+        public BookingController(INexmoService nexmo, TandemBookingContext context, BookingCoordinatorSettings bookingCoordinatorSettings, BookingService bookingService, MessageService messageService, ILogger<BookingController> logger)
         {
             _nexmo = nexmo;
             _context = context;
@@ -68,7 +69,7 @@ namespace TandemBooking.Controllers
 
                     Booking booking;
                     Booking[] additionalBookings;
-                    using (var tx = _context.Database.BeginTransaction())
+                    using (var tx = _context.Database.TryBeginTransaction())
                     {
                         booking = new Booking()
                         {
@@ -121,7 +122,7 @@ namespace TandemBooking.Controllers
                             })
                             .ToArray();
 
-                        tx.Commit();
+                        tx?.Commit();
                     }
 
                     await _messageService.SendNewBookingMessage(booking, additionalBookings, true, true);
