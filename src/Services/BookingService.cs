@@ -28,27 +28,26 @@ namespace TandemBooking.Services
             _bookingServiceDb = bookingServiceDb;
         }
 
-        public List<AvailablePilot> FindAvailablePilots(DateTime date, bool includeUnavailable = false)
+        public async Task<List<AvailablePilot>> FindAvailablePilotsAsync(DateTime date, bool includeUnavailable = false)
         {
-            var task = _bookingServiceDb.GetAvailablePilotsAsync(date);
-            task.Wait();
+            var result = await _bookingServiceDb.GetAvailablePilotsAsync(date);
             if (includeUnavailable)
             {
-                return task.Result;
+                return result;
             }
             else
             {
-                return task.Result
+                return result
                     .Where(a => a.Available)
                     .ToList();
             }
         }
 
-        public ApplicationUser AssignNewPilot(Booking booking)
+        public async Task<ApplicationUser> AssignNewPilotAsync(Booking booking)
         {
             var spentPilots = booking.BookedPilots?.Select(bp => bp.Pilot) ?? new List<ApplicationUser>();
 
-            var availablePilots = FindAvailablePilots(booking.BookingDate)
+            var availablePilots = (await FindAvailablePilotsAsync(booking.BookingDate))
                 .Where(ap => !spentPilots.Contains(ap.Pilot));
 
             var prioritizedPilots = availablePilots
@@ -96,8 +95,6 @@ namespace TandemBooking.Services
                 booking.AssignedPilot = null;
             }
         }
-
-
 
         public void AddEvent(Booking booking, ClaimsPrincipal user, string message)
         {

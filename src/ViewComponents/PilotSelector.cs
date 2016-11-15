@@ -11,7 +11,7 @@ namespace TandemBooking.ViewComponents
 {
     public class PilotSelector : ViewComponent
     {
-        private BookingService _bookingService;
+        private readonly BookingService _bookingService;
 
         public PilotSelector(BookingService bookingService)
         {
@@ -22,7 +22,7 @@ namespace TandemBooking.ViewComponents
         {
             return View(new PilotSelectorViewModel
             {
-                AvailablePilots = _bookingService.FindAvailablePilots(date, true),
+                AvailablePilots = await _bookingService.FindAvailablePilotsAsync(date, true),
                 ControlName = controlName,
             });
         }

@@ -121,7 +121,7 @@ namespace TandemBooking.Controllers
                     if (string.IsNullOrEmpty(input.PilotId))
                     {
                         //if no pilot is selected, find a new one
-                        _bookingService.AssignNewPilot(booking);
+                        await _bookingService.AssignNewPilotAsync(booking);
                     }
                     else
                     {
@@ -153,7 +153,7 @@ namespace TandemBooking.Controllers
         }
 
         [HttpGet]
-        public ActionResult Edit(Guid id, string errorMessage = null)
+        public async Task<ActionResult> Edit(Guid id, string errorMessage = null)
         {
             var booking = _context.Bookings
                 .Include(b => b.BookedPilots).ThenInclude(bp => bp.Pilot)
@@ -166,14 +166,13 @@ namespace TandemBooking.Controllers
                 return new UnauthorizedResult();
             }
 
-            var vm = new BookingDetailsViewModel()
+            var vm = new BookingDetailsViewModel
             {
                 ErrorMessage = errorMessage,
                 Booking = booking,
                 Editable = User.IsAdmin() || booking.AssignedPilot?.Id == _userManager.GetUserId(User),
+                AvailablePilots = await _bookingService.FindAvailablePilotsAsync(booking.BookingDate, true),
             };
-
-            vm.AvailablePilots = _bookingService.FindAvailablePilots(booking.BookingDate, true);
 
             ViewBag.ErrorMessage = errorMessage;
             return View(vm);
@@ -249,7 +248,7 @@ namespace TandemBooking.Controllers
             if (string.IsNullOrEmpty(newPilotId))
             {
                 //try to find a new pilot (if none are available, set no pilot assigned)
-                assignedPilot = _bookingService.AssignNewPilot(booking);
+                assignedPilot = await _bookingService.AssignNewPilotAsync(booking);
             }
             else
             {

@@ -83,7 +83,7 @@ namespace TandemBooking.Controllers
                         };
                         _context.Add(booking);
 
-                        _bookingService.AssignNewPilot(booking);
+                       await  _bookingService.AssignNewPilotAsync(booking);
                         _context.SaveChanges();
 
                         var additionalPassengers = (input.AdditionalPassengers ?? new string[] {})
@@ -96,31 +96,30 @@ namespace TandemBooking.Controllers
                             .ToList();
                                                    
                         //Create separate bookings for the additional passengers
-                        additionalBookings = additionalPassengers.Select(additionalPassenger =>
+                        additionalBookings = await Task.WhenAll(additionalPassengers.Select(async additionalPassenger =>
+                        {
+                            var commentExtra = booking.AssignedPilot != null
+                                ? $"booking {additionalPassenger.Index + 1}/{additionalPassengers.Count() + 1}, coordinate with {booking.AssignedPilot.Name} ({booking.AssignedPilot.PhoneNumber.AsPhoneNumber()}) "
+                                : $"booking {additionalPassenger.Index + 1}/{additionalPassengers.Count() + 1}";
+
+                            var additionalBooking = new Booking()
                             {
-                                var commentExtra = booking.AssignedPilot != null
-                                    ? $"booking {additionalPassenger.Index + 1}/{additionalPassengers.Count() + 1}, coordinate with {booking.AssignedPilot.Name} ({booking.AssignedPilot.PhoneNumber.AsPhoneNumber()}) "
-                                    : $"booking {additionalPassenger.Index + 1}/{additionalPassengers.Count() + 1}";
+                                BookingDate = input.Date.Value.Date,
+                                PrimaryBooking = booking,
+                                DateRegistered = DateTime.UtcNow,
+                                PassengerEmail = input.Email,
+                                PassengerName = additionalPassenger.Name,
+                                PassengerPhone = phoneNumber,
+                                Comment = $"{input.Comment} {commentExtra}",
+                                BookingEvents = new List<BookingEvent>(),
+                            };
+                            _context.Add(additionalBooking);
 
-                                var additionalBooking = new Booking()
-                                {
-                                    BookingDate = input.Date.Value.Date,
-                                    PrimaryBooking = booking,
-                                    DateRegistered = DateTime.UtcNow,
-                                    PassengerEmail = input.Email,
-                                    PassengerName = additionalPassenger.Name,
-                                    PassengerPhone = phoneNumber,
-                                    Comment = $"{input.Comment} {commentExtra}",
-                                    BookingEvents = new List<BookingEvent>(),
-                                };
-                                _context.Add(additionalBooking);
+                            await _bookingService.AssignNewPilotAsync(additionalBooking);
+                            _context.SaveChanges();
 
-                                _bookingService.AssignNewPilot(additionalBooking);
-                                _context.SaveChanges();
-
-                                return additionalBooking;
-                            })
-                            .ToArray();
+                            return additionalBooking;
+                        }));
 
                         tx?.Commit();
                     }
