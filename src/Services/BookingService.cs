@@ -68,17 +68,17 @@ namespace TandemBooking.Services
 
         public void AssignNewPilot(Booking booking, ApplicationUser pilot)
         {
+            //set all other booked pilots to canceled
+            foreach (var bookedPilot in _context.BookedPilots.Where(b => b.Booking.Id == booking.Id))
+            {
+                bookedPilot.Canceled = true;
+            }
+
+            //set as currently assigned pilot
+            booking.AssignedPilot = pilot;
+
             if (pilot != null)
             {
-                //set all other booked pilots to canceled
-                foreach (var bookedPilot in _context.BookedPilots.Where(b => b.Booking.Id == booking.Id))
-                {
-                    bookedPilot.Canceled = true;
-                }
-
-                //set as currently assigned pilot
-                booking.AssignedPilot = pilot;
-
                 //add to list of pilots assigned to this booking
                 if (booking.BookedPilots == null)
                 {
@@ -89,10 +89,6 @@ namespace TandemBooking.Services
                     AssignedDate = DateTime.UtcNow,
                     Pilot = pilot,
                 });
-            }
-            else
-            {
-                booking.AssignedPilot = null;
             }
         }
 

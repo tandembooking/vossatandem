@@ -25,7 +25,9 @@ namespace TandemBooking.Tests.TestData
                 DateRegistered = new DateTime(2016, 1, 1),
                 BookingDate = date,
                 Canceled = false,
-                BookedPilots = new List<BookedPilot> {new BookedPilot {Pilot = pilot}}
+                BookedPilots = pilot != null 
+                    ? new List<BookedPilot> {new BookedPilot {Pilot = pilot}} 
+                    : new List<BookedPilot>()
             }).Entity;
 
             context.SaveChanges();
