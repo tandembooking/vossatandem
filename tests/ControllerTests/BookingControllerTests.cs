@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using TandemBooking.Controllers;
 using TandemBooking.Services;
 using TandemBooking.Tests.TestSetup;
 using TandemBooking.ViewModels.Booking;
 using Xunit;
 
-namespace TandemBooking.Tests.FullStackTests
+namespace TandemBooking.Tests.ControllerTests
 {
     [Collection("Integration Tests")]
     public class BookingTests : IntegrationTestBase
@@ -24,13 +21,13 @@ namespace TandemBooking.Tests.FullStackTests
         [Fact]
         public async Task CreateSuccessfulSimpleBookingWithNoAvailablePilot()
         {
-            var input = new BookingViewModel()
+            var input = new BookingViewModel
             {
                 Date = new DateTime(2016, 11, 13),
                 Name = "My Name",
                 PhoneNumber = "11111111",
                 Email = "passenger@example.com",
-                Comment = "Blah",
+                Comment = "Blah"
             };
 
             var ctrl = GetService<BookingController>();
@@ -48,12 +45,12 @@ namespace TandemBooking.Tests.FullStackTests
                 .First();
 
             Assert.Equal(null, booking.AssignedPilot); // no pilots available
-            Assert.Equal("passenger@example.com",booking.PassengerEmail);
+            Assert.Equal("passenger@example.com", booking.PassengerEmail);
             Assert.Equal("4711111111", booking.PassengerPhone);
             Assert.Equal("Blah", booking.Comment);
 
             //Assert sms is sent
-            var nexmoService =((MockNexmoService) GetService<INexmoService>());
+            var nexmoService = (MockNexmoService) GetService<INexmoService>();
 
             //we should have sent two text messages: one to passenger, one to booking coordinator
             Assert.Equal(2, nexmoService.Messages.Count);
@@ -64,6 +61,5 @@ namespace TandemBooking.Tests.FullStackTests
             var coordinatorMessage = nexmoService.Messages.Single(m => m.Recipient == "4798463072");
             Assert.Contains("Please find a pilot", coordinatorMessage.Body);
         }
-
     }
 }
