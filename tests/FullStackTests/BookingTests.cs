@@ -22,7 +22,7 @@ namespace TandemBooking.Tests.FullStackTests
         }
 
         [Fact]
-        public async Task CreateSuccessfulSimpleBooking()
+        public async Task CreateSuccessfulSimpleBookingWithNoAvailablePilot()
         {
             var input = new BookingViewModel()
             {

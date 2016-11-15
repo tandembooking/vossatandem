@@ -46,6 +46,7 @@ namespace TandemBooking.Services
 				                BookedPilots.Canceled = 0
 				                AND Bookings.Canceled = 0
 				                AND Bookings.BookingDate BETWEEN DATEADD(day, -30, @Date) AND DATEADD(day, 14, @Date)
+                                AND Bookings.BookingDate != @Date
 			                GROUP BY PilotId
 	                ) Bookings ON Pilots.Id = Bookings.PilotId
 	                LEFT OUTER JOIN (
