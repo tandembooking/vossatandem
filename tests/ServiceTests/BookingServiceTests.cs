@@ -124,5 +124,37 @@ namespace TandemBooking.Tests.ServiceTests
             Assert.False(booking.Canceled);
         }
 
+        [Fact]
+        public async Task AssignMultipleBookings()
+        {
+            //setup
+            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), _pilots.Frode);
+            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), _pilots.Erik);
+            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), _pilots.Aasmund);
+
+            Context.AddBookingFixture(new DateTime(2016, 10, 30), _pilots.Frode);
+            Context.AddBookingFixture(new DateTime(2016, 10, 30), _pilots.Frode);
+            Context.AddBookingFixture(new DateTime(2016, 10, 30), _pilots.Frode);
+
+            Context.AddBookingFixture(new DateTime(2016, 10, 30), _pilots.Erik);
+            Context.AddBookingFixture(new DateTime(2016, 10, 30), _pilots.Erik);
+
+            Context.AddBookingFixture(new DateTime(2016, 10, 30), _pilots.Aasmund);
+
+            var booking1 = Context.AddBookingFixture(new DateTime(2016, 11, 1), null);
+            var booking2 = Context.AddBookingFixture(new DateTime(2016, 11, 1), null);
+            var booking3 = Context.AddBookingFixture(new DateTime(2016, 11, 1), null);
+            var bookings = new[] {booking1, booking2, booking3}.ToList();
+
+            //act
+            var pilots = await _bookingService.AssignNewPilotAsync(bookings);
+
+            //verify
+            Assert.Equal(3, pilots.Count);
+            Assert.Equal(_pilots.Aasmund, pilots[0]);
+            Assert.Equal(_pilots.Erik, pilots[1]);
+            Assert.Equal(_pilots.Frode, pilots[2]);
+        }
+
     }
 }

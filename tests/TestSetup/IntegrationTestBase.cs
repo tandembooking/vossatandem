@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using TandemBooking.Models;
+using TandemBooking.Services;
 using Xunit;
 
 namespace TandemBooking.Tests.TestSetup
@@ -30,7 +31,10 @@ namespace TandemBooking.Tests.TestSetup
         public virtual void Dispose()
         {
             //roll back transaction
-            Transaction.Dispose();            
+            Transaction.Dispose();     
+            
+            // Reset mock messages
+            ((MockNexmoService )GetService<INexmoService>()).Messages.Clear();       
         }
 
         public T GetService<T>()

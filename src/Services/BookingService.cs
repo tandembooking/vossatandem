@@ -45,25 +45,55 @@ namespace TandemBooking.Services
 
         public async Task<ApplicationUser> AssignNewPilotAsync(Booking booking)
         {
-            var spentPilots = booking.BookedPilots?.Select(bp => bp.Pilot) ?? new List<ApplicationUser>();
+            return (await AssignNewPilotAsync(new List<Booking>() {booking})).FirstOrDefault();
+        }
 
-            var availablePilots = (await FindAvailablePilotsAsync(booking.BookingDate))
-                .Where(ap => !spentPilots.Contains(ap.Pilot));
+        public async Task<List<ApplicationUser>> AssignNewPilotAsync(IList<Booking> bookings)
+        {
+            if (bookings.Count == 0)
+            {
+                throw new Exception("No bookings to assign pilots to");
+            }
+            var date = bookings.First().BookingDate;
+            if (bookings.Any(b => b.BookingDate != date))
+            {
+                throw new Exception("All bookings must be on the same date");
+            }
+            
+            var spentPilots = bookings.SelectMany(b =>
+                        b.BookedPilots?.Select(bp => bp.Pilot).ToList() ?? new List<ApplicationUser>()
+            );
 
-            var prioritizedPilots = availablePilots
-                .GroupBy(pa => pa.Priority)
-                .OrderBy(grp => grp.Key)
-                .FirstOrDefault()
-                ?.ToList() ?? new List<AvailablePilot>()
-                ;
+            var availablePilots = (await FindAvailablePilotsAsync(date))
+                .Where(ap => !spentPilots.Contains(ap.Pilot))
+                .ToList();
 
-            var selectedPilot = prioritizedPilots.Count > 0 
-                ? prioritizedPilots[new Random().Next(prioritizedPilots.Count - 1)].Pilot
-                : null;
+            var assignedPilots = new List<ApplicationUser>();
+            foreach (var booking in bookings)
+            {
+                var prioritizedPilots = availablePilots
+                    .GroupBy(pa => pa.Priority)
+                    .OrderBy(grp => grp.Key)
+                    .FirstOrDefault()
+                    ?.ToList() ?? new List<AvailablePilot>()
+                    ;
 
-            AssignNewPilot(booking, selectedPilot);
+                var selectedPilot = prioritizedPilots.Count > 0
+                    ? prioritizedPilots[new Random().Next(prioritizedPilots.Count - 1)].Pilot
+                    : null;
 
-            return selectedPilot;
+                AssignNewPilot(booking, selectedPilot);
+
+                if (selectedPilot != null)
+                {
+                    assignedPilots.Add(selectedPilot);
+
+                    //don't select this pilot for another booking in this group
+                    availablePilots.RemoveAll(ap => ap.Pilot == selectedPilot);
+                }
+            }
+
+            return assignedPilots;
         }
 
         public void AssignNewPilot(Booking booking, ApplicationUser pilot)
