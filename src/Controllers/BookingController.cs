@@ -61,6 +61,11 @@ namespace TandemBooking.Controllers
                         ModelState.AddModelError("Date", "Please select a date");
                         return View(input);
                     }
+                    if (string.IsNullOrWhiteSpace(input.Name))
+                    {
+                        ModelState.AddModelError("Name", "Please enter your name");
+                        return View(input);
+                    }
                     if (input.AdditionalPassengers?.Any(string.IsNullOrWhiteSpace) ?? false)
                     {
                         ModelState.AddModelError("AdditionalPassengers",
