@@ -1,9 +1,21 @@
-﻿@model List<Booking>
+﻿@model CompletedBookingsViewModel
 @{
-    ViewData["Title"] = $"Completed flights {DateTime.Now.Year}";
+    ViewData["Title"] = $"Completed flights {DateTime.Now.Year} for {Model.PilotName}";
 }
 
 <h2>@ViewData["Title"]</h2>
+
+<div class="row">
+    <div class="col-xs-2">
+        <h2><a href="@Url.Action("CompletedBookings", new {year = Model.Year - 1, pilotId = Model.PilotId})">&lt;</a></h2>
+    </div>
+    <div class="col-xs-8 text-center">
+        <h2>@Model.Year</h2>
+    </div>
+    <div class="col-xs-2 text-right">
+        <h2><a href="@Url.Action("CompletedBookings", new {year = Model.Year + 1, pilotId = Model.PilotId})">&gt;</a></h2>
+    </div>
+</div>
 
 <table class="table">
     <tr>
@@ -12,7 +24,7 @@
         <th>Pilot</th>
         <th></th>
     </tr>
-    @foreach (var booking in Model)
+    @foreach (var booking in Model.Bookings)
     {
         <tr>
             <td>@booking.BookingDate.ToString("dd.MM.yyyy")</td>
@@ -23,7 +35,7 @@
     }
     <tfoot>
     <tr>
-        <th colspan="4">@Model.Count Completed Bookings</th>
+        <th colspan="4">@Model.Bookings.Count Completed Bookings</th>
     </tr>
         </tfoot>
 </table>

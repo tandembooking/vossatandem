@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -23,10 +22,14 @@ namespace TandemBooking.Controllers
             _userManager = userManager;
         }
 
-        public IActionResult CompletedBookings(string pilotId = null)
+        public async Task<IActionResult> CompletedBookings(string pilotId = null, int? year = null)
         {
-            var fromDate = new DateTime(DateTime.Today.Year, 1, 1);
-            var toDate = DateTime.Today;
+            var fromDate = new DateTime(year ?? DateTime.Today.Year, 1, 1);
+            var toDate = fromDate.AddYears(1);
+            if (toDate > DateTime.Today)
+            {
+                toDate = DateTime.Today;
+            }
 
             var bookings = _context.Bookings
                 .Include(b => b.AssignedPilot)
@@ -44,25 +47,40 @@ namespace TandemBooking.Controllers
                 bookings = bookings.Where(b => b.AssignedPilot.Id == pilotId);
             }
 
+            var pilotName = pilotId == null
+                ? "all pilots"
+                : (await _userManager.FindByIdAsync(pilotId)).Name;
+
             var orderedBookings = bookings
                 .OrderBy(b => b.BookingDate)
                 .ToList();
 
-            return View(orderedBookings);
+            return View(new CompletedBookingsViewModel()
+            {
+                Bookings = orderedBookings,
+                Year = fromDate.Year,
+                PilotId = pilotId,
+                PilotName = pilotName
+            });
         }
 
         [Authorize(Policy = "IsAdmin")]
-        public IActionResult BookingsByPilot()
+        public IActionResult BookingsByPilot(int? year = null)
         {
-            var fromDate = new DateTime(DateTime.Today.Year, 1, 1);
-            var toDate = DateTime.Today;
+            var fromDate = new DateTime(year ?? DateTime.Today.Year, 1, 1);
+            var toDate = fromDate.AddYears(1);
+            if (toDate > DateTime.Today)
+            {
+                toDate = DateTime.Today;
+            }
 
-            var bookings = _context.Bookings
+
+            var pilotStats = _context.Bookings
                 .Include(b => b.AssignedPilot)
                 .AsNoTracking()
                 .Where(b => !b.Canceled && b.AssignedPilot != null && b.BookingDate >= fromDate && b.BookingDate < toDate)
                 .GroupBy(b => b.AssignedPilot)
-                .Select(grp => new BookingsByPilotViewModel
+                .Select(grp => new BookingsByPilotViewModelItem
                 {
                     PilotId = grp.Key.Id,
                     PilotName = grp.Key.Name,
@@ -72,14 +90,11 @@ namespace TandemBooking.Controllers
                 .OrderByDescending(b => b.Flights)
                 .ToList();
 
-            return View(bookings);
+            return View(new BookingsByPilotViewModel()
+            {
+                Year = fromDate.Year,
+                PilotStats = pilotStats,
+            });
         }
-    }
-
-    public class BookingsByPilotViewModel
-    {
-        public string PilotId { get; set; }
-        public string PilotName { get; set; }
-        public int Flights { get; set; }
     }
 }
