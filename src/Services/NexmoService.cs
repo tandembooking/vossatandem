@@ -91,7 +91,7 @@ namespace TandemBooking.Services
 
         public async Task<NexmoSmsResult> SendSms(string from, string to, string text)
         {
-            if (_settings.Enable)
+            if (!_settings.Enable)
             {
                 return new NexmoSmsResult()
                 {
@@ -109,7 +109,7 @@ namespace TandemBooking.Services
 
         public async Task<string> FormatPhoneNumber(string phoneNumber, string countryCode = "NO")
         {
-            if (_settings.Enable)
+            if (!_settings.Enable)
             {
                 return phoneNumber;
             }
