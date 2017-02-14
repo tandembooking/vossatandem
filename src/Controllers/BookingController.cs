@@ -94,13 +94,15 @@ namespace TandemBooking.Controllers
                         })
                         .ToList();
 
+                    if (additionalPassengers.Any())
+                    {
+                        booking.Comment += $", booking 1/{additionalPassengers.Count() + 1}";
+                    }
+
                     //Create separate bookings for the additional passengers
                     var additionalBookings = additionalPassengers.Select(additionalPassenger =>
                     {
-                        var commentExtra = booking.AssignedPilot != null
-                            ? $"booking {additionalPassenger.Index + 1}/{additionalPassengers.Count() + 1}, coordinate with {booking.AssignedPilot.Name} ({booking.AssignedPilot.PhoneNumber.AsPhoneNumber()}) "
-                            : $"booking {additionalPassenger.Index + 1}/{additionalPassengers.Count() + 1}";
-
+                        var commentExtra = $"booking {additionalPassenger.Index + 1}/{additionalPassengers.Count() + 1}";
                         var additionalBooking = new Booking()
                         {
                             BookingDate = input.Date.Value.Date,
@@ -109,7 +111,7 @@ namespace TandemBooking.Controllers
                             PassengerEmail = input.Email,
                             PassengerName = additionalPassenger.Name,
                             PassengerPhone = phoneNumber,
-                            Comment = $"{input.Comment} {commentExtra}",
+                            Comment = $"{input.Comment}, {commentExtra}",
                             BookingEvents = new List<BookingEvent>(),
                         };
                         _context.Add(additionalBooking);
