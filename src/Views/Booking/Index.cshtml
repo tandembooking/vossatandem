@@ -141,7 +141,7 @@
             </div>
 
             <p class="small">
-                If you are a group of people wanting to fly together, please use the "add passenger"-button below and enter their names. That way we can find enough pilots so you can all fly toghether.
+                If you are a group of people wanting to fly together, please use the "add extra passenger"-button below and enter their names. That way we can find enough pilots so you can all fly toghether.
             </p>
             
             <p class="small">
@@ -166,22 +166,7 @@
                 </div>
             }
             
-            @* template used when adding additional passengers dynamically *@
-            <template id="add-passenger-template">
-                <div class="form-group">
-                    <label asp-for="AdditionalPassengers" class="small">
-                        Name of additional passenger
-                    </label>
-                    <div class="row">
-                        <div class="col-sm-5 col-xs-8">
-                            <input type="text" asp-for="AdditionalPassengers" class="form-control" placeholder="Please enter your name" value="" />
-                        </div>
-                        <div class="info col-sm-7 col-xs-4">
-                            <button class="btn remove-passenger-button" type="button">Remove</button>
-                        </div>
-                    </div>
-                </div>
-            </template>
+            <template id="add-passenger-marker"></template>
             
             <div class="form-group">
                 <p>
@@ -192,7 +177,7 @@
             <div class="form-group">
                 <div class="row">
                     <div class="col-xs-12">
-                        <button class="btn btn-secondary" type="button" id="add-passenger-button">Add Passenger</button>
+                        <button class="btn btn-secondary" type="button" id="add-passenger-button">Add Extra Passenger</button>
                     </div>
                 </div>
             </div>
@@ -243,12 +228,30 @@
         });
 
     </script>
+    
+    @* template used when adding additional passengers dynamically *@
+    <template id="add-passenger-template">
+        <div class="form-group">
+            <label asp-for="AdditionalPassengers" class="small">
+                Name of additional passenger
+            </label>
+            <div class="row">
+                <div class="col-sm-5 col-xs-8">
+                    <input type="text" asp-for="AdditionalPassengers" class="form-control" placeholder="Please enter your name" value="" />
+                </div>
+                <div class="info col-sm-7 col-xs-4">
+                    <button class="btn remove-passenger-button" type="button">Remove</button>
+                </div>
+            </div>
+        </div>
+    </template>
 
     <script>
         var addPassengerButton = document.getElementById("add-passenger-button");
+        var addPassengerMarker = document.getElementById("add-passenger-marker");
         var addPassengerTemplate = document.getElementById("add-passenger-template");
         $(addPassengerButton).on("click", function () {
-            $($(addPassengerTemplate).html()).insertBefore(addPassengerTemplate);
+            $($(addPassengerTemplate).html()).insertBefore(addPassengerMarker);
         });
         
         $(document).on("click", ".remove-passenger-button", function (e) {
