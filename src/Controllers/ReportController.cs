@@ -6,17 +6,21 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TandemBooking.Models;
 using Microsoft.EntityFrameworkCore;
+using TandemBooking.Services;
 
 namespace TandemBooking.Controllers
 {
     [Authorize(Policy = "IsAdmin")]
+    [Authorize(Policy = "IsPilot")]
     public class ReportController : Controller
     {
-        private TandemBookingContext _context;
+        private readonly TandemBookingContext _context;
+        private readonly UserManager _userManager;
 
-        public ReportController(TandemBookingContext context)
+        public ReportController(TandemBookingContext context, UserManager userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         public IActionResult CompletedBookings(string pilotId = null)
@@ -28,6 +32,12 @@ namespace TandemBooking.Controllers
                 .Include(b => b.AssignedPilot)
                 .AsNoTracking()
                 .Where(b => !b.Canceled && b.BookingDate >= fromDate && b.BookingDate < toDate);
+
+            //Pilots should be able to see their own flights
+            if (!User.IsAdmin())
+            {
+                pilotId = _userManager.GetUserId(User);
+            }
                 
             if (pilotId != null)
             {
@@ -41,6 +51,7 @@ namespace TandemBooking.Controllers
             return View(orderedBookings);
         }
 
+        [Authorize(Policy = "IsAdmin")]
         public IActionResult BookingsByPilot()
         {
             var fromDate = new DateTime(DateTime.Today.Year, 1, 1);

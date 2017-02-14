@@ -40,6 +40,7 @@ namespace TandemBooking.Controllers
             _nexmo = nexmo;
         }
 
+        #region List Bookings
 
         public ActionResult Index(string userId = null)
         {
@@ -68,6 +69,10 @@ namespace TandemBooking.Controllers
 
             return View(bookings);
         }
+
+        #endregion
+
+        #region Create New Booking
 
         [HttpGet]
         public ActionResult Create()
@@ -152,6 +157,10 @@ namespace TandemBooking.Controllers
             return ViewComponent("PilotSelector", new {controlName, date});
         }
 
+        #endregion
+
+        #region Edit Booking
+
         [HttpGet]
         public async Task<ActionResult> Edit(Guid id, string errorMessage = null)
         {
@@ -159,6 +168,9 @@ namespace TandemBooking.Controllers
                 .Include(b => b.BookedPilots).ThenInclude(bp => bp.Pilot)
                 .Include(b => b.BookingEvents).ThenInclude(be => be.User)
                 .Include(b => b.AssignedPilot)
+                .Include(b => b.AdditionalBookings).ThenInclude(b => b.AssignedPilot)
+                .Include(b => b.PrimaryBooking).ThenInclude(b => b.AssignedPilot)
+                .Include(b => b.PrimaryBooking).ThenInclude(b => b.AdditionalBookings)
                 .FirstOrDefault(b => b.Id == id);
 
             if (!User.IsAdmin() && !User.IsPilot())
@@ -176,12 +188,6 @@ namespace TandemBooking.Controllers
 
             ViewBag.ErrorMessage = errorMessage;
             return View(vm);
-        }
-
-        [HttpPost]
-        public ActionResult EditUser(Guid id, ApplicationUser input)
-        {
-            return RedirectToAction("Edit", new { Id = id });
         }
 
         [HttpPost]
@@ -213,6 +219,7 @@ namespace TandemBooking.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpPost]
         public async Task<ActionResult> NewPilot(Guid id, NewPilotViewModel newPilot)
         {
             var booking = _context.Bookings
@@ -332,5 +339,7 @@ namespace TandemBooking.Controllers
 
             return RedirectToAction("Edit", new {Id = booking.Id});
         }
+
+        #endregion
     }
 }
