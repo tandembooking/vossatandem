@@ -30,6 +30,7 @@ namespace TandemBooking.Services
             services
                 .AddAuthorization(options =>
                 {
+                    options.AddPolicy("IsValidated", policy => policy.RequireAssertion(ctx => ctx.User.IsAdmin() || ctx.User.IsPilot()));
                     options.AddPolicy("IsAdmin", policy => policy.RequireClaim(ClaimsPrincipalExtensions.AdminClaim));
                     options.AddPolicy("IsPilot", policy => policy.RequireClaim(ClaimsPrincipalExtensions.PilotClaim));
                 });

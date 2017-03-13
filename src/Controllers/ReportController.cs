@@ -9,8 +9,7 @@ using TandemBooking.Services;
 
 namespace TandemBooking.Controllers
 {
-    [Authorize(Policy = "IsAdmin")]
-    [Authorize(Policy = "IsPilot")]
+    [Authorize(Policy="IsValidated")]
     public class ReportController : Controller
     {
         private readonly TandemBookingContext _context;
