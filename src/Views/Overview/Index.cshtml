@@ -1,0 +1,101 @@
+﻿@using TandemBooking.Services
+@model TandemBooking.Models.OverviewViewModel
+@{
+    ViewData["Title"] = $"Booking Overview";
+}
+
+<div class="clearfix">
+    <ul class="nav navbar-nav">
+        <li class=""><a href="@Url.Action("Create", "BookingAdmin")">New Booking</a></li>
+        <li><a href="@Url.Action("Index", "BookingAdmin")">All Bookings</a></li>
+        <li><a href="@Url.Action("CompletedBookings", "Report")">All Completed bookings</a></li>
+        @if (User.IsAdmin())
+        {
+            <li><a href="@Url.Action("BookingsByPilot", "Report")">Completed bookings per pilot</a></li>
+        }
+    </ul>
+</div>
+
+@if (Model.MissingPilotBookings != null)
+{
+    <h2>Bookings Without Pilots</h2>
+
+    @if (Model.MissingPilotBookings.Count() > 0) 
+    {
+        <table class="table">
+            <tr>
+                <th>Date</th>
+                <th>Passenger</th>
+                <th></th>
+            </tr>
+            @foreach (var booking in Model.MissingPilotBookings)
+            {
+                <tr>
+                    <td>@booking.BookingDate.ToString("dd.MM.yyyy")</td>
+                    <td>@booking.PassengerName</td>
+                    <td><a href="@Url.Action("Details", "BookingAdmin", new { id = booking.Id })" class="btn btn-default">Details</a></td>
+                </tr>
+            }
+        </table>
+    }
+    else 
+    {
+        <p>No upcoming bookings without pilots</p>
+    }
+}
+
+@if (Model.UpcomingBookings != null)
+{
+    <h2>My Upcoming Bookings</h2>
+
+    @if (Model.UpcomingBookings.Count() > 0)
+    {
+        <table class="table">
+            <tr>
+                <th>Date</th>
+                <th>Passenger</th>
+                <th></th>
+            </tr>
+            @foreach (var booking in Model.UpcomingBookings)
+            {
+                <tr>
+                    <td>@booking.BookingDate.ToString("dd.MM.yyyy")</td>
+                    <td>@booking.PassengerName</td>
+                    <td><a href="@Url.Action("Details", "BookingAdmin", new { id = booking.Id })" class="btn btn-default">Details</a></td>
+                </tr>
+            }
+        </table>
+    }
+    else
+    {
+        <p>You do not have any upcoming bookings</p>
+    }
+}
+
+@if (Model.RecentBookings != null)
+{
+    <h2>My Recent Bookings</h2>
+
+    @if (Model.RecentBookings.Count() > 0)
+    {
+        <table class="table">
+            <tr>
+                <th>Date</th>
+                <th>Passenger</th>
+                <th></th>
+            </tr>
+            @foreach (var booking in Model.RecentBookings)
+            {
+                <tr>
+                    <td>@booking.BookingDate.ToString("dd.MM.yyyy")</td>
+                    <td>@booking.PassengerName</td>
+                    <td><a href="@Url.Action("Details", "BookingAdmin", new { id = booking.Id })" class="btn btn-default">Details</a></td>
+                </tr>
+            }
+        </table>
+    }
+    else
+    {
+        <p>No recent bookings found</p>
+    }
+}

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using TandemBooking.Services;
 
 namespace TandemBooking.Controllers
 {
@@ -10,6 +11,10 @@ namespace TandemBooking.Controllers
     {
         public IActionResult Index()
         {
+            if (User.IsAdmin() || User.IsPilot())
+            {
+                return RedirectToAction("Index", "Overview");
+            }
             return View();
         }
 
