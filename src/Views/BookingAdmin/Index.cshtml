@@ -32,7 +32,7 @@
             <td>@booking.PassengerName</td>
             <td>@booking.PassengerPhone</td>
             <td>@(booking.AssignedPilot?.Name ?? "No pilot assigned")</td>
-            <td><a href="@Url.Action("Edit", new { id = booking.Id })" class="btn btn-default">Details</a></td>
+            <td><a href="@Url.Action("Details", new { id = booking.Id })" class="btn btn-default">Details</a></td>
         </tr>
     }
 </table>

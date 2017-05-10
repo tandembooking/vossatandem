@@ -16,7 +16,7 @@ using TandemBooking.ViewModels.BookingAdmin;
 
 namespace TandemBooking.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = "IsValidated")]
     public class BookingAdminController : Controller
     {
         private readonly ILogger<BookingAdminController> _logger;
@@ -44,15 +44,10 @@ namespace TandemBooking.Controllers
 
         public ActionResult Index(string userId = null)
         {
-            if (!User.IsAdmin() && !User.IsPilot())
-            {
-                return new UnauthorizedResult();
-            }
-
             var bookingQuery = _context.Bookings
                 .Include(b => b.AssignedPilot)
                 .Where(u => u.BookingDate >= DateTime.UtcNow.AddDays(-30))
-                .OrderByDescending(u => u.BookingDate)
+                .OrderByDescending(u => u.BookingDate).ThenBy(u => u.DateRegistered)
                 .AsQueryable();
 
             //non-admin users can only see their own bookings
@@ -75,12 +70,39 @@ namespace TandemBooking.Controllers
         #region Create New Booking
 
         [HttpGet]
-        public ActionResult Create()
+        public ActionResult Create(Guid? cloneBookingId = null)
         {
-            return View(new CreateBookingViewModel
+            CreateBookingViewModel vm;
+            if (cloneBookingId.HasValue)
             {
-                Date = DateTime.Today,
-            });
+                var originalBooking = _context.Bookings
+                    .FirstOrDefault(b => b.Id == cloneBookingId);
+                if (originalBooking == null)
+                {
+                    return NotFound();
+                }
+
+                vm = new CreateBookingViewModel
+                {
+                    Date = originalBooking.BookingDate,
+                    Email = originalBooking.PassengerEmail,
+                    PhoneNumber = originalBooking.PassengerPhone,
+                    Name = originalBooking.PassengerName + " +1",
+                    Comment = originalBooking.Comment,
+                    PrimaryBookingId = originalBooking.Id,
+                    NotifyPassenger = false,
+                    NotifyPilot = true,
+                };
+            }
+            else
+            {
+                vm = new CreateBookingViewModel
+                {
+                    Date = DateTime.Today,
+                };
+            }
+
+            return View(vm);
         }
 
         [HttpPost]
@@ -109,6 +131,14 @@ namespace TandemBooking.Controllers
                         }
                     }
 
+                    //Fetch primary booking if this is a clone
+                    Booking primaryBooking = null;
+                    if (input.PrimaryBookingId != null)
+                    {
+                        primaryBooking = _context.Bookings
+                            .FirstOrDefault(b => b.Id == input.PrimaryBookingId);
+                    }
+
                     //create booking
                     var booking = new Booking()
                     {
@@ -119,6 +149,7 @@ namespace TandemBooking.Controllers
                         PassengerPhone = phoneNumber,
                         Comment = input.Comment,
                         BookingEvents = new List<BookingEvent>(),
+                        PrimaryBooking = primaryBooking,
                     };
                     _context.Add(booking);
 
@@ -139,7 +170,7 @@ namespace TandemBooking.Controllers
                     await _messageService.SendNewBookingMessage(booking, new Booking[] {}, input.NotifyPassenger, input.NotifyPilot);
 
                     //redirect to edit action
-                    return RedirectToAction("Edit", new {id = booking.Id});
+                    return RedirectToAction("Details", new {id = booking.Id});
                 }
             }
             catch (Exception ex)
@@ -162,7 +193,78 @@ namespace TandemBooking.Controllers
         #region Edit Booking
 
         [HttpGet]
-        public async Task<ActionResult> Edit(Guid id, string errorMessage = null)
+        public ActionResult Edit(Guid id)
+        {
+            var booking = _context.Bookings
+                .FirstOrDefault(b => b.Id == id);
+            if (booking == null)
+            {
+                return NotFound();
+            }
+
+            var vm = new EditBookingViewModel
+            {
+                Id = booking.Id,
+                BookingDate = booking.BookingDate,
+                PassengerName = booking.PassengerName,
+                PassengerEmail = booking.PassengerEmail,
+                PassengerPhone = booking.PassengerPhone,
+            };
+            return View(vm);
+        }
+
+        public async Task<ActionResult> Edit(Guid id, EditBookingViewModel input)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    //if phone number is provided, make sure it is valid. 
+                    //if no phone number is provided, that's ok as well
+                    string phoneNumber = null;
+                    if (!string.IsNullOrEmpty(input.PassengerPhone))
+                    {
+                        phoneNumber = await _nexmo.FormatPhoneNumber(input.PassengerPhone);
+                        if (phoneNumber == null)
+                        {
+                            ModelState.AddModelError("PhoneNumber", "Please enter a valid phone number");
+                            return View(input);
+                        }
+                    }
+
+                    var booking = _context.Bookings
+                        .FirstOrDefault(b => b.Id == id);
+                    if (booking == null)
+                    {
+                        return NotFound();
+                    }
+
+                    //create booking
+                    booking.BookingDate = input.BookingDate;
+                    booking.PassengerName = input.PassengerName;
+                    booking.PassengerPhone = phoneNumber;
+                    booking.PassengerEmail = input.PassengerEmail;
+                    _context.SaveChanges();
+
+                    //redirect to edit action
+                    return RedirectToAction("Details", new { id = booking.Id });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(0, $"Error editing booking {id}, {ex.Message}, {ex}");
+                ModelState.AddModelError("", $"An unexpected error occured during editing");
+            }
+
+            return View(input);
+        }
+
+        #endregion
+
+        #region Booking Details
+
+        [HttpGet]
+        public async Task<ActionResult> Details(Guid id, string errorMessage = null)
         {
             var booking = _context.Bookings
                 .Include(b => b.BookedPilots).ThenInclude(bp => bp.Pilot)
@@ -172,11 +274,6 @@ namespace TandemBooking.Controllers
                 .Include(b => b.PrimaryBooking).ThenInclude(b => b.AssignedPilot)
                 .Include(b => b.PrimaryBooking).ThenInclude(b => b.AdditionalBookings)
                 .FirstOrDefault(b => b.Id == id);
-
-            if (!User.IsAdmin() && !User.IsPilot())
-            {
-                return new UnauthorizedResult();
-            }
 
             var vm = new BookingDetailsViewModel
             {
@@ -206,7 +303,7 @@ namespace TandemBooking.Controllers
 
             if (string.IsNullOrWhiteSpace(cancelMessage))
             {
-                return RedirectToAction("Edit", new { Id = booking.Id });
+                return RedirectToAction("Details", new { Id = booking.Id });
             }
 
             booking.Canceled = true;
@@ -301,7 +398,7 @@ namespace TandemBooking.Controllers
             }
             _context.SaveChanges();
 
-            return RedirectToAction("Edit", new { Id = booking.Id, errorMessage });
+            return RedirectToAction("Details", new { Id = booking.Id, errorMessage });
         }
 
         [HttpPost]
@@ -314,7 +411,7 @@ namespace TandemBooking.Controllers
 
             if (string.IsNullOrWhiteSpace(input.EventMessage))
             {
-                return RedirectToAction("Edit", new { Id = booking.Id });
+                return RedirectToAction("Details", new { Id = booking.Id });
             }
 
             var userId = _userManager.GetUserId(User);
@@ -337,7 +434,7 @@ namespace TandemBooking.Controllers
                 await _messageService.SendPassengerMessage(input, booking);
             }
 
-            return RedirectToAction("Edit", new {Id = booking.Id});
+            return RedirectToAction("Details", new {Id = booking.Id});
         }
 
         #endregion

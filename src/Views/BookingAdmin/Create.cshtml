@@ -8,13 +8,25 @@
 
 <h2>Create new booking</h2>
 
-<p>
-    Create a new booking for a specific pilot. Use this if you have taken a flight which did not
-    originate in the booking system (e.g. direct booking on the day), or you have a good reason
-    for not using the completely-fair-pilot-assignment-system (tm). 
-</p>
+@if (Model.PrimaryBookingId == null)
+{
+    <p>
+        Create a new booking. Use this if you have taken a flight which did not
+        originate in the booking system (e.g. direct booking on the day), or you have a good reason
+        for not using the completely-fair-pilot-assignment-system (tm).
+    </p>
+}
+else
+{
+    <p>
+        Clone an existing booking. Use this if the original booking was for multiple people, and
+        you want to create another booking with the original as primary booking, e.g. additional passengers
+        want to join in on an existing booking.
+    </p>
+}
 
 <form asp-action="Create">
+
     <div class="form-horizontal">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -92,6 +104,9 @@
             </div>
         </div>
     </div>
+
+    <input type="hidden" asp-for="PrimaryBookingId" />
+
 </form>
 
 <div>

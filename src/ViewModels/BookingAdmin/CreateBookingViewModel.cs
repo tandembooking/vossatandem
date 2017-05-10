@@ -42,6 +42,8 @@ namespace TandemBooking.ViewModels.BookingAdmin
 
         [Display(Name = "Send notification to pilot")]
         public bool NotifyPilot { get; set; }
+
+        public Guid? PrimaryBookingId { get; set; }
     }
 
 

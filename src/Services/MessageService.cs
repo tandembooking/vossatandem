@@ -67,7 +67,7 @@ Passenger Email: {booking.PassengerEmail ?? "not specified"}
 Comments:
 {booking.Comment}
 
-Booking Url: http://vossatandem.no/BookingAdmin/Edit/{booking.Id}
+Booking Url: http://vossatandem.no/BookingAdmin/Details/{booking.Id}
 
 fly safe!
 Booking Coordinator
@@ -163,7 +163,7 @@ Passenger Email: {booking.PassengerEmail ?? "not specified"}
 Comments:
 {booking.Comment}
 
-Booking Url: http://vossatandem.no/BookingAdmin/Edit/{booking.Id}
+Booking Url: http://vossatandem.no/BookingAdmin/Details/{booking.Id}
 
 fly safe!
 Booking Coordinator
@@ -195,7 +195,7 @@ Booking Coordinator
 
 Your flight on {bookingDateString} has been assigned another pilot.
 
-Booking Url: http://vossatandem.no/BookingAdmin/Edit/{booking
+Booking Url: http://vossatandem.no/BookingAdmin/Details/{booking
                         .Id}
 
 fly safe!
