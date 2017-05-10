@@ -1,5 +1,5 @@
 {
-  "name": "TandemBooking",
+  "name": "tandem-booking",
   "private": true,
   "dependencies": {
     "bootstrap": "3.3.5",
