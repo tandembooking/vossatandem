@@ -161,7 +161,7 @@ namespace TandemBooking.Tests.ControllerTests
             Assert.Equal("My Name", mainBooking.PassengerName);
             Assert.Equal("passenger@example.com", mainBooking.PassengerEmail);
             Assert.Equal("4711111111", mainBooking.PassengerPhone);
-            Assert.Equal("Blah", mainBooking.Comment);
+            Assert.Equal("Blah, booking 1/3", mainBooking.Comment);
 
             //other booking (with pilot)
             Assert.Equal(0, otherBooking1.AdditionalBookings.Count);
@@ -174,7 +174,7 @@ namespace TandemBooking.Tests.ControllerTests
             Assert.Equal("Additional1", otherBooking1.PassengerName);
             Assert.Equal("passenger@example.com", otherBooking1.PassengerEmail);
             Assert.Equal("4711111111", otherBooking1.PassengerPhone);
-            Assert.StartsWith("Blah", otherBooking1.Comment);
+            Assert.StartsWith("Blah, booking 2/3", otherBooking1.Comment);
 
             //other booking (without pilot)
             Assert.Equal(0, otherBooking2.AdditionalBookings.Count);
@@ -183,7 +183,7 @@ namespace TandemBooking.Tests.ControllerTests
             Assert.Equal("Additional2", otherBooking2.PassengerName);
             Assert.Equal("passenger@example.com", otherBooking2.PassengerEmail);
             Assert.Equal("4711111111", otherBooking2.PassengerPhone);
-            Assert.StartsWith("Blah", otherBooking2.Comment);
+            Assert.StartsWith("Blah, booking 3/3", otherBooking2.Comment);
 
             //Assert sms is sent
             var nexmoService = (MockNexmoService) GetService<INexmoService>();
