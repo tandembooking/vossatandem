@@ -80,6 +80,7 @@ namespace TandemBooking.Controllers
                         PassengerEmail = input.Email,
                         PassengerName = input.Name,
                         PassengerPhone = phoneNumber,
+                        PassengerFee = _bookingCoordinatorSettings.DefaultPassengerFee,
                         Comment = input.Comment,
                         BookingEvents = new List<BookingEvent>(),
                     };

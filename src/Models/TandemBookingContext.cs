@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using TandemBooking.Services;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace TandemBooking.Models
 {
@@ -21,6 +22,13 @@ namespace TandemBooking.Models
 
 
         public TandemBookingContext(DbContextOptions<TandemBookingContext> options) : base(options)
+        {
+        }
+        public TandemBookingContext() : base(
+            new DbContextOptionsBuilder<TandemBookingContext>()
+                .UseSqlServer("server=.;database=tandembooking;integrated security=true")
+                .Options
+        )
         {
         }
 

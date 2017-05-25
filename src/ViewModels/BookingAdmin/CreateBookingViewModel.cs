@@ -31,9 +31,9 @@ namespace TandemBooking.ViewModels.BookingAdmin
         [EmailAddress(ErrorMessage = "Please enter a valid email address")]
         public string Email { get; set; }
 
-        //[Required(ErrorMessage = "Please enter a valid number of passengers or 1 if you're the only one flying")]   
-        //public int Passengers { get; set; }
-
+        [Display(Name = "Passenger Fee", Description ="The fee the passenger pays for the flight")]
+        public int PassengerFee { get; set; }
+       
         [DataType(DataType.MultilineText)]
         public string Comment { get; set; }
 

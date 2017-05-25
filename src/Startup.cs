@@ -33,7 +33,7 @@ namespace TandemBooking
             if (env.IsDevelopment())
             {
                 // For more details on using the user secret store see http://go.microsoft.com/fwlink/?LinkID=532709
-                builder.AddUserSecrets();
+                builder.AddUserSecrets<Startup>();
             }
 
             builder.AddEnvironmentVariables();
@@ -68,7 +68,9 @@ namespace TandemBooking
             services.AddTransient(provider => new BookingCoordinatorSettings()
             {
                 Name = Configuration["BookingCoordinator:Name"],
-                PhoneNumber = Configuration["BookingCoordinator:PhoneNumber"]
+                PhoneNumber = Configuration["BookingCoordinator:PhoneNumber"],
+                Email = Configuration["BookingCoordinator:Email"],
+                DefaultPassengerFee = int.Parse(Configuration["BookingCoordinator:DefaultPassengerFee"]),
             });
 
             services.AddTransient(provider => new NexmoSettings()

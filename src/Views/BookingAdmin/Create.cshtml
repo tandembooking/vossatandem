@@ -74,6 +74,14 @@ else
         </div>
 
         <div class="form-group">
+            <label asp-for="PassengerFee" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="PassengerFee" class="form-control" />
+                <span asp-validation-for="PassengerFee" class="text-danger" />
+            </div>
+        </div>
+
+        <div class="form-group">
             <label asp-for="Comment" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 <textarea asp-for="Comment" class="form-control"></textarea>
@@ -110,7 +118,14 @@ else
 </form>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    @if (Model.PrimaryBookingId != null)
+    {
+        <a href="@Url.Action("Details", new { id = Model.PrimaryBookingId })">Back to Booking Details</a>
+    }
+    else
+    {
+        <a asp-action="Index">Back to List</a>
+    }
 </div>
 
 @section scripts

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace TandemBooking.ViewModels.BookingAdmin
 {
-    public class NewPilotViewModel
+    public class AssignPilotPostbackModel
     {
         public string NewPilotMessage { get; set; }
         public string NewPilotUserId { get; set; }

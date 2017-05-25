@@ -18,7 +18,7 @@
 
 @if (Model.MissingPilotBookings != null)
 {
-    <h2>Bookings Without Pilots</h2>
+    <h2>Bookings Without Pilot</h2>
 
     @if (Model.MissingPilotBookings.Count() > 0) 
     {
@@ -33,7 +33,9 @@
                 <tr>
                     <td>@booking.BookingDate.ToString("dd.MM.yyyy")</td>
                     <td>@booking.PassengerName</td>
-                    <td><a href="@Url.Action("Details", "BookingAdmin", new { id = booking.Id })" class="btn btn-default">Details</a></td>
+                    <td class="text-right">
+                        <a href="@Url.Action("Details", "BookingAdmin" , new { id=booking.Id })" class="btn btn-default">Details</a>
+                    </td>
                 </tr>
             }
         </table>
@@ -61,7 +63,13 @@
                 <tr>
                     <td>@booking.BookingDate.ToString("dd.MM.yyyy")</td>
                     <td>@booking.PassengerName</td>
-                    <td><a href="@Url.Action("Details", "BookingAdmin", new { id = booking.Id })" class="btn btn-default">Details</a></td>
+                    <td class="text-right">
+                        <a href="@Url.Action("Details", "BookingAdmin", new { id = booking.Id })" class="btn btn-default">Details</a>
+                        @if (!booking.Canceled && !booking.Completed)
+                        {
+                            <a href="@Url.Action("Cancel", "BookingAdmin", new { id = booking.Id })" class="btn btn-danger">Cancel</a>  
+                        }
+                    </td>
                 </tr>
             }
         </table>
@@ -89,7 +97,14 @@
                 <tr>
                     <td>@booking.BookingDate.ToString("dd.MM.yyyy")</td>
                     <td>@booking.PassengerName</td>
-                    <td><a href="@Url.Action("Details", "BookingAdmin", new { id = booking.Id })" class="btn btn-default">Details</a></td>
+                    <td class="text-right">
+                        <a href="@Url.Action("Details", "BookingAdmin", new { id = booking.Id })" class="btn btn-sm btn-default">Details</a>
+                        @if (!booking.Canceled && !booking.Completed)
+                        {
+                            <a href="@Url.Action("Cancel", "BookingAdmin", new { id = booking.Id })" class="btn btn-sm btn-danger">Cancel</a>
+                            <a href="@Url.Action("Complete", "BookingAdmin", new { id = booking.Id })" class="btn btn-sm btn-success">Complete</a>
+                        }
+                    </td>
                 </tr>
             }
         </table>

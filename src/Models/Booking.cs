@@ -8,6 +8,8 @@ namespace TandemBooking.Models
         public DateTime DateRegistered {get;set;}
         public DateTime BookingDate {get;set;}
         public bool Canceled { get; set; }
+        public bool Completed { get; set; }
+        public decimal PassengerFee { get; set; }
 
         public string PassengerName {get;set;}
         public string PassengerEmail {get;set;}

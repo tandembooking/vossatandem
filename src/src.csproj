@@ -18,6 +18,10 @@
     <Content Include="wwwroot\web.config">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+
+    <Content Update="appsettings.local.json">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -69,6 +73,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="log\" />
     <Folder Include="ViewModels\Overview\" />
   </ItemGroup>
 

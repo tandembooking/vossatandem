@@ -92,6 +92,7 @@ namespace TandemBooking.Controllers
                     PrimaryBookingId = originalBooking.Id,
                     NotifyPassenger = false,
                     NotifyPilot = true,
+                    PassengerFee = (int)originalBooking.PassengerFee,
                 };
             }
             else
@@ -150,6 +151,7 @@ namespace TandemBooking.Controllers
                         Comment = input.Comment,
                         BookingEvents = new List<BookingEvent>(),
                         PrimaryBooking = primaryBooking,
+                        PassengerFee = input.PassengerFee,
                     };
                     _context.Add(booking);
 
@@ -177,7 +179,6 @@ namespace TandemBooking.Controllers
             {
                 _logger.LogError(0, $"Error creating booking, {ex.Message}, {ex}");
                 ModelState.AddModelError("", $"An unexpected error occured during booking, please contact the booking coordinator, {_bookingCoordinatorSettings.Name}, on {_bookingCoordinatorSettings.PhoneNumber}");
-
             }
 
             return View(input);
@@ -209,6 +210,7 @@ namespace TandemBooking.Controllers
                 PassengerName = booking.PassengerName,
                 PassengerEmail = booking.PassengerEmail,
                 PassengerPhone = booking.PassengerPhone,
+                PassengerFee = (int)booking.PassengerFee,
             };
             return View(vm);
         }
@@ -244,6 +246,7 @@ namespace TandemBooking.Controllers
                     booking.PassengerName = input.PassengerName;
                     booking.PassengerPhone = phoneNumber;
                     booking.PassengerEmail = input.PassengerEmail;
+                    booking.PassengerFee = input.PassengerFee;
                     _context.SaveChanges();
 
                     //redirect to edit action
@@ -287,8 +290,33 @@ namespace TandemBooking.Controllers
             return View(vm);
         }
 
+        #endregion
+
+        #region Cancel
+
+        [HttpGet]
+        public async Task<ActionResult> Cancel(Guid id)
+        {
+            var booking = _context.Bookings
+                .Include(b => b.AssignedPilot)
+                .FirstOrDefault(b => b.Id == id);
+
+            var userId = _userManager.GetUserId(User);
+            if (!User.IsAdmin() && booking.AssignedPilot.Id != userId)
+            {
+                return RedirectToAction("Details", new { id = id, errorMessage = "Only admin or currently assigned pilot can cancel booking" });
+            }
+
+            var vm = new BookingCancelViewModel
+            {
+                Booking = booking,
+            };
+
+            return View(vm);
+        }
+
         [HttpPost]
-        public async Task<ActionResult> Cancel(Guid id, string cancelMessage)
+        public async Task<ActionResult> Cancel(Guid id, CancelBookingPostbackModel input)
         {
             var booking = _context.Bookings
                 .Include(b => b.AssignedPilot)
@@ -298,26 +326,64 @@ namespace TandemBooking.Controllers
             var userId = _userManager.GetUserId(User);
             if (!User.IsAdmin() && booking.AssignedPilot?.Id != userId)
             {
-                return RedirectToAction("Index");
+                return RedirectToAction("Details", new { id = id, errorMessage = "Only admin or currently assigned pilot can cancel booking" });
             }
 
+            var cancelMessage = input.CancelMessage;
             if (string.IsNullOrWhiteSpace(cancelMessage))
             {
-                return RedirectToAction("Details", new { Id = booking.Id });
+                cancelMessage = "- no cancel message";
             }
 
             booking.Canceled = true;
-            _bookingService.AddEvent(booking, User, $"Canceled due to {cancelMessage}");
+            booking.Completed = false;
 
-            await _messageService.SendCancelMessage(cancelMessage, booking);
+            if (input.NotifyPassenger)
+            {
+                await _messageService.SendCancelMessage(cancelMessage, booking);
+                _bookingService.AddEvent(booking, User, $"Canceled due to {cancelMessage} (notified passenger)");
+            }
+            else
+            {
+                _bookingService.AddEvent(booking, User, $"Canceled due to {cancelMessage} (did not notify passenger)");
+            }
 
             _context.SaveChanges();
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Details", new { Id = booking.Id });
+        }
+
+        #endregion
+
+        #region Assign Pilot
+
+        [HttpGet]
+        public async Task<ActionResult> AssignPilot(Guid id, string errorMessage = null)
+        {
+            var booking = _context.Bookings
+                .Include(b => b.AssignedPilot)
+                .Include(b => b.BookingEvents)
+                .FirstOrDefault(b => b.Id == id);
+
+            var userId = _userManager.GetUserId(User);
+            if (!User.IsAdmin() && booking.AssignedPilot.Id != userId)
+            {
+                return RedirectToAction("Details", new { id = id, errorMessage = "Only admin or currently assigned pilot can assign new pilot" });
+            }
+
+            var vm = new BookingAssignPilotViewModel
+            {
+                ErrorMessage = errorMessage,
+                Booking = booking,
+                AvailablePilots = await _bookingService.FindAvailablePilotsAsync(booking.BookingDate, true),
+            };
+
+            ViewBag.ErrorMessage = errorMessage;
+            return View(vm);
         }
 
         [HttpPost]
-        public async Task<ActionResult> NewPilot(Guid id, NewPilotViewModel newPilot)
+        public async Task<ActionResult> AssignPilot(Guid id, AssignPilotPostbackModel newPilot)
         {
             var booking = _context.Bookings
                 .Include(b => b.AssignedPilot)
@@ -328,7 +394,7 @@ namespace TandemBooking.Controllers
             var userId = _userManager.GetUserId(User);
             if (!User.IsAdmin() && booking.AssignedPilot.Id != userId)
             {
-                return RedirectToAction("Index");
+                return RedirectToAction("Details", new { id = id, errorMessage = "Only admin or currently assigned pilot can assign new pilot" });
             }
 
             //get optional pilot id from input
@@ -359,7 +425,7 @@ namespace TandemBooking.Controllers
                 assignedPilot = _context.Users.Single(u => u.Id == newPilotId);
                 _bookingService.AssignNewPilot(booking, assignedPilot);
             }
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             //notify pilot and passenger of the newly assigned pilot
             var bookingDateString = booking.BookingDate.ToString("dd.MM.yyyy");
@@ -395,8 +461,9 @@ namespace TandemBooking.Controllers
             else
             {
                 errorMessage = "No pilots available. Please select pilot manually";
+                return RedirectToAction("AssignPilot", new { Id = booking.Id, errorMessage });
             }
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return RedirectToAction("Details", new { Id = booking.Id, errorMessage });
         }
@@ -438,5 +505,52 @@ namespace TandemBooking.Controllers
         }
 
         #endregion
+
+        [HttpGet]
+        public async Task<ActionResult> Complete(Guid id)
+        {
+            var booking = await _context.Bookings
+                .Include(b => b.AssignedPilot)
+                .Include(b => b.BookingEvents)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            var userId = _userManager.GetUserId(User);
+            if (!User.IsAdmin() && booking.AssignedPilot.Id != userId)
+            {
+                return RedirectToAction("Details", new { Id = booking.Id, errorMessage = "Only admin or currently assigned pilot can confirm booking" });
+            }
+
+            return View(new CompleteBookingViewModel()
+            {
+                Booking = booking,
+                PassengerFee = (int)booking.PassengerFee,
+            });
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Complete(Guid id, CompleteBookingViewModel input)
+        {
+            var booking = await _context.Bookings
+                .Include(b => b.AssignedPilot)
+                .Include(b => b.BookingEvents)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            var userId = _userManager.GetUserId(User);
+            if (!User.IsAdmin() && booking.AssignedPilot.Id != userId)
+            {
+                return RedirectToAction("Details", new { Id = booking.Id, errorMessage = "Only admin or currently assigned pilot can confirm booking" });
+            }
+
+            //update passenger fee and completed status
+            booking.PassengerFee = input.PassengerFee;
+            booking.Canceled = false;
+            booking.Completed = true;
+            await _context.SaveChangesAsync();
+
+            _bookingService.AddEvent(booking, User, "booking confirmed");
+            _context.SaveChanges();
+
+            return RedirectToAction("Details", new { Id = booking.Id });
+        }
     }
 }
