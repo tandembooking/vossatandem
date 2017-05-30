@@ -109,10 +109,10 @@ namespace TandemBooking.Services
 
         public async Task<string> FormatPhoneNumber(string phoneNumber, string countryCode = "NO")
         {
-            if (!_settings.Enable)
-            {
-                return phoneNumber;
-            }
+            //if (!_settings.Enable)
+            //{
+            //    return phoneNumber;
+            //}
 
             var result = await Post($"{ApiUrl}/number/format/json", new
             {

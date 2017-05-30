@@ -209,12 +209,13 @@ namespace TandemBooking.Controllers
                 BookingDate = booking.BookingDate,
                 PassengerName = booking.PassengerName,
                 PassengerEmail = booking.PassengerEmail,
-                PassengerPhone = booking.PassengerPhone,
+                PassengerPhone = booking.PassengerPhone.AsPhoneNumber(),
                 PassengerFee = (int)booking.PassengerFee,
             };
             return View(vm);
         }
 
+        [HttpPost]
         public async Task<ActionResult> Edit(Guid id, EditBookingViewModel input)
         {
             try
@@ -229,7 +230,7 @@ namespace TandemBooking.Controllers
                         phoneNumber = await _nexmo.FormatPhoneNumber(input.PassengerPhone);
                         if (phoneNumber == null)
                         {
-                            ModelState.AddModelError("PhoneNumber", "Please enter a valid phone number");
+                            ModelState.AddModelError("PassengerPhone", "Please enter a valid phone number");
                             return View(input);
                         }
                     }
@@ -239,6 +240,12 @@ namespace TandemBooking.Controllers
                     if (booking == null)
                     {
                         return NotFound();
+                    }
+
+                    var userId = _userManager.GetUserId(User);
+                    if (!User.IsAdmin() && booking.AssignedPilot.Id != userId)
+                    {
+                        return RedirectToAction("Details", new { id = id, errorMessage = "Only admin or currently assigned pilot can edit booking" });
                     }
 
                     //create booking
