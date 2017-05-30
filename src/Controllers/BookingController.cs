@@ -112,6 +112,7 @@ namespace TandemBooking.Controllers
                             PassengerEmail = input.Email,
                             PassengerName = additionalPassenger.Name,
                             PassengerPhone = phoneNumber,
+                            PassengerFee = booking.PassengerFee,
                             Comment = $"{input.Comment}, {commentExtra}",
                             BookingEvents = new List<BookingEvent>(),
                         };
