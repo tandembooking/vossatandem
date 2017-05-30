@@ -236,6 +236,7 @@ namespace TandemBooking.Controllers
                     }
 
                     var booking = _context.Bookings
+                        .Include(b => b.AssignedPilot)
                         .FirstOrDefault(b => b.Id == id);
                     if (booking == null)
                     {
