@@ -41,6 +41,7 @@ namespace TandemBooking.Tests.ServiceTests
             Context.AddBookingFixture(new DateTime(2016, 11, 2), _pilots.Frode);
             Context.AddBookingFixture(new DateTime(2016, 11, 3), _pilots.Frode);
             Context.AddBookingFixture(new DateTime(2016, 11, 4), _pilots.Frode);
+            Context.AddBookingFixture(new DateTime(2016, 11, 4), _pilots.Frode, 0);          //should not count (zero fee)
             Context.AddBookingFixture(new DateTime(2016, 11, 1).AddDays(20), _pilots.Frode); //should not count
 
             //past bookings

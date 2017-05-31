@@ -43,7 +43,8 @@ namespace TandemBooking.Services
 			                FROM BookedPilots 
 			                INNER JOIN Bookings ON BookedPilots.BookingId = Bookings.Id
 			                WHERE
-				                BookedPilots.Canceled = 0
+                                COALESCE(PassengerFee, 0) > 0
+				                AND BookedPilots.Canceled = 0
 				                AND Bookings.Canceled = 0
 				                AND Bookings.BookingDate BETWEEN DATEADD(day, -30, @Date) AND DATEADD(day, 14, @Date)
                                 AND Bookings.BookingDate != @Date
@@ -54,7 +55,8 @@ namespace TandemBooking.Services
 			                FROM BookedPilots 
 			                INNER JOIN Bookings ON BookedPilots.BookingId = Bookings.Id
 			                WHERE
-				                BookedPilots.Canceled = 0
+                                COALESCE(PassengerFee, 0) > 0
+				                AND BookedPilots.Canceled = 0
 				                AND Bookings.Canceled = 0
 				                AND CONVERT(date, Bookings.BookingDate) = @Date
 			                GROUP BY PilotId

@@ -17,7 +17,7 @@ namespace TandemBooking.Tests.TestData
             context.SaveChanges();
         }
 
-        public static Booking AddBookingFixture(this TandemBookingContext context, DateTime date, ApplicationUser pilot)
+        public static Booking AddBookingFixture(this TandemBookingContext context, DateTime date, ApplicationUser pilot, int passengerFee=1700)
         {
             var booking = context.Bookings.Add(new Booking
             {
@@ -25,6 +25,7 @@ namespace TandemBooking.Tests.TestData
                 DateRegistered = new DateTime(2016, 1, 1),
                 BookingDate = date,
                 Canceled = false,
+                PassengerFee = passengerFee,
                 BookedPilots = pilot != null 
                     ? new List<BookedPilot> {new BookedPilot {Pilot = pilot}} 
                     : new List<BookedPilot>()
