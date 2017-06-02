@@ -10,6 +10,7 @@ namespace TandemBooking.Models
         public bool Canceled { get; set; }
         public bool Completed { get; set; }
         public decimal PassengerFee { get; set; }
+        public int? PassengerWeight { get; set; }
 
         public string PassengerName {get;set;}
         public string PassengerEmail {get;set;}

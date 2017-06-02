@@ -7,6 +7,12 @@ using System.Threading.Tasks;
 
 namespace TandemBooking.ViewModels.Booking
 {
+    public class AdditionalPassengerViewModel
+    {
+        public string Name { get; set; }
+        public int? Weight { get; set; }
+    }
+
     public class BookingViewModel
     {
         [Required(ErrorMessage = "Please select a date")]
@@ -16,7 +22,9 @@ namespace TandemBooking.ViewModels.Booking
         [Required(ErrorMessage = "Please enter your name")]
         public string Name { get; set; }
 
-        public string[] AdditionalPassengers { get; set; }
+        public int? Weight { get; set; }
+
+        public AdditionalPassengerViewModel[] AdditionalPassengers { get; set; }
 
         [Phone(ErrorMessage = "We need a phone number to contact you about your flight. Please enter valid phone number.")]
         [Required(ErrorMessage = "We need a phone number to contact you about your flight. Please enter valid phone number.")]

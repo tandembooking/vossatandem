@@ -71,6 +71,12 @@ namespace TandemBooking.Services
             var assignedPilots = new List<ApplicationUser>();
             foreach (var booking in bookings)
             {
+                //pilots who can fly this passenger
+                var applicablePilots = availablePilots
+                    .Where(pa => pa.Pilot.InWeightRange(booking.PassengerWeight))
+                    ;
+
+                //find pilots with the lowest priority (lower is better)
                 var prioritizedPilots = availablePilots
                     .GroupBy(pa => pa.Priority)
                     .OrderBy(grp => grp.Key)
@@ -78,6 +84,7 @@ namespace TandemBooking.Services
                     ?.ToList() ?? new List<AvailablePilot>()
                     ;
 
+                //select randomly from lowest priority pilots
                 var selectedPilot = prioritizedPilots.Count > 0
                     ? prioritizedPilots[new Random().Next(prioritizedPilots.Count - 1)].Pilot
                     : null;

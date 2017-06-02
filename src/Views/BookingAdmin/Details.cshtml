@@ -61,6 +61,13 @@
                 </div>
 
                 <div class="form-group">
+                    <label asp-for="Booking.PassengerName" class="col-sm-4 control-label">Passenger Weight</label>
+                    <div class="col-sm-8 control-text">
+                        @Model.Booking.PassengerWeight.AsWeight()
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label asp-for="Booking.PassengerPhone" class="col-sm-4 control-label">Passenger Phone</label>
                     <div class="col-sm-8 control-text">
                         @Model.Booking.PassengerPhone.AsPhoneNumber()

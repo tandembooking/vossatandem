@@ -1,3 +1,4 @@
+@using TandemBooking.ViewModels.Booking;
 @model TandemBooking.ViewModels.Booking.BookingViewModel
 @{
     ViewData["Title"] = "Booking";
@@ -66,7 +67,7 @@
                     <td class="text-right">(up to) 200,-</td>
                 </tr>
             </table>
-            Regular price covers transport to the start from Voss town center. Out-of-town surcharge is added when flying from places outside the normal starts around Voss (such as Aurland). All prices are in norwegian kroner and are paid via Vipps or directly to the pilot.
+            Regular price covers transport to the start from Voss town center. Out-of-town surcharge is added when flying from places outside the normal starts around Voss (such as Aurland). All prices are in norwegian kroner and are paid via Vipps or directly to the pilot. All prices are in Norwegian Krone (NOK)
         </p>
 
         <div class="details">
@@ -84,6 +85,24 @@
                 </div>
                 <p>
                     <span asp-validation-for="Name" class="text-danger small">
+                    </span>
+                </p>
+            </div>
+
+            <div class="form-group" id="primary-passenger-group">
+                <label asp-for="Weight" class="small">
+                    Please enter your approximate weight in kg
+                </label>
+                <div class="row">
+                    <div class="col-sm-5">
+                        <input type="text" asp-for="Name" class="form-control" placeholder="Please enter your approximate weight" />
+                    </div>
+                    <div class="info col-sm-7">
+                        Paragliders are certified for a certain weight range. By entering your weight we can find a pilot whose weight will allow you to stay in the certified weight range.
+                    </div>
+                </div>
+                <p>
+                    <span asp-validation-for="Weight" class="text-danger small">
                     </span>
                 </p>
             </div>
@@ -149,21 +168,44 @@
             </p>
             
             @* add additional passengers on a postback with invalid model *@
-            @foreach (var additionalPassenger in Model.AdditionalPassengers ?? new string[] { })
+            @{ 
+                var currentAdditionalPassengerIndex = 1;
+            }
+            @foreach (var additionalPassenger in Model.AdditionalPassengers ?? new AdditionalPassengerViewModel[] { })
             {
-                <div class="form-group">
-                    <label class="small">
-                        Name of additional passenger
-                    </label>
-                    <div class="row">
-                        <div class="col-sm-5 col-xs-8">
-                            <input type="text" name="AdditionalPassengers" class="form-control" placeholder="Please enter your name" value="@additionalPassenger" />
+                <div class="additional-passenger">
+                    <input type="hidden" name="AdditionalPassengers.Index" value="@currentAdditionalPassengerIndex" />
+
+                    <div class="form-group">
+                        <label class="small">
+                            Name of additional passenger
+                        </label>
+                        <div class="row">
+                            <div class="col-sm-5 col-xs-8">
+                                <input type="text" name="AdditionalPassengers[@currentAdditionalPassengerIndex].Name" class="form-control" placeholder="Please enter the passenger name" value="@additionalPassenger.Name" />
+                            </div>
+                            <div class="info col-sm-7 col-xs-4">
+                            </div>
                         </div>
-                        <div class="info col-sm-7 col-xs-4">
-                            <button class="btn remove-passenger-button" type="button">Remove</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="small">
+                            Weight of additional passenger (in kg)
+                        </label>
+                        <div class="row">
+                            <div class="col-sm-5 col-xs-8">
+                                <input type="text" name="AdditionalPassengers[@currentAdditionalPassengerIndex].Weight" class="form-control" placeholder="Please enter the passenger weight" value="@additionalPassenger.Weight" />
+                            </div>
+                            <div class="info col-sm-7 col-xs-4">
+                                <button class="btn remove-passenger-button" type="button">Remove</button>
+                            </div>
                         </div>
                     </div>
                 </div>
+                {
+                    currentAdditionalPassengerIndex++;
+                }
             }
             
             <template id="add-passenger-marker"></template>
@@ -231,31 +273,53 @@
     
     @* template used when adding additional passengers dynamically *@
     <template id="add-passenger-template">
-        <div class="form-group">
-            <label asp-for="AdditionalPassengers" class="small">
-                Name of additional passenger
-            </label>
-            <div class="row">
-                <div class="col-sm-5 col-xs-8">
-                    <input type="text" asp-for="AdditionalPassengers" class="form-control" placeholder="Please enter your name" value="" />
+        <div class="additional-passenger">
+            <input type="hidden" name="AdditionalPassengers.Index" value="--index--" />
+
+            <div class="form-group">
+                <label class="small">
+                    Name of additional passenger
+                </label>
+                <div class="row">
+                    <div class="col-sm-5 col-xs-8">
+                        <input type="text" name="AdditionalPassengers[--index--].Name" class="form-control" placeholder="Please enter the passenger name" value="" />
+                    </div>
+                    <div class="info col-sm-7 col-xs-4">
+                    </div>
                 </div>
-                <div class="info col-sm-7 col-xs-4">
-                    <button class="btn remove-passenger-button" type="button">Remove</button>
+            </div>
+
+            <div class="form-group">
+                <label class="small">
+                    Weight of additional passenger (in kg)
+                </label>
+                <div class="row">
+                    <div class="col-sm-5 col-xs-8">
+                        <input type="text" name="AdditionalPassengers[--index--].Weight" class="form-control" placeholder="Please enter the passenger weight" value="" />
+                    </div>
+                    <div class="info col-sm-7 col-xs-4">
+                        <button class="btn remove-passenger-button" type="button">Remove</button>
+                    </div>
                 </div>
             </div>
         </div>
     </template>
 
     <script>
+        var addPassengerService = 1000;
         var addPassengerButton = document.getElementById("add-passenger-button");
         var addPassengerMarker = document.getElementById("add-passenger-marker");
         var addPassengerTemplate = document.getElementById("add-passenger-template");
         $(addPassengerButton).on("click", function () {
-            $($(addPassengerTemplate).html()).insertBefore(addPassengerMarker);
+            var addPassengerHtml = $(addPassengerTemplate).html();
+            addPassengerHtml.replace('--index--', '' + addPassengerService)
+            addPassengerService++;
+
+            $(addPassengerHtml).insertBefore(addPassengerMarker);
         });
         
         $(document).on("click", ".remove-passenger-button", function (e) {
-            $(e.target).closest(".form-group").remove();
+            $(e.target).closest(".additional-passenger").remove();
         });
     
     </script>

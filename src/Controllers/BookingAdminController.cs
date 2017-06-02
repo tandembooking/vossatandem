@@ -88,6 +88,7 @@ namespace TandemBooking.Controllers
                     Email = originalBooking.PassengerEmail,
                     PhoneNumber = originalBooking.PassengerPhone,
                     Name = originalBooking.PassengerName + " +1",
+                    Weight = originalBooking.PassengerWeight,
                     Comment = originalBooking.Comment,
                     PrimaryBookingId = originalBooking.Id,
                     NotifyPassenger = false,
@@ -147,6 +148,7 @@ namespace TandemBooking.Controllers
                         DateRegistered = DateTime.UtcNow,
                         PassengerEmail = input.Email,
                         PassengerName = input.Name,
+                        PassengerWeight = input.Weight,
                         PassengerPhone = phoneNumber,
                         Comment = input.Comment,
                         BookingEvents = new List<BookingEvent>(),
@@ -208,6 +210,7 @@ namespace TandemBooking.Controllers
                 Id = booking.Id,
                 BookingDate = booking.BookingDate,
                 PassengerName = booking.PassengerName,
+                PassengerWeight = booking.PassengerWeight,
                 PassengerEmail = booking.PassengerEmail,
                 PassengerPhone = booking.PassengerPhone.AsPhoneNumber(),
                 PassengerFee = (int)booking.PassengerFee,
@@ -252,6 +255,7 @@ namespace TandemBooking.Controllers
                     //create booking
                     booking.BookingDate = input.BookingDate;
                     booking.PassengerName = input.PassengerName;
+                    booking.PassengerWeight = input.PassengerWeight;
                     booking.PassengerPhone = phoneNumber;
                     booking.PassengerEmail = input.PassengerEmail;
                     booking.PassengerFee = input.PassengerFee;

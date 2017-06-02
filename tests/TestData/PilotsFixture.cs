@@ -27,7 +27,8 @@ namespace TandemBooking.Tests.TestData
                 PhoneNumber = "4794279974",
                 IsAdmin = false,
                 IsPilot = true,
-                Availabilities = new List<PilotAvailability>()
+                Availabilities = new List<PilotAvailability>(),
+                MaxPassengerWeight = 100,
             }).Entity;
 
             Erik = _context.Users.Add(new ApplicationUser
@@ -37,7 +38,9 @@ namespace TandemBooking.Tests.TestData
                 PhoneNumber = "47999694616",
                 IsAdmin = false,
                 IsPilot = true,
-                Availabilities = new List<PilotAvailability>()
+                Availabilities = new List<PilotAvailability>(),
+                MinPassengerWeight = 60,
+                MaxPassengerWeight = 120,
             }).Entity;
 
             Aasmund = _context.Users.Add(new ApplicationUser
@@ -47,7 +50,8 @@ namespace TandemBooking.Tests.TestData
                 PhoneNumber = "4792819387",
                 IsAdmin = false,
                 IsPilot = true,
-                Availabilities = new List<PilotAvailability>()
+                Availabilities = new List<PilotAvailability>(),
+                MinPassengerWeight = 40,
             }).Entity;
 
             Tore = _context.Users.Add(new ApplicationUser

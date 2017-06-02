@@ -45,6 +45,21 @@ namespace TandemBooking.Tests.ServiceTests
         }
 
         [Fact]
+        public async Task AssignPilotInWeightRange()
+        {
+            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), _pilots.Frode, _pilots.Erik);
+
+            var booking = Context.AddBookingFixture(new DateTime(2016, 11, 1), null);
+            booking.PassengerWeight = 130; //out of frodes weight range
+
+            var pilot = await _bookingService.AssignNewPilotAsync(booking);
+            Context.SaveChanges();
+
+            //assigned pilot is the one available pilot in weight range
+            Assert.True(pilot == _pilots.Erik);
+        }
+
+        [Fact]
         public async Task AssignPrioritizedPilot()
         {
             Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), _pilots.Frode, _pilots.Erik);

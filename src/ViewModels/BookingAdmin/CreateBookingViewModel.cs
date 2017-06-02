@@ -23,6 +23,10 @@ namespace TandemBooking.ViewModels.BookingAdmin
         [Required(ErrorMessage = "Please enter the passenger name")]
         public string Name { get; set; }
 
+        [Display(Name = "Passenger Weight")]
+        [Required(ErrorMessage = "Please enter the passenger weight")]
+        public int? Weight { get; set; }
+
         [Display(Name = "Phone Number")]
         [Phone(ErrorMessage = "Please enter a valid phone number.")]
         public string PhoneNumber { get; set; }

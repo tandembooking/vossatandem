@@ -32,7 +32,8 @@
                             {
                                 <option class="@(pilot.Available ? "available" : "unavailable")" value="@pilot.Pilot.Id">
                                     @pilot.Pilot.Name (@pilot.Pilot.PhoneNumber.AsPhoneNumber())
-                                    @(pilot.Available ? "Available" : "Unavailable")
+                                    @pilot.Pilot.FormatWeightRange()
+                                    @(pilot.Available ? "Available" : "Unavailable"),
                                     Priority @(pilot.Priority)
                                 </option>
                             }

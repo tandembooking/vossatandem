@@ -60,6 +60,8 @@ namespace TandemBooking.Controllers
                 BrowserRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
                 SmsNotification = user.SmsNotification,
                 EmailNotification = user.EmailNotification,
+                MaxPassengerWeight = user.MaxPassengerWeight,
+                MinPassengerWeight = user.MinPassengerWeight,
             };
             return View(model);
         }
@@ -91,6 +93,10 @@ namespace TandemBooking.Controllers
             var user = await GetCurrentUserAsync();
             user.EmailNotification = input.EmailNotification;
             user.SmsNotification = input.SmsNotification || !user.EmailNotification;
+
+            user.MinPassengerWeight = input.MinPassengerWeight;
+            user.MaxPassengerWeight = input.MaxPassengerWeight;
+
             await _userManager.UpdateAsync(user);
 
             return RedirectToAction(nameof(Index));

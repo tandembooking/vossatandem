@@ -60,8 +60,16 @@ namespace TandemBooking.Tests.ControllerTests
                 Comment = "Blah",
                 AdditionalPassengers = new[]
                 {
-                    "With Name",
-                    "" //missing name
+                    new AdditionalPassengerViewModel
+                    {
+                        Name = "WithName",
+                        Weight = null
+                    },
+                    new AdditionalPassengerViewModel
+                    {
+                        Name = null, //missing name
+                        Weight = null
+                    },
                 }
             };
 
@@ -117,13 +125,22 @@ namespace TandemBooking.Tests.ControllerTests
             {
                 Date = new DateTime(2016, 11, 1),
                 Name = "My Name",
+                Weight = 100,
                 PhoneNumber = "11111111",
                 Email = "passenger@example.com",
                 Comment = "Blah",
                 AdditionalPassengers = new[]
                 {
-                    "Additional1",
-                    "Additional2"
+                    new AdditionalPassengerViewModel
+                    {
+                        Name = "Additional1",
+                        Weight = 80
+                    },
+                    new AdditionalPassengerViewModel
+                    {
+                        Name = "Additional2", 
+                        Weight = null
+                    },
                 }
             };
 
@@ -159,6 +176,7 @@ namespace TandemBooking.Tests.ControllerTests
                 Assert.False(b.Canceled);
             });
             Assert.Equal("My Name", mainBooking.PassengerName);
+            Assert.Equal(100, mainBooking.PassengerWeight);
             Assert.Equal("passenger@example.com", mainBooking.PassengerEmail);
             Assert.Equal("4711111111", mainBooking.PassengerPhone);
             Assert.Equal("Blah, booking 1/3", mainBooking.Comment);
@@ -172,6 +190,7 @@ namespace TandemBooking.Tests.ControllerTests
                 Assert.False(b.Canceled);
             });
             Assert.Equal("Additional1", otherBooking1.PassengerName);
+            Assert.Equal(80, otherBooking1.PassengerWeight);
             Assert.Equal("passenger@example.com", otherBooking1.PassengerEmail);
             Assert.Equal("4711111111", otherBooking1.PassengerPhone);
             Assert.StartsWith("Blah, booking 2/3", otherBooking1.Comment);
@@ -181,6 +200,7 @@ namespace TandemBooking.Tests.ControllerTests
             Assert.Equal(null, otherBooking2.AssignedPilot);
             Assert.Equal(0, otherBooking2.BookedPilots.Count);
             Assert.Equal("Additional2", otherBooking2.PassengerName);
+            Assert.Equal(null, otherBooking2.PassengerWeight);
             Assert.Equal("passenger@example.com", otherBooking2.PassengerEmail);
             Assert.Equal("4711111111", otherBooking2.PassengerPhone);
             Assert.StartsWith("Blah, booking 3/3", otherBooking2.Comment);

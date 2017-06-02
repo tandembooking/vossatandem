@@ -66,12 +66,14 @@ namespace TandemBooking.Controllers
                         ModelState.AddModelError("Name", "Please enter your name");
                         return View(input);
                     }
-                    if (input.AdditionalPassengers?.Any(string.IsNullOrWhiteSpace) ?? false)
+                    if (input.AdditionalPassengers?.Any(a => string.IsNullOrWhiteSpace(a.Name)) ?? false)
                     {
                         ModelState.AddModelError("AdditionalPassengers",
                             "Please enter the name of the additional passengers");
                         return View(input);
                     }
+
+                    return View(input);
 
                     var booking = new Booking()
                     {
@@ -80,28 +82,29 @@ namespace TandemBooking.Controllers
                         PassengerEmail = input.Email,
                         PassengerName = input.Name,
                         PassengerPhone = phoneNumber,
+                        PassengerWeight = input.Weight,
                         PassengerFee = _bookingCoordinatorSettings.DefaultPassengerFee,
                         Comment = input.Comment,
                         BookingEvents = new List<BookingEvent>(),
                     };
                     _context.Add(booking);
 
-                    var additionalPassengers = (input.AdditionalPassengers ?? new string[] {})
-                        .Where(p => !string.IsNullOrEmpty(p))
-                        .Select((name, i) => new
+                    var additionalPassengers = input.AdditionalPassengers
+                        ?.Select((a, i) => new
                         {
-                            Name = name,
+                            Name = a.Name,
+                            Weight = a.Weight,
                             Index = i + 1,
                         })
                         .ToList();
 
-                    if (additionalPassengers.Any())
+                    if (additionalPassengers?.Any() ?? false)
                     {
                         booking.Comment += $", booking 1/{additionalPassengers.Count() + 1}";
                     }
 
                     //Create separate bookings for the additional passengers
-                    var additionalBookings = additionalPassengers.Select(additionalPassenger =>
+                    var additionalBookings = additionalPassengers?.Select(additionalPassenger =>
                     {
                         var commentExtra = $"booking {additionalPassenger.Index + 1}/{additionalPassengers.Count() + 1}";
                         var additionalBooking = new Booking()
@@ -111,6 +114,7 @@ namespace TandemBooking.Controllers
                             DateRegistered = DateTime.UtcNow,
                             PassengerEmail = input.Email,
                             PassengerName = additionalPassenger.Name,
+                            PassengerWeight = additionalPassenger.Weight,
                             PassengerPhone = phoneNumber,
                             PassengerFee = booking.PassengerFee,
                             Comment = $"{input.Comment}, {commentExtra}",
@@ -119,7 +123,7 @@ namespace TandemBooking.Controllers
                         _context.Add(additionalBooking);
 
                         return additionalBooking;
-                    }).ToArray();
+                    }).ToArray() ?? new Booking[] { };
 
                     //Assign pilots
                     var bookings = new [] {booking}.Union(additionalBookings).ToList();
