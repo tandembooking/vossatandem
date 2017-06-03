@@ -73,8 +73,6 @@ namespace TandemBooking.Controllers
                         return View(input);
                     }
 
-                    return View(input);
-
                     var booking = new Booking()
                     {
                         BookingDate = input.Date.Value.Date,
