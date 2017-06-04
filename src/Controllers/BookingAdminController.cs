@@ -86,7 +86,7 @@ namespace TandemBooking.Controllers
                 {
                     Date = originalBooking.BookingDate,
                     Email = originalBooking.PassengerEmail,
-                    PhoneNumber = originalBooking.PassengerPhone,
+                    PhoneNumber = originalBooking.PassengerPhone.AsPhoneNumber(),
                     Name = originalBooking.PassengerName + " +1",
                     Weight = originalBooking.PassengerWeight,
                     Comment = originalBooking.Comment,
