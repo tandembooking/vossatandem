@@ -113,7 +113,7 @@ namespace TandemBooking.Tests.TestSetup
             app.UseDatabaseErrorPage();
 
             app.UseStaticFiles();
-            app.UseIdentity();
+            app.UseAuthentication();
 
             app.UseMvc(routes =>
             {

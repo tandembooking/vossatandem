@@ -30,6 +30,7 @@ namespace TandemBooking.Tests.TestData
                 Availabilities = new List<PilotAvailability>(),
                 MaxPassengerWeight = 100,
             }).Entity;
+            _context.SaveChanges();
 
             Erik = _context.Users.Add(new ApplicationUser
             {
@@ -42,6 +43,7 @@ namespace TandemBooking.Tests.TestData
                 MinPassengerWeight = 60,
                 MaxPassengerWeight = 120,
             }).Entity;
+            _context.SaveChanges();
 
             Aasmund = _context.Users.Add(new ApplicationUser
             {

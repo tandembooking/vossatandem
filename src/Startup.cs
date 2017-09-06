@@ -1,52 +1,25 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using TandemBooking.Models;
 using TandemBooking.Services;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Serilog;
 
 namespace TandemBooking
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env, IHostingEnvironment appEnv)
+        public Startup(IConfiguration configuration)
         {
-            // Set up configuration sources.
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(appEnv.ContentRootPath)
-                .AddJsonFile("appsettings.json")
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddJsonFile($"appsettings.local.json", optional: true);
-
-            if (env.IsDevelopment())
-            {
-                // For more details on using the user secret store see http://go.microsoft.com/fwlink/?LinkID=532709
-                builder.AddUserSecrets<Startup>();
-            }
-
-            builder.AddEnvironmentVariables();
-            Configuration = builder.Build();
-
-            Log.Logger = new LoggerConfiguration()
-                .Enrich.FromLogContext()
-                .WriteTo.LiterateConsole()
-                .WriteTo.RollingFile("log/tandembooking-{Date}.log")
-                .CreateLogger();
+            Configuration = configuration;
         }
 
-        public IConfigurationRoot Configuration { get; set; }
+        public IConfiguration Configuration { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -65,22 +38,22 @@ namespace TandemBooking
             services.AddMvc();
 
             // Add configuration services.
-            services.AddTransient(provider => new BookingCoordinatorSettings()
+            services.AddTransient(provider => new BookingCoordinatorSettings
             {
                 Name = Configuration["BookingCoordinator:Name"],
                 PhoneNumber = Configuration["BookingCoordinator:PhoneNumber"],
                 Email = Configuration["BookingCoordinator:Email"],
-                DefaultPassengerFee = int.Parse(Configuration["BookingCoordinator:DefaultPassengerFee"]),
+                DefaultPassengerFee = int.Parse(Configuration["BookingCoordinator:DefaultPassengerFee"])
             });
 
-            services.AddTransient(provider => new NexmoSettings()
+            services.AddTransient(provider => new NexmoSettings
             {
                 Enable = Configuration["Nexmo:Enable"] == "True",
                 ApiKey = Configuration["Nexmo:ApiKey"],
                 ApiSecret = Configuration["Nexmo:ApiSecret"]
             });
 
-            services.AddTransient(provider => new MailSettings()
+            services.AddTransient(provider => new MailSettings
             {
                 Enable = Configuration["Mail:Enable"] == "True",
                 SmtpUser = Configuration["Mail:SmtpUser"],
@@ -88,7 +61,7 @@ namespace TandemBooking
                 SmtpServer = Configuration["Mail:SmtpServer"],
                 SmtpPort = int.Parse(Configuration["Mail:SmtpPort"]),
                 FromName = Configuration["Mail:FromName"],
-                FromAddress = Configuration["Mail:FromAddress"],
+                FromAddress = Configuration["Mail:FromAddress"]
             });
 
             //add implementations of mail and nexmo services, which does communication with the outside world
@@ -100,7 +73,8 @@ namespace TandemBooking
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IApplicationLifetime appLifetime)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
+            IApplicationLifetime appLifetime)
         {
             CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US");
             CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("en-US");
@@ -145,34 +119,22 @@ namespace TandemBooking
                     }
                     else
                     {
-                        var url = context.Request.Scheme + "://" + host + context.Request.Path + context.Request.QueryString;
+                        var url = context.Request.Scheme + "://" + host + context.Request.Path +
+                                  context.Request.QueryString;
                         context.Response.Redirect(url);
                     }
                 });
             }
 
             app.UseStaticFiles();
-            app.UseIdentity();
+            app.UseAuthentication();
 
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    "default",
+                    "{controller=Home}/{action=Index}/{id?}");
             });
         }
-
-        // Entry point for the application.
-        public static void Main(string[] args)
-        {
-            var host = new WebHostBuilder()
-                .UseKestrel()
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseIISIntegration()
-                .UseStartup<Startup>()
-                .Build();
-
-            host.Run();
-        } 
     }
 }
