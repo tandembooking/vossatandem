@@ -2,6 +2,7 @@
 using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 
@@ -46,14 +47,15 @@ namespace TandemBooking
                 .ConfigureLogging((hostingContext, logging) =>
                 {
                     Log.Logger = new LoggerConfiguration()
+                        .ReadFrom.Configuration(hostingContext.Configuration)
                         .Enrich.FromLogContext()
                         .WriteTo.LiterateConsole()
+                        .WriteTo.Trace()
                         .WriteTo.RollingFile("log/tandembooking-{Date}.log")
+                        //.WriteTo.ApplicationInsightsTraces(hostingContext.Configuration["ApplicationInsights:InstrumentationKey"])
                         .CreateLogger();
 
-                    logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-                    logging.AddConsole();
-                    logging.AddDebug();
+                    //logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
                     logging.AddSerilog();
                 })
                 .UseIISIntegration()
@@ -63,6 +65,10 @@ namespace TandemBooking
                         options.ValidateScopes = context.HostingEnvironment.IsDevelopment();
                     })
                 .UseStartup<Startup>()
+                .ConfigureServices((ctx, svc) =>
+                {
+                    svc.AddApplicationInsightsTelemetry(ctx.Configuration);
+                })
                 .Build();
         }
     }

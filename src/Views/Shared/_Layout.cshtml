@@ -1,4 +1,5 @@
-﻿<!doctype html>
+﻿@inject Microsoft.ApplicationInsights.AspNetCore.JavaScriptSnippet JavaScriptSnippet
+<!doctype html>
 <html lang="">
     <head>
         <meta charset="utf-8" />
@@ -26,6 +27,7 @@
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/lib/bootstrap-datepicker/dist/css/bootstrap-datepicker.css" />
         <link rel="stylesheet" href="~/css/site.css" />
+    @Html.Raw(JavaScriptSnippet.FullScript)
     </head>
     <body class="@ViewData["CssClass"]">
         <div class="navbar navbar-inverse navbar-fixed-top">

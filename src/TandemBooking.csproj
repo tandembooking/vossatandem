@@ -5,16 +5,27 @@
     <UserSecretsId>TandemBooking</UserSecretsId>
     <AssemblyName>TandemBooking</AssemblyName>
     <RootNamespace>TandemBooking</RootNamespace>
+    <ApplicationInsightsResourceId>/subscriptions/1e764059-0762-4405-b2dd-1567ac0687c5/resourcegroups/TandemBooking/providers/microsoft.insights/components/TandemBooking</ApplicationInsightsResourceId>
+    <ApplicationInsightsAnnotationResourceId>/subscriptions/1e764059-0762-4405-b2dd-1567ac0687c5/resourcegroups/TandemBooking/providers/microsoft.insights/components/TandemBooking</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Properties\PublishProfiles\WebHuset2.pubxml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Fujiy.ApplicationInsights.AspNetCore.SqlTrack" Version="2.0.0" />
     <PackageReference Include="MailKit" Version="1.18.1.1" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.0" />
     <PackageReference Include="MimeKit" Version="1.18.1" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="2.0.2" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="2.4.0" />
+    <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="2.2.1" />
     <PackageReference Include="Serilog.Sinks.Literate" Version="3.0.0" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
+    <PackageReference Include="Serilog.Sinks.Trace" Version="2.1.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.0" />
   </ItemGroup>
 
@@ -36,4 +47,15 @@
     <Folder Include="ViewModels\Overview\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <MsDeploySkipRules Include="CustomSkipFile">
+      <ObjectName>filePath</ObjectName>
+      <AbsolutePath>appsettings.local.json</AbsolutePath>
+    </MsDeploySkipRules>
+  </ItemGroup>
+  
 </Project>

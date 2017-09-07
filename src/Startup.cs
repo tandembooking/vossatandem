@@ -1,5 +1,7 @@
 using System;
 using System.Globalization;
+using Fujiy.ApplicationInsights.AspNetCore.SqlTrack;
+using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -73,15 +75,25 @@ namespace TandemBooking
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
-            IApplicationLifetime appLifetime)
+        public void Configure(
+            IApplicationBuilder app,
+            IHostingEnvironment env,
+            ILoggerFactory loggerFactory,
+            IApplicationLifetime appLifetime,
+            TelemetryClient telemetryClient
+        )
         {
+            //Force en-US culture to avoid date formatting issues in requests
             CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US");
             CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("en-US");
 
-            loggerFactory.AddSerilog();
+            //Add EF Core Application Insights
+            loggerFactory.AddProvider(new AiEfCoreLoggerProvider(telemetryClient));
+
+            //Flush log when application stops
             appLifetime.ApplicationStopped.Register(Log.CloseAndFlush);
 
+            //Error handling
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
