@@ -208,7 +208,7 @@ namespace TandemBooking.Tests.ControllerTests
             //Assert sms is sent
             var nexmoService = (MockNexmoService) GetService<INexmoService>();
 
-            //we should have sent three text messages: 
+            //we should have sent six text messages: 
             // - one to passenger
             // - one to each of the two assigned pilots
             // - three to booking coordinator
@@ -227,6 +227,22 @@ namespace TandemBooking.Tests.ControllerTests
 
             var pilotMessage2 = nexmoService.Messages.Single(m => m.Recipient == _pilots.Erik.PhoneNumber);
             Assert.Contains("You have a new flight", pilotMessage2.Body);
+
+            //assert mail is sent
+            var mailService = (MockMailService)GetService<IMailService>();
+            
+            //we should have three mail sent: to the passenger and the instructors
+            Assert.Equal(3, mailService.Messages.Count);
+
+            var pilotMail1 = mailService.Messages.Single(m => m.Recipient == _pilots.Frode.Email);
+            Assert.Contains("You have been assigned", pilotMail1.Body);
+
+            var pilotMail2 = mailService.Messages.Single(m => m.Recipient == _pilots.Erik.Email);
+            Assert.Contains("You have been assigned", pilotMail2.Body);
+
+            var passengerMail = mailService.Messages.Single(m => m.Recipient == "passenger@example.com");
+            Assert.Contains("Thank you for", passengerMail.Body);
+
         }
 
         [Fact]
@@ -281,6 +297,19 @@ namespace TandemBooking.Tests.ControllerTests
 
             var pilotMessage = nexmoService.Messages.Single(m => m.Recipient == _pilots.Frode.PhoneNumber);
             Assert.Contains("You have a new flight", pilotMessage.Body);
+
+            //assert mail is sent
+            var mailService = (MockMailService)GetService<IMailService>();
+
+            //we should have two mail sent: to the passenger and the instructor
+            Assert.Equal(2, mailService.Messages.Count);
+
+            var pilotMail = mailService.Messages.Single(m => m.Recipient == _pilots.Frode.Email);
+            Assert.Contains("You have been assigned", pilotMail.Body);
+
+            var passengerMail = mailService.Messages.Single(m => m.Recipient == "passenger@example.com");
+            Assert.Contains("Thank you for", passengerMail.Body);
+
         }
 
         [Fact]
@@ -325,6 +354,15 @@ namespace TandemBooking.Tests.ControllerTests
 
             var coordinatorMessage = nexmoService.Messages.Single(m => m.Recipient == "4798463072");
             Assert.Contains("Please find a pilot", coordinatorMessage.Body);
+
+            //assert mail is sent
+            var mailService = (MockMailService) GetService<IMailService>();
+
+            //we should have one mail sent: to the passenger
+            Assert.Equal(1, mailService.Messages.Count);
+
+            var passengerMail = mailService.Messages.Single(m => m.Recipient == "passenger@example.com");
+            Assert.Contains("Thank you", passengerMail.Body);
         }
     }
 }

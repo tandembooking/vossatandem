@@ -309,9 +309,9 @@ namespace TandemBooking.Controllers
         [HttpGet]
         public async Task<ActionResult> Cancel(Guid id)
         {
-            var booking = _context.Bookings
+            var booking = await _context.Bookings
                 .Include(b => b.AssignedPilot)
-                .FirstOrDefault(b => b.Id == id);
+                .FirstOrDefaultAsync(b => b.Id == id);
 
             var userId = _userManager.GetUserId(User);
             if (!User.IsAdmin() && booking.AssignedPilot.Id != userId)
@@ -330,12 +330,13 @@ namespace TandemBooking.Controllers
         [HttpPost]
         public async Task<ActionResult> Cancel(Guid id, CancelBookingPostbackModel input)
         {
-            var booking = _context.Bookings
+            var booking = await _context.Bookings
                 .Include(b => b.AssignedPilot)
                 .Include(b => b.BookingEvents)
-                .FirstOrDefault(b => b.Id == id);
+                .FirstOrDefaultAsync(b => b.Id == id);
 
-            var userId = _userManager.GetUserId(User);
+            var user = await _userManager.GetUserAsync(User);
+            var userId = user.Id;
             if (!User.IsAdmin() && booking.AssignedPilot?.Id != userId)
             {
                 return RedirectToAction("Details", new { id = id, errorMessage = "Only admin or currently assigned pilot can cancel booking" });
@@ -352,7 +353,7 @@ namespace TandemBooking.Controllers
 
             if (input.NotifyPassenger)
             {
-                await _messageService.SendCancelMessage(cancelMessage, booking);
+                await _messageService.SendCancelMessage(cancelMessage, booking, user);
                 _bookingService.AddEvent(booking, User, $"Canceled due to {cancelMessage} (notified passenger)");
             }
             else
@@ -493,7 +494,8 @@ namespace TandemBooking.Controllers
                 return RedirectToAction("Details", new { Id = booking.Id });
             }
 
-            var userId = _userManager.GetUserId(User);
+            var user = await _userManager.GetUserAsync(User);
+            var userId = user.Id;
             if (!User.IsAdmin() && booking.AssignedPilot.Id != userId)
             {
                 return RedirectToAction("Index");
@@ -508,10 +510,7 @@ namespace TandemBooking.Controllers
             _bookingService.AddEvent(booking, User, message);
             _context.SaveChanges();
 
-            if (input.SendToPassenger)
-            {
-                await _messageService.SendPassengerMessage(input, booking);
-            }
+            await _messageService.SendBookingInformationMessage(input, booking, user);
 
             return RedirectToAction("Details", new {Id = booking.Id});
         }
