@@ -285,7 +285,7 @@ Booking Coordinator
 
             if (!string.IsNullOrEmpty(booking.PassengerEmail))
             {
-                var senderText = $"{sender.Name} ({sender.PhoneNumber.AsPhoneNumber()}";
+                var senderText = $"{sender.Name} ({sender.PhoneNumber.AsPhoneNumber()}, {sender.Email})";
                 var mailMessage = $@"Hi {booking.PassengerName},
 
 Your booking on {bookingDate} has been updated. {senderText} has sent you a new message:
@@ -312,7 +312,7 @@ Voss HPK
 
                 if (!string.IsNullOrEmpty(booking.PassengerEmail))
                 {
-                    var senderText = $"{sender.Name} ({sender.PhoneNumber.AsPhoneNumber()}";
+                    var senderText = $"{sender.Name} ({sender.PhoneNumber.AsPhoneNumber()}, {sender.Email})";
                     var bookingDate = $"{booking.BookingDate:dd.MM.yyyy}";
                     var mailMessage = $@"Hi {booking.PassengerName},
 
