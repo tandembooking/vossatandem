@@ -73,16 +73,16 @@ namespace TandemBooking.Controllers
                 toDate = DateTime.Today;
             }
 
+            var pilots = _context.Users.ToList();
 
             var pilotStats = _context.Bookings
-                .Include(b => b.AssignedPilot)
                 .AsNoTracking()
-                .Where(b => !b.Canceled && b.AssignedPilot != null && b.BookingDate >= fromDate && b.BookingDate < toDate)
-                .GroupBy(b => b.AssignedPilot)
+                .Where(b => !b.Canceled && b.AssignedPilotId != null && b.BookingDate >= fromDate && b.BookingDate < toDate)
+                .GroupBy(b => b.AssignedPilotId)
                 .Select(grp => new BookingsByPilotViewModelItem
                 {
-                    PilotId = grp.Key.Id,
-                    PilotName = grp.Key.Name,
+                    PilotId = grp.Key,
+                    PilotName = pilots.First(p => p.Id == grp.Key).Name,
                     Flights = grp.Count()
                 })
                 .ToList()

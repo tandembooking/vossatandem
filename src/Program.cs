@@ -52,10 +52,8 @@ namespace TandemBooking
                         .WriteTo.LiterateConsole()
                         .WriteTo.Trace()
                         .WriteTo.RollingFile("log/tandembooking-{Date}.log")
-                        //.WriteTo.ApplicationInsightsTraces(hostingContext.Configuration["ApplicationInsights:InstrumentationKey"])
                         .CreateLogger();
 
-                    //logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
                     logging.AddSerilog();
                 })
                 .UseIISIntegration()
