@@ -1,6 +1,6 @@
 ﻿@model BookingsByPilotViewModel
 @{
-    ViewData["Title"] = $"Flights per pilot {DateTime.Now.Year}";
+    ViewData["Title"] = $"Paid flights per pilot {DateTime.Now.Year}";
 }
 
 <h2>@ViewData["Title"]</h2>
@@ -20,18 +20,23 @@
 <table class="table">
     <tr>
         <th>Pilot</th>
-        <th>Flights</th>
-        <th></th>
+        <th>Completed Flights</th>
+        <th>Missing Status</th>
+        <th>Total</th>
     </tr>
     @foreach (var row in Model.PilotStats)
     {
         <tr>
             <td>@row.PilotName</td>
-            <td>@row.Flights</td>
+            <td>@row.CompletedFlights</td>
+            <td>@row.FlightsMissingStatus</td>
+            <td>@(row.FlightsMissingStatus + row.CompletedFlights)</td>
         </tr>
     }
     <tr>
         <th>Total</th>
-        <th>@Model.PilotStats.Sum(row => row.Flights)</th>
+        <th>@Model.PilotStats.Sum(row => row.CompletedFlights)</th>
+        <th>@Model.PilotStats.Sum(row => row.FlightsMissingStatus)</th>
+        <th>@Model.PilotStats.Sum(row => row.FlightsMissingStatus + row.CompletedFlights)</th>
     </tr>
 </table>

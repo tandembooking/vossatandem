@@ -75,18 +75,24 @@ namespace TandemBooking.Controllers
 
             var pilots = _context.Users.ToList();
 
+            var basicQuery = _context.Bookings
+                .AsNoTracking()
+                .Where(b => !b.Canceled && b.AssignedPilotId != null && b.BookingDate >= fromDate && b.BookingDate < toDate);
+
             var pilotStats = _context.Bookings
                 .AsNoTracking()
                 .Where(b => !b.Canceled && b.AssignedPilotId != null && b.BookingDate >= fromDate && b.BookingDate < toDate)
+                .Where(b => b.PassengerFee > 0)
                 .GroupBy(b => b.AssignedPilotId)
                 .Select(grp => new BookingsByPilotViewModelItem
                 {
                     PilotId = grp.Key,
                     PilotName = pilots.First(p => p.Id == grp.Key).Name,
-                    Flights = grp.Count()
+                    CompletedFlights = grp.Count(b => b.Completed),
+                    FlightsMissingStatus = grp.Count(b => !b.Completed),
                 })
                 .ToList()
-                .OrderByDescending(b => b.Flights)
+                .OrderByDescending(b => b.CompletedFlights + b.FlightsMissingStatus)
                 .ToList();
 
             return View(new BookingsByPilotViewModel()
