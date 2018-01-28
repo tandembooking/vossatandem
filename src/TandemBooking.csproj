@@ -30,10 +30,10 @@
   </ItemGroup>
 
   <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
-    <Exec Command="npm install" />
-    <Exec Command="bower install" />
-    <Exec Command="gulp clean" />
-    <Exec Command="gulp min" />
+    <Exec Command="yarn" />
+    <Exec Command="yarn run bower install" />
+    <Exec Command="yarn run gulp clean" />
+    <Exec Command="yarn run gulp min" />
   </Target>
 
   <ItemGroup>
