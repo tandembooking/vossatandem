@@ -7,8 +7,8 @@
     <h2>@ViewData["Title"]</h2>
 
     <p class="readwrap">
-        Awesome!<br />We're super excited about showing you Voss from the air, and what paragliding is all about. Fill out
-        the form below, and one of our pilots will contact you and arrange the details.
+        Vi er glade for å kunne vise deg Nord-Norge og Bodø fra luften, og hva paragliding dreier seg om.
+        Fyll ut skjemaet under, så vil en av våre piloter kontakte deg for å avtale detaljene.
     </p>
 
     @* All of this instead of @Html.ValidationSummary(false) due to a bug in ASP.NET Core 1.0 (probably fixed in 1.1) *@
@@ -29,7 +29,7 @@
         <div class="form-group">
             <h5>
                 <label asp-for="Date">
-                    When would you like to fly?
+                    Når ønsker du å fly?
                 </label>
             </h5>
             <div id="datepicker" data-date='@Model.Date?.ToString("MM/dd/yyyy")'></div>
@@ -40,45 +40,50 @@
         </div>
 
         <div class="info-text air-vertical">
-            During <a href="https://ekstremsportveko.com">ekstremsportveko</a>, the online booking is unavailable. Instead visit the tandem booking booth on prestegardslandet, and we'll get you flying!
+            Under Midnattsol Cupen vil vi også booke gjennom dette systemet, men da til noe reduserte priser!
         </div>
 
         <div class="info-text air-vertical">
-            Please note that paragliding is very dependent on weather. Safety is paramount, and we will only fly if the weather conditions permit it. If the selected day turns out to be unflyable, your pilot will contact you to cancel the flight. You will of course not pay anything if we're unable to fly.
+            Husk at paragliding er en veldig væravhengig sport. Sikkerheten er viktigst, og vi vil ikke starte om værforholdene ikke tillater det. Om den valgte dagen viser seg å ikke være flybar, kontakter piloten deg for å kansellere turen eventuelt finne et annet egnet tidspunkt. Du betaler selvfølgelig ingenting om vi ikke er i stand til å fly.
         </div>
 
         <p class="readwrap">
-            <strong>Current prices</strong>
+            <strong>Prisliste</strong>
             <table class="table">
-                <tr>
-                    <td>Regular price</td>
+                            <tr>
+                    <td>Normalpris</td>
                     <td class="text-right">1&nbsp;900,-</td>
                 </tr>
                 <tr>
-                    <td>Extra for flights out of town</td>
-                    <td class="text-right">(up to) 1&nbsp;000,-</td>
+                    <td>Pris under Midnattsol Cupen</td>
+                    <td class="text-right">1&nbsp;300,-</td>
                 </tr>
                 <tr>
-                    <td>Extra for boat-tow launch</td>
-                    <td class="text-right">200,-</td>
+                    <td>Andre startområder utenfor byen</td>
+                    <td class="text-right">Avtales med pilot</td>
                 </tr>
+<!-- 
                 <tr>
                     <td>Extra for photos/video using the pilots equipment</td>
-                    <td class="text-right">(up to) 200,-</td>
+                    <td class="text-right">200,-</td>
                 </tr>
+                -->
             </table>
-            Regular price covers transport to the start from Voss town center. Out-of-town surcharge is added when flying from places outside the normal starts around Voss (such as Aurland). All prices are in norwegian kroner and are paid via Vipps or directly to the pilot. All prices are in Norwegian Krone (NOK)
+            Normalpris dekker transport til start fra klubbhytta på Løp, eller Bodø sentrum.
+            Tillegg for turer med andre startområder utenfor byen, avtales med pilot.
+            Alle priser er i norske kroner, og betales til klubbens Vipps-konto {kontonummer}.
+      
         </p>
 
         <div class="details">
-            <strong>Your details</strong>
+            <strong>Personlige opplysninger</strong>
             <div class="form-group" id="primary-passenger-group">
                 <label asp-for="Name" class="small">
-                    Please enter your name
+                    Ditt navn
                 </label>
                 <div class="row">
                     <div class="col-sm-5">
-                        <input type="text" asp-for="Name" class="form-control" placeholder="Please enter your name" />
+                        <input type="text" asp-for="Name" class="form-control" placeholder="Navn" />
                     </div>
                     <div class="info col-sm-7">
                     </div>
@@ -91,14 +96,14 @@
 
             <div class="form-group" id="primary-passenger-group">
                 <label asp-for="Weight" class="small">
-                    Please enter your approximate weight in kg
+                    Vennligst oppgi omtrentlig vekt i kg
                 </label>
                 <div class="row">
                     <div class="col-sm-5">
-                        <input type="text" asp-for="Name" class="form-control" placeholder="Please enter your approximate weight" />
+                        <input type="text" asp-for="Name" class="form-control" placeholder="Omtrentlig vekt" />
                     </div>
                     <div class="info col-sm-7">
-                        Paragliders are certified for a certain weight range. By entering your weight we can find a pilot whose weight will allow you to stay in the certified weight range.
+                        Paraglidere er klassifiserte for et gitt vektspenn. Ved å oppgi riktig vekt kan vi finne en pilot som vil holde dere samlet innenfor vingens klassifiserte vektspenn.
                     </div>
                 </div>
                 <p>
@@ -110,14 +115,14 @@
 
             <div class="form-group">
                 <label asp-for="PhoneNumber" class="small">
-                    Phone number
+                    Mobil
                 </label>
                 <div class="row">
                     <div class="col-sm-5">
-                        <input type="tel" asp-for="PhoneNumber" class="form-control" placeholder="Please enter a phone number" />
+                        <input type="tel" asp-for="PhoneNumber" class="form-control" placeholder="Mobilnummer" />
                     </div>
                     <div class="info col-sm-7 small">
-                        Your pilot will contact you on this phone number in order to arrange the details for your flight. It will not be used for any other purpose.
+                        Piloten vil kontakte deg på dette mobilnummeret for å avtale detaljene rundt turen. Det vil ikke blir benyttet for andre formål.
                     </div>
                 </div>
                 <p>
@@ -127,14 +132,14 @@
 
             <div class="form-group">
                 <label asp-for="Email" class="small">
-                    Email
+                    E-post
                 </label>
                 <div class="row">
                     <div class="col-sm-5">
-                        <input type="email" asp-for="Email" class="form-control" placeholder="Optionally enter an email address" />
+                        <input type="email" asp-for="Email" class="form-control" placeholder="E-post-adresse (valgfritt)" />
                     </div>
                     <p class="info col-sm-7 small">
-                        An optional email address the pilot can use to send pictures/video of your flight. Arrange the details with your pilot.
+                        Valgfri e-post-adresse piloten kan sende bilder/video fra turen til. Avtal detaljene med piloten.
                     </p>
                 </div>
                 <p>
@@ -144,14 +149,14 @@
 
             <div class="form-group">
                 <label asp-for="Comment">
-                    Message to pilot
+                    Melding til piloten
                 </label>
                 <div class="row">
                     <div class="col-sm-5">
                         <textarea asp-for="Comment" class="form-control"></textarea>
                     </div>
                     <p class="col-sm-7 small">
-                        Extra information you want to share with the pilot, e.g. time constraints or other requirements.
+                        Annen informasjon du ønsker oppgi til piloten, f.eks. tidsbegrensninger eller andre behov.
                     </p>
                 </div>
                 <p>
@@ -160,11 +165,11 @@
             </div>
 
             <p class="small">
-                If you are a group of people wanting to fly together, please use the "add extra passenger"-button below and enter their names. That way we can find enough pilots so you can all fly toghether.
+                Om dere er en gruppe folk som ønsker å fly sammen, vennligst bruk "Legg til ekstra passasjer"-knappen under og legg inn navnene på de som ønsker å fly sammen, slik at vi kan prøve å sørge for nok piloter for en felles flytur.
             </p>
             
             <p class="small">
-                If you are a booking on behalf of somebody else (e.g. birthday or hen/stag party), enter the name of the passenger in the name field above, and use your own phone number. Also, please add a comment about the circumstances of the flight.
+                Om du booker på vegne av noen andre (f.eks. bursdag eller utdrikningslag), skriv navnet til passasjeren i navnefeltet over, og bruk ditt eget mobilnummer. I tillegg, vennligst beskriv litt om omstendighetene vedrørende ønsket tur, i boksen "Melding til piloten".
             </p>
             
             @* add additional passengers on a postback with invalid model *@
@@ -178,7 +183,7 @@
 
                     <div class="form-group">
                         <label class="small">
-                            Name of additional passenger
+                            Tilleggspassasjerens navn
                         </label>
                         <div class="row">
                             <div class="col-sm-5 col-xs-8">
@@ -191,7 +196,7 @@
 
                     <div class="form-group">
                         <label class="small">
-                            Weight of additional passenger (in kg)
+                            Tilleggspassasjerens omtrentlige vekt (i kg)
                         </label>
                         <div class="row">
                             <div class="col-sm-5 col-xs-8">
@@ -219,17 +224,17 @@
             <div class="form-group">
                 <div class="row">
                     <div class="col-xs-12">
-                        <button class="btn btn-secondary" type="button" id="add-passenger-button">Add Extra Passenger</button>
+                        <button class="btn btn-secondary" type="button" id="add-passenger-button">Legg til ekstra passasjer</button>
                     </div>
                 </div>
             </div>
 
             <p class="small">
-                When you click the submit button below, we will try to find an available pilot who can give you a tandem flight. The pilot will call you to discuss the exact time and place you'll fly. If you enter an email address, we'll send you a confirmation email with name and phone number to your pilot.
+                Når du sender inn skjemaet med knappen under, prøver vi å finne en tilgjengelig pilot som kan tilby en tandemtur. Piloten vil ringe deg for å avtale nøyaktig tid og sted du ønsker å fly. Om du legger inn en e-post-adresse, sender vi en bekreftelsesmail til deg, med pilotens navn og mobilnummer.
             </p>
 
             <div class="text-center air-vertical">
-                <button type="submit" class="btn btn-lg btn-action">Take me flying!</button>
+                <button type="submit" class="btn btn-lg btn-action">Ta mæ til himmels!</button>
             </div>
         </div>
 
@@ -278,11 +283,11 @@
 
             <div class="form-group">
                 <label class="small">
-                    Name of additional passenger
+                    Ekstra-passasjerens navn
                 </label>
                 <div class="row">
                     <div class="col-sm-5 col-xs-8">
-                        <input type="text" name="AdditionalPassengers[--index--].Name" class="form-control" placeholder="Please enter the passenger name" value="" />
+                        <input type="text" name="AdditionalPassengers[--index--].Name" class="form-control" placeholder="Navn" value="" />
                     </div>
                     <div class="info col-sm-7 col-xs-4">
                     </div>
@@ -291,14 +296,14 @@
 
             <div class="form-group">
                 <label class="small">
-                    Weight of additional passenger (in kg)
+                    Ekstra-passasjerens omtrentlige vekt (i kg)
                 </label>
                 <div class="row">
                     <div class="col-sm-5 col-xs-8">
-                        <input type="text" name="AdditionalPassengers[--index--].Weight" class="form-control" placeholder="Please enter the passenger weight" value="" />
+                        <input type="text" name="AdditionalPassengers[--index--].Weight" class="form-control" placeholder="Omtrentlig vekt" value="" />
                     </div>
                     <div class="info col-sm-7 col-xs-4">
-                        <button class="btn remove-passenger-button" type="button">Remove</button>
+                        <button class="btn remove-passenger-button" type="button">Fjern</button>
                     </div>
                 </div>
             </div>

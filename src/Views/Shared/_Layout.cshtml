@@ -4,7 +4,7 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>@ViewData["Title"] - Voss tandem paragliding</title>
+        <title>@ViewData["Title"] - Bodø Hang &amp; Paraglider Klubb</title>
 
         <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
         <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
@@ -42,14 +42,14 @@
 
                     <a asp-controller="Home" asp-action="Index" class="navbar-brand">
                         <img src="~/images/logo.png" alt="" style="height: 35px; display: inline-block; margin: -10px 0;" />
-                        Voss tandem paragliding
+                        Bodø tandem paragliding
                     </a>
                 </div>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
                         <li><a asp-controller="Booking" asp-action="Index">Booking</a></li>
-                        <li><a asp-controller="Home" asp-action="Faq">FAQ</a></li>
-                        <li><a asp-controller="Home" asp-action="Contact">Contact</a></li>
+                        <li><a asp-controller="Home" asp-action="Faq">Ofte stilte spørsmål</a></li>
+                        <li><a asp-controller="Home" asp-action="Contact">Kontakt</a></li>
                     </ul>
                     @await Html.PartialAsync("_LoginPartial")
                 </div>

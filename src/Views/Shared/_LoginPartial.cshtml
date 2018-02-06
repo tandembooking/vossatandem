@@ -10,30 +10,30 @@
             <li>
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Manage<span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                    <li><a asp-controller="Overview" asp-action="Index">Overview</a></li>
+                    <li><a asp-controller="Overview" asp-action="Index">Oversikt</a></li>
                     @if (User.IsAdmin())
                     {
-                        <li><a asp-controller="UserAdmin" asp-action="Index">Pilots</a></li>
+                        <li><a asp-controller="UserAdmin" asp-action="Index">Piloter</a></li>
                     }
                     @if (User.IsPilot())
                     {
-                        <li><a asp-controller="PilotAvailability" asp-action="Index">Availability</a></li>
+                        <li><a asp-controller="PilotAvailability" asp-action="Index">Tilgjengelighet</a></li>
                     }
                     @if (User.IsAdmin())
                     {
-                        <li><a asp-controller="AvailabilityOverview" asp-action="Index">Availability Overview</a></li>
+                        <li><a asp-controller="AvailabilityOverview" asp-action="Index">Tilgjengelighetsoversikt</a></li>
                     }
                     @if (User.IsPilot() || User.IsAdmin())
                     {
-                        <li><a asp-controller="BookingAdmin" asp-action="Index">Bookings</a></li>
+                        <li><a asp-controller="BookingAdmin" asp-action="Index">Bookinger</a></li>
                     }
                 </ul>
             </li>
             <li>
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">@((await userManager.GetUserAsync(User)).Name)<span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                    <li><a asp-controller="Manage" asp-action="Index" title="Manage">Account Settings</a></li>
-                    <li><button type="submit" class="btn btn-link navbar-btn navbar-link">Log off</button></li>
+                    <li><a asp-controller="Manage" asp-action="Index" title="Manage">Kontoinnstillinger</a></li>
+                    <li><button type="submit" class="btn btn-link navbar-btn navbar-link">Logg ut</button></li>
                 </ul>
             </li>
         </ul>
@@ -43,10 +43,10 @@ else
 {
     <ul class="nav navbar-nav navbar-right">
         <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Pilots <span class="caret"></span></a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">For pilotene<span class="caret"></span></a>
             <ul class="dropdown-menu">
-                <li><a asp-controller="Account" asp-action="Register">Register</a></li>
-                <li><a asp-controller="Account" asp-action="Login">Log in</a></li>
+                <li><a asp-controller="Account" asp-action="Register">Registrer</a></li>
+                <li><a asp-controller="Account" asp-action="Login">Logg inn</a></li>
             </ul>
         </li>
     </ul>
