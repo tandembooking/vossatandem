@@ -87,15 +87,32 @@ namespace TandemBooking.Controllers
             {
                 var curDate = startDate.AddDays(dayIndex);
                 var availableToday = availabilities.Where(a => a.Date.Date == curDate).ToList();
-                var unassignedToday = unassignedBookings.Where(b => b.BookingDate.Date == curDate).ToList();
-                var bookingsToday = pilotBookings.Where(a => a.Booking.BookingDate.Date == curDate).ToList();
+                var timeslots = new List<AvailabilityOverviewTimeSlotViewModel>();
+                var unassignedToday = unassignedBookings.Where(b => b.BookingDate.Date == curDate);
+                var bookingsToday = pilotBookings.Where(a => a.Booking.BookingDate.Date == curDate);
+
+                for (int i = 0; i < 5; i++)
+                {
+                    var availableAtTimeslot = availableToday.Where(a => a.TimeSlot == i);
+                    var unassignedAtTimeslot = unassignedToday.Where(a => a.TimeSlot == i);
+                    var bookingsAtTimeslot = bookingsToday.Where(a => a.Booking.TimeSlot == i);
+                    timeslots.Add(new AvailabilityOverviewTimeSlotViewModel
+                    {
+                        TimeSlot = i,
+                        Availabilities = availableAtTimeslot.ToList(),
+                        PilotBookings = bookingsAtTimeslot.ToList(),
+                        UnassignedBookings = unassignedAtTimeslot.ToList(),
+                        FreePilots = availableAtTimeslot.Where(a => bookingsAtTimeslot.All(b => b.Pilot != a.Pilot)).ToList(),
+                    });
+                }
+                
+                
+                
                 days.Add(new AvailabilityOverviewDayViewModel()
                 {
                     Date = curDate,
-                    Availabilities = availableToday,
-                    PilotBookings = bookingsToday,
-                    UnassignedBookings = unassignedBookings,
-                    FreePilots = availableToday.Where(a => bookingsToday.All(b => b.Pilot != a.Pilot)).ToList(),
+                    TimeSlots = timeslots,
+                    
                     InPast = curDate < DateTime.Now.Date,
                 });                
             }

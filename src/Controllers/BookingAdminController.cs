@@ -85,6 +85,7 @@ namespace TandemBooking.Controllers
                 vm = new CreateBookingViewModel
                 {
                     Date = originalBooking.BookingDate,
+                    TimeSlot = originalBooking.TimeSlot,
                     Email = originalBooking.PassengerEmail,
                     PhoneNumber = originalBooking.PassengerPhone.AsPhoneNumber(),
                     Name = originalBooking.PassengerName + " +1",
@@ -145,6 +146,7 @@ namespace TandemBooking.Controllers
                     var booking = new Booking()
                     {
                         BookingDate = input.Date.Value.Date,
+                        TimeSlot = input.TimeSlot,
                         DateRegistered = DateTime.UtcNow,
                         PassengerEmail = input.Email,
                         PassengerName = input.Name,
@@ -209,6 +211,7 @@ namespace TandemBooking.Controllers
             {
                 Id = booking.Id,
                 BookingDate = booking.BookingDate,
+                TimeSlot = booking.TimeSlot,
                 PassengerName = booking.PassengerName,
                 PassengerWeight = booking.PassengerWeight,
                 PassengerEmail = booking.PassengerEmail,
@@ -254,6 +257,7 @@ namespace TandemBooking.Controllers
 
                     //create booking
                     booking.BookingDate = input.BookingDate;
+                    booking.TimeSlot = input.TimeSlot;
                     booking.PassengerName = input.PassengerName;
                     booking.PassengerWeight = input.PassengerWeight;
                     booking.PassengerPhone = phoneNumber;
@@ -295,7 +299,7 @@ namespace TandemBooking.Controllers
                 ErrorMessage = errorMessage,
                 Booking = booking,
                 Editable = User.IsAdmin() || booking.AssignedPilot?.Id == _userManager.GetUserId(User),
-                AvailablePilots = await _bookingService.FindAvailablePilotsAsync(booking.BookingDate, true),
+                AvailablePilots = await _bookingService.FindAvailablePilotsAsync(booking.BookingDate, booking.TimeSlot, true),
             };
 
             ViewBag.ErrorMessage = errorMessage;
@@ -388,7 +392,7 @@ namespace TandemBooking.Controllers
             {
                 ErrorMessage = errorMessage,
                 Booking = booking,
-                AvailablePilots = await _bookingService.FindAvailablePilotsAsync(booking.BookingDate, true),
+                AvailablePilots = await _bookingService.FindAvailablePilotsAsync(booking.BookingDate, booking.TimeSlot, true),
             };
 
             ViewBag.ErrorMessage = errorMessage;

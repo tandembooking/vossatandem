@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using TandemBooking.Models;
 using TandemBooking.ViewModels;
 using TandemBooking.Services;
-
+using Microsoft.EntityFrameworkCore;
 namespace TandemBooking.Controllers
 {
     [Authorize]
@@ -66,7 +66,13 @@ namespace TandemBooking.Controllers
             var availabilities = _context.PilotAvailabilities
                 .Where(a => a.Pilot.Id == userId)
                 .Where(a => a.Date >= startDate && a.Date <= endDate)
-                .OrderBy(a => a.Date)
+                .OrderBy(a => a.Date).ThenBy(a => a.TimeSlot)
+                .ToList();
+
+            var pilotBookings = _context.BookedPilots
+                .Include(b => b.Booking)
+                .Where(a => a.Pilot.Id == userId)
+                .Where(b => !b.Canceled && b.Booking.BookingDate >= startDate && b.Booking.BookingDate <= endDate)
                 .ToList();
 
             return View(new PilotAvailabilityViewModel()
@@ -77,43 +83,55 @@ namespace TandemBooking.Controllers
                 StartDate = startDate,
                 EndDate = endDate,
                 Availabilities = availabilities,
+                PilotBookings = pilotBookings,
                 Pilot = user,
             });
         }
 
-        public ActionResult SetAvailability(DateTime date, bool available, string userId = null)
+        
+         [HttpPost]
+        public ActionResult SetAvailability([FromBody]  SetPilotAvailabilityViewModel[] availabilities)
         {
-            if (userId == null || !User.IsAdmin())
-            {
-                userId = _userManager.GetUserId(User);
-            }
 
-            if (available)
+            for (int i = 0; i < availabilities.Length; i++)
             {
-                var pilotAvailability = new PilotAvailability()
-                {
-                    Date = date.Date,
-                    Pilot = _context.Users.Single(u => u.Id == userId)
-                };
-                _context.PilotAvailabilities.Add(pilotAvailability);
-            }
-            else
-            {
-                var availabilities = _context.PilotAvailabilities
-                    .Where(a => a.Pilot.Id == userId)
-                    .Where(a => a.Date >= date && a.Date < date.AddDays(1))
-                    .ToList();
+                DateTime currentDate = Convert.ToDateTime(availabilities[i].Date);
+                var existingAvailabilities = _context.PilotAvailabilities
+                .Where(a => a.Pilot.Id == availabilities[i].PilotID)
+                .Where(a => a.Date == currentDate)
+                .Where(a => a.TimeSlot == availabilities[i].TimeSlot);
 
-                foreach (var pilotAvailability in availabilities)
+                
+                if (availabilities[i].Available && existingAvailabilities.Count()==0)
                 {
-                    _context.PilotAvailabilities.Remove(pilotAvailability);
+
+                    var pilotAvailability = new PilotAvailability()
+                    {
+                        Date = currentDate,
+                        TimeSlot = availabilities[i].TimeSlot,
+                        Pilot = _context.Users.Single(u => u.Id == availabilities[i].PilotID)
+                    };
+                    _context.PilotAvailabilities.Add(pilotAvailability);
+
+                }
+                else
+                {
+                    
+
+                    foreach (var pilotAvailability in existingAvailabilities)
+                    {
+                        _context.PilotAvailabilities.Remove(pilotAvailability);
+                    }
                 }
             }
+
             _context.SaveChanges();
 
-            return Json(new {result = "ok"});
+            return Json(new { result = "ok" });
         }
 
+
+        
     }
 
 }

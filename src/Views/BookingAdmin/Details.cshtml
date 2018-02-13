@@ -29,7 +29,7 @@
         <section>
             <h3>Booking Info</h3>
             <form asp-controller="Admin" asp-action="Details" method="post" class="form-horizontal" role="form">
-                <input type="hidden" asp-for="Booking.Id"/>
+                <input type="hidden" asp-for="Booking.Id" />
                 <div asp-validation-summary="All" class="text-danger"></div>
 
                 <div class="form-group">
@@ -38,13 +38,19 @@
                         @Model.Booking.BookingDate.ToString("dd.MM.yyyy")
                     </div>
                 </div>
+                <div class="form-group">
+                    <label asp-for="Booking.TimeSlot" class="col-sm-4 control-label">Time</label>
+                    <div class="col-sm-8 control-text">
+                        @Model.Booking.TimeSlot.asTime()
+                    </div>
+                </div>
 
                 @*<div class="form-group">
-                    <label asp-for="Booking.BookingDate" class="col-sm-4 control-label">Registration Date</label>
-                    <div class="col-sm-8 control-text">
-                        @Model.Booking.DateRegistered.ToString("dd.MM.yyyy HH:mm")
-                    </div>
-                </div>*@
+            <label asp-for="Booking.BookingDate" class="col-sm-4 control-label">Registration Date</label>
+            <div class="col-sm-8 control-text">
+                @Model.Booking.DateRegistered.ToString("dd.MM.yyyy HH:mm")
+            </div>
+        </div>*@
 
                 <div class="form-group">
                     <label asp-for="Booking.BookingDate" class="col-sm-4 control-label">Status</label>
@@ -99,70 +105,70 @@
                     <label asp-for="Booking.AssignedPilot" class="col-sm-4 control-label">Assigned Pilot</label>
                     <div class="col-sm-8 control-text">
                         @if (Model.Booking.AssignedPilot != null)
-                        {
-                            <text>@Model.Booking.AssignedPilot?.Name (@Model.Booking.AssignedPilot.PhoneNumber.AsPhoneNumber())</text>
-                        }
-                        else
-                        {
-                            <text>No pilot assigned</text>
-                        }
+            {
+                <text>@Model.Booking.AssignedPilot?.Name (@Model.Booking.AssignedPilot.PhoneNumber.AsPhoneNumber())</text>
+}
+else
+{
+            <text>No pilot assigned</text>
+}
                     </div>
                 </div>
-                
+
                 @if (Model.Booking.PrimaryBooking != null)
-                {
-                    <div class="form-group">
-                        <label class="col-sm-4 control-label">Linked bookings</label>
-                        <div class="col-sm-8 control-text">
-                            <p>
-                                This booking is in a group of @(1 + Model.Booking.PrimaryBooking.AdditionalBookings.Count) bookings. Please coordinate time and place with the pilot of the <a href="@Url.Action("Details", new { Id = Model.Booking.PrimaryBooking.Id })">primary booking</a>:
-                                @(Model.Booking.PrimaryBooking.AssignedPilot != null
-                                      ? $"{Model.Booking.PrimaryBooking.AssignedPilot.Name} ({Model.Booking.PrimaryBooking.AssignedPilot.PhoneNumber.AsPhoneNumber()})"
-                                      : "pilot will be assigned by booking coordinator")
-                            </p>
-                        </div>
-                    </div>
-                    
-                }
+    {
+            <div class="form-group">
+                <label class="col-sm-4 control-label">Linked bookings</label>
+                <div class="col-sm-8 control-text">
+                    <p>
+                        This booking is in a group of @(1 + Model.Booking.PrimaryBooking.AdditionalBookings.Count) bookings. Please coordinate time and place with the pilot of the <a href="@Url.Action("Details", new { Id = Model.Booking.PrimaryBooking.Id })">primary booking</a>:
+                        @(Model.Booking.PrimaryBooking.AssignedPilot != null
+                          ? $"{Model.Booking.PrimaryBooking.AssignedPilot.Name} ({Model.Booking.PrimaryBooking.AssignedPilot.PhoneNumber.AsPhoneNumber()})"
+                          : "pilot will be assigned by booking coordinator")
+                    </p>
+                </div>
+            </div>
+
+}
 
                 @if (Model.Booking.AdditionalBookings.Any())
-                {
-                    <div class="form-group">
-                        <label class="col-sm-4 control-label">Linked bookings</label>
-                        <div class="col-sm-8 control-text">
-                            <p>This is the primary booking in a group of @(1 + Model.Booking.AdditionalBookings.Count) bookings. Please coordinate flight time and place with the primary passenger above and the other pilots below.</p>
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th>Passenger</th>
-                                    <th>Pilot</th>
-                                </tr>
-                                </thead>
-                                @foreach (var additionalBooking in Model.Booking.AdditionalBookings)
-                                {
-                                    <tr class="@(additionalBooking.Canceled ? "booking-canceled" : "")">
-                                        <td>
-                                            <a href="@Url.Action("Details", new {Id = additionalBooking.Id})">
-                                                @additionalBooking.PassengerName
-                                            </a>
-                                        </td>
-                                        <td>
-                                            @if (additionalBooking.AssignedPilot != null)
-                                            {
-                                                @additionalBooking.AssignedPilot.Name
-                                                @("(" + additionalBooking.AssignedPilot.PhoneNumber.AsPhoneNumber() + ")")
-                                            }
-                                            else
-                                            {
-                                                <text>No pilot assigned</text>
-                                            }
-                                        </td>
-                                    </tr>
-                                }
-                            </table>
-                        </div>
-                    </div>
-                }
+    {
+            <div class="form-group">
+                <label class="col-sm-4 control-label">Linked bookings</label>
+                <div class="col-sm-8 control-text">
+                    <p>This is the primary booking in a group of @(1 + Model.Booking.AdditionalBookings.Count) bookings. Please coordinate flight time and place with the primary passenger above and the other pilots below.</p>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Passenger</th>
+                                <th>Pilot</th>
+                            </tr>
+                        </thead>
+                        @foreach (var additionalBooking in Model.Booking.AdditionalBookings)
+            {
+                <tr class="@(additionalBooking.Canceled ? "booking-canceled" : "")">
+                    <td>
+                        <a href="@Url.Action("Details", new {Id = additionalBooking.Id})">
+                            @additionalBooking.PassengerName
+                        </a>
+                    </td>
+                    <td>
+                        @if (additionalBooking.AssignedPilot != null)
+            {
+                @additionalBooking.AssignedPilot.Name
+                @("(" + additionalBooking.AssignedPilot.PhoneNumber.AsPhoneNumber() + ")")
+}
+else
+{
+            <text>No pilot assigned</text>
+}
+                    </td>
+                </tr>
+}
+                    </table>
+                </div>
+            </div>
+}
             </form>
         </section>
 

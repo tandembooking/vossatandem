@@ -17,10 +17,19 @@ namespace TandemBooking.ViewModels.AvailabilityOverview
     public class AvailabilityOverviewDayViewModel
     {
         public DateTime Date { get; set; }
+       
+        public List<AvailabilityOverviewTimeSlotViewModel> TimeSlots { get; set; }
+        public bool InPast { get; set; }
+        
+    }
+
+    public class AvailabilityOverviewTimeSlotViewModel
+    {
+        public int TimeSlot { get; set; }
         public List<PilotAvailability> Availabilities { get; set; }
         public List<BookedPilot> PilotBookings { get; set; }
         public List<PilotAvailability> FreePilots { get; set; }
-        public bool InPast { get; set; }
+
         public List<Models.Booking> UnassignedBookings { get; set; }
     }
 }

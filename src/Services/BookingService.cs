@@ -13,6 +13,7 @@ namespace TandemBooking.Services
         public ApplicationUser Pilot { get; set; }
         public int Priority { get; set; } 
         public bool Available { get; set; }
+        public bool Booked { get; set; }
     }
 
     public class BookingService
@@ -28,9 +29,9 @@ namespace TandemBooking.Services
             _bookingServiceDb = bookingServiceDb;
         }
 
-        public async Task<List<AvailablePilot>> FindAvailablePilotsAsync(DateTime date, bool includeUnavailable = false)
+        public async Task<List<AvailablePilot>> FindAvailablePilotsAsync(DateTime date, int timeslot, bool includeUnavailable = false)
         {
-            var result = await _bookingServiceDb.GetAvailablePilotsAsync(date);
+            var result = await _bookingServiceDb.GetAvailablePilotsAsync(date, timeslot);
             if (includeUnavailable)
             {
                 return result;
@@ -50,11 +51,14 @@ namespace TandemBooking.Services
 
         public async Task<List<ApplicationUser>> AssignNewPilotAsync(IList<Booking> bookings)
         {
+
+            //FIX THIS FOR TIMESLOTS!!!!!!!!!!!!!!!!!!!
             if (bookings.Count == 0)
             {
                 throw new Exception("No bookings to assign pilots to");
             }
             var date = bookings.First().BookingDate;
+            
             if (bookings.Any(b => b.BookingDate != date))
             {
                 throw new Exception("All bookings must be on the same date");
@@ -64,13 +68,14 @@ namespace TandemBooking.Services
                         b.BookedPilots?.Select(bp => bp.Pilot).ToList() ?? new List<ApplicationUser>()
             );
 
-            var availablePilots = (await FindAvailablePilotsAsync(date))
-                .Where(ap => !spentPilots.Contains(ap.Pilot))
-                .ToList();
+            
 
             var assignedPilots = new List<ApplicationUser>();
             foreach (var booking in bookings)
             {
+                var availablePilots = (await FindAvailablePilotsAsync(date, booking.TimeSlot))
+                .Where(ap => !spentPilots.Contains(ap.Pilot))
+                .ToList();
                 //pilots who can fly this passenger
                 var applicablePilots = availablePilots
                     .Where(pa => pa.Pilot.InWeightRange(booking.PassengerWeight))

@@ -8,5 +8,7 @@ namespace TandemBooking.Models
 
         public string PilotId { get; set; }
         public ApplicationUser Pilot {get;set;}
+
+        public int TimeSlot { get; set; }
     }
 }

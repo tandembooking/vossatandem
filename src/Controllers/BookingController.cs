@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -13,8 +14,24 @@ using TandemBooking.ViewModels.Booking;
 
 namespace TandemBooking.Controllers
 {
+
     public class BookingController: Controller
     {
+        private static string[] _monthNames = new[]
+        {
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"
+        };
         private readonly ILogger<BookingController> _logger;
         private readonly INexmoService _nexmo;
         private readonly TandemBookingContext _context;
@@ -41,10 +58,13 @@ namespace TandemBooking.Controllers
             });
         }
 
+       
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Index(BookingViewModel input)
+        public async Task<ActionResult> Index(BookingViewModel input, string Action=null)
         {
+           
             try
             {
                 if (ModelState.IsValid)
@@ -56,11 +76,7 @@ namespace TandemBooking.Controllers
                         ModelState.AddModelError("PhoneNumber", "Please enter a valid phone number");
                         return View(input);
                     }
-                    if (input.Date == null)
-                    {
-                        ModelState.AddModelError("Date", "Please select a date");
-                        return View(input);
-                    }
+                    
                     if (string.IsNullOrWhiteSpace(input.Name))
                     {
                         ModelState.AddModelError("Name", "Please enter your name");
@@ -72,10 +88,37 @@ namespace TandemBooking.Controllers
                             "Please enter the name of the additional passengers");
                         return View(input);
                     }
+                    
+                    
+                   
+                    if (Action == "show_calender" )
+                    {
+                        
+                        input.Calendar = UpdateBookingCalendar(input.Calendar, DateTime.UtcNow);
+                        return View(input);
+                    }
+                    if (Action == "next_month")
+                    {
+                        
+                        input.Calendar = UpdateBookingCalendar(input.Calendar, input.NextDate??DateTime.UtcNow);
+                        return View(input);
+                    }
+                    if (Action == "prev_month")
+                    {
+                        
+                        input.Calendar = UpdateBookingCalendar(input.Calendar, input.PrevDate ?? DateTime.UtcNow);
+                        return View(input);
+                    }
+                    if (input.TimeSlot > 5 || input.TimeSlot < 0)
+                    {
+                        ModelState.AddModelError("TimeSlot", "Please select a time slot");
 
+                        return View(input);
+                    }
                     var booking = new Booking()
                     {
                         BookingDate = input.Date.Value.Date,
+                        TimeSlot = input.TimeSlot,
                         DateRegistered = DateTime.UtcNow,
                         PassengerEmail = input.Email,
                         PassengerName = input.Name,
@@ -101,6 +144,8 @@ namespace TandemBooking.Controllers
                         booking.Comment += $", booking 1/{additionalPassengers.Count() + 1}";
                     }
 
+
+                   
                     //Create separate bookings for the additional passengers
                     var additionalBookings = additionalPassengers?.Select(additionalPassenger =>
                     {
@@ -108,6 +153,7 @@ namespace TandemBooking.Controllers
                         var additionalBooking = new Booking()
                         {
                             BookingDate = input.Date.Value.Date,
+                            TimeSlot = input.TimeSlot,
                             PrimaryBooking = booking,
                             DateRegistered = DateTime.UtcNow,
                             PassengerEmail = input.Email,
@@ -130,6 +176,7 @@ namespace TandemBooking.Controllers
 
                     await _messageService.SendNewBookingMessage(booking, additionalBookings, true, true);
 
+                    
                     return RedirectToAction("Confirm", new {bookingId = booking.Id});
                 }
             }
@@ -142,10 +189,87 @@ namespace TandemBooking.Controllers
             return View(input);
         }
 
+
+
         public ActionResult Confirm(string bookingId)
         {
-
+           
             return View();
         }
+        
+      
+        public BookingCalendarViewModel UpdateBookingCalendar(BookingCalendarViewModel input, DateTime date)
+        {
+       
+            var startDate = new DateTime(date.Year, date.Month, 1);
+            var endDate = startDate.AddMonths(1);
+
+            var nextMonth = startDate.AddMonths(1);
+            var prevMonth = startDate.AddMonths(-1);
+
+            int startWeekDay = ((int)startDate.DayOfWeek - 1 + 7) % 7;
+            startDate = startDate.AddDays(-startWeekDay);
+
+            int endWeekDay = ((int)endDate.DayOfWeek - 1 + 7) % 7;
+            endDate = endDate.AddDays(6 - endWeekDay);
+
+            var pilots = _context.Users.ToList();
+
+            var availabilities = _context.PilotAvailabilities
+                .Where(a => a.Date >= startDate && a.Date <= endDate)
+                .OrderBy(a => a.Date)
+                .ToList();
+
+            var pilotBookings = _context.BookedPilots
+                .Include(b => b.Booking)
+                .Where(b => !b.Canceled && b.Booking.BookingDate >= startDate && b.Booking.BookingDate <= endDate)
+                .ToList();
+
+
+    
+
+            var days = new List<BookingCalendarDayViewModel>();
+
+            for (var dayIndex = 0; startDate.AddDays(dayIndex) <= endDate; dayIndex++)
+            {
+                var curDate = startDate.AddDays(dayIndex);
+                var availableToday = availabilities.Where(a => a.Date.Date == curDate).ToList();
+                
+                var bookingsToday = pilotBookings.Where(a => a.Booking.BookingDate.Date == curDate).ToList();
+
+                var timeSlots = new List<BookingCalendarTimeSlotViewModel>();
+
+                for (var timeSlotIndex = 0; timeSlotIndex < 5; timeSlotIndex++)
+                {
+                    var availableNow = availableToday.Where(a => a.TimeSlot == timeSlotIndex);
+                    var bookingsNow = bookingsToday.Where(a => a.Booking.TimeSlot == timeSlotIndex);
+                    timeSlots.Add(new BookingCalendarTimeSlotViewModel()
+                    {
+                        TimeSlot = timeSlotIndex,
+                        AvailablePilots = availableNow.ToList().Count,
+                        FreePilots = availableNow.Where(a => bookingsNow.All(b => b.Pilot != a.Pilot)).ToList().Count,
+                        InPast = curDate < DateTime.Now.Date,
+                    });
+                }
+                days.Add(new BookingCalendarDayViewModel()
+                {
+                    Date = curDate,
+                    TimeSlots = timeSlots,
+                    InPast = curDate < DateTime.Now.Date,
+                });
+            }
+
+            return new BookingCalendarViewModel()
+            {
+                Next = nextMonth,
+                Prev = prevMonth,
+                MonthName = $"{_monthNames[date.Month - 1]} {date.Year}",
+                StartDate = startDate,
+                EndDate = endDate,
+                Days = days,
+            };
+        }
+
+   
     }
 }

@@ -16,6 +16,8 @@ namespace TandemBooking.ViewModels.BookingAdmin
         [DataType(DataType.Date, ErrorMessage = "Please enter a valid date")]
         public DateTime? Date { get; set; }
 
+        public int TimeSlot { get; set; }
+
         [Display(Name = "Pilot")]
         public string PilotId { get; set; }
 

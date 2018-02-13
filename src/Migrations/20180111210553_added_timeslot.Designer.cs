@@ -11,9 +11,10 @@ using TandemBooking.Models;
 namespace tandembooking.Migrations
 {
     [DbContext(typeof(TandemBookingContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180111210553_added_timeslot")]
+    partial class added_timeslot
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

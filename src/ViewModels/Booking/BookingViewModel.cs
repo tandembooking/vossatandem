@@ -15,7 +15,7 @@ namespace TandemBooking.ViewModels.Booking
 
     public class BookingViewModel
     {
-        [Required(ErrorMessage = "Please select a date")]
+        
         [DataType(DataType.Date, ErrorMessage="Please enter a valid date")]
         public DateTime? Date { get; set; }
 
@@ -38,5 +38,18 @@ namespace TandemBooking.ViewModels.Booking
 
         [DataType(DataType.MultilineText)]
         public string Comment { get; set; }
+
+        public string Action { get; set; }
+
+        [Range(0,5)]
+        public int TimeSlot { get; set; }
+
+        public DateTime? NextDate { get; set; }
+        public DateTime? PrevDate { get; set; }
+
+        public BookingCalendarViewModel Calendar { get; set; }
+
+      
+
     }
 }

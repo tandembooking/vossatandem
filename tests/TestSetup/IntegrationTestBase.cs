@@ -34,7 +34,8 @@ namespace TandemBooking.Tests.TestSetup
             Transaction.Dispose();     
             
             // Reset mock messages
-            ((MockNexmoService )GetService<INexmoService>()).Messages.Clear();       
+            ((MockNexmoService )GetService<INexmoService>()).Messages.Clear();
+            ((MockMailService)GetService<IMailService>()).Messages.Clear();
         }
 
         public T GetService<T>()

@@ -24,9 +24,9 @@ namespace TandemBooking.Tests.ServiceTests
         [Fact]
         public async Task AssignAvailablePilot()
         {
-            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), _pilots.Frode, _pilots.Erik);
+            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), 1,_pilots.Frode, _pilots.Erik);
 
-            var booking = Context.AddBookingFixture(new DateTime(2016, 11, 1), null);
+            var booking = Context.AddBookingFixture(new DateTime(2016, 11, 1), 1, null);
 
             var pilot = await _bookingService.AssignNewPilotAsync(booking);
             Context.SaveChanges();
@@ -47,9 +47,9 @@ namespace TandemBooking.Tests.ServiceTests
         [Fact]
         public async Task AssignPilotInWeightRange()
         {
-            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), _pilots.Frode, _pilots.Erik);
+            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), 1,_pilots.Frode, _pilots.Erik);
 
-            var booking = Context.AddBookingFixture(new DateTime(2016, 11, 1), null);
+            var booking = Context.AddBookingFixture(new DateTime(2016, 11, 1),1, null);
             booking.PassengerWeight = 130; //out of frodes weight range
 
             var pilot = await _bookingService.AssignNewPilotAsync(booking);
@@ -62,12 +62,12 @@ namespace TandemBooking.Tests.ServiceTests
         [Fact]
         public async Task AssignPrioritizedPilot()
         {
-            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), _pilots.Frode, _pilots.Erik);
-            Context.AddBookingFixture(new DateTime(2016, 11, 2), _pilots.Frode);
-            Context.AddBookingFixture(new DateTime(2016, 11, 3), _pilots.Frode);
-            Context.AddBookingFixture(new DateTime(2016, 11, 4), _pilots.Erik);
+            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), 1,_pilots.Frode, _pilots.Erik);
+            Context.AddBookingFixture(new DateTime(2016, 11, 2), 1, _pilots.Frode);
+            Context.AddBookingFixture(new DateTime(2016, 11, 3), 1, _pilots.Frode);
+            Context.AddBookingFixture(new DateTime(2016, 11, 4), 1, _pilots.Erik);
 
-            var booking = Context.AddBookingFixture(new DateTime(2016, 11, 1), null);
+            var booking = Context.AddBookingFixture(new DateTime(2016, 11, 1), 1, null);
 
             var pilot = await _bookingService.AssignNewPilotAsync(booking);
             Context.SaveChanges();
@@ -79,12 +79,12 @@ namespace TandemBooking.Tests.ServiceTests
         [Fact]
         public async Task AssignNextPilot()
         {
-            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), _pilots.Frode, _pilots.Erik);
-            Context.AddBookingFixture(new DateTime(2016, 11, 2), _pilots.Frode);
-            Context.AddBookingFixture(new DateTime(2016, 11, 3), _pilots.Frode);
-            Context.AddBookingFixture(new DateTime(2016, 11, 4), _pilots.Erik);
+            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), 1, _pilots.Frode, _pilots.Erik);
+            Context.AddBookingFixture(new DateTime(2016, 11, 2), 1, _pilots.Frode);
+            Context.AddBookingFixture(new DateTime(2016, 11, 3), 1, _pilots.Frode);
+            Context.AddBookingFixture(new DateTime(2016, 11, 4), 1, _pilots.Erik);
 
-            var booking = Context.AddBookingFixture(new DateTime(2016, 11, 1), null);
+            var booking = Context.AddBookingFixture(new DateTime(2016, 11, 1), 1, null);
 
             var firstPilot = await _bookingService.AssignNewPilotAsync(booking);
             Context.SaveChanges();
@@ -113,9 +113,9 @@ namespace TandemBooking.Tests.ServiceTests
         [Fact]
         public async Task AssignNextPilotUnavailable()
         {
-            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), _pilots.Frode);
+            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), 1, _pilots.Frode);
 
-            var booking = Context.AddBookingFixture(new DateTime(2016, 11, 1), null);
+            var booking = Context.AddBookingFixture(new DateTime(2016, 11, 1), 1, null);
 
             var firstPilot = await _bookingService.AssignNewPilotAsync(booking);
             Context.SaveChanges();
@@ -143,22 +143,22 @@ namespace TandemBooking.Tests.ServiceTests
         public async Task AssignMultipleBookings()
         {
             //setup
-            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), _pilots.Frode);
-            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), _pilots.Erik);
-            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), _pilots.Aasmund);
+            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), 1, _pilots.Frode);
+            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), 1, _pilots.Erik);
+            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), 1, _pilots.Aasmund);
 
-            Context.AddBookingFixture(new DateTime(2016, 10, 30), _pilots.Frode);
-            Context.AddBookingFixture(new DateTime(2016, 10, 30), _pilots.Frode);
-            Context.AddBookingFixture(new DateTime(2016, 10, 30), _pilots.Frode);
+            var BookingFrode1 = Context.AddBookingFixture(new DateTime(2016, 10, 30), 1, _pilots.Frode);
+            var bookingFrode2 = Context.AddBookingFixture(new DateTime(2016, 10, 30), 2, _pilots.Frode);
+            var bookingFrode3 = Context.AddBookingFixture(new DateTime(2016, 10, 30), 3, _pilots.Frode);
 
-            Context.AddBookingFixture(new DateTime(2016, 10, 30), _pilots.Erik);
-            Context.AddBookingFixture(new DateTime(2016, 10, 30), _pilots.Erik);
+            Context.AddBookingFixture(new DateTime(2016, 10, 30), 1, _pilots.Erik);
+            Context.AddBookingFixture(new DateTime(2016, 10, 30), 2, _pilots.Erik);
 
-            Context.AddBookingFixture(new DateTime(2016, 10, 30), _pilots.Aasmund);
+            Context.AddBookingFixture(new DateTime(2016, 10, 30), 1, _pilots.Aasmund);
 
-            var booking1 = Context.AddBookingFixture(new DateTime(2016, 11, 1), null);
-            var booking2 = Context.AddBookingFixture(new DateTime(2016, 11, 1), null);
-            var booking3 = Context.AddBookingFixture(new DateTime(2016, 11, 1), null);
+            var booking1 = Context.AddBookingFixture(new DateTime(2016, 11, 1), 1, null);
+            var booking2 = Context.AddBookingFixture(new DateTime(2016, 11, 1), 1, null);
+            var booking3 = Context.AddBookingFixture(new DateTime(2016, 11, 1), 1, null);
             var bookings = new[] {booking1, booking2, booking3}.ToList();
 
             //act
@@ -170,6 +170,8 @@ namespace TandemBooking.Tests.ServiceTests
             Assert.Equal(_pilots.Erik, pilots[1]);
             Assert.Equal(_pilots.Frode, pilots[2]);
         }
+       
+
 
     }
 }

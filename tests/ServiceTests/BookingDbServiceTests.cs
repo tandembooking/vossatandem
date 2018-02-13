@@ -24,9 +24,9 @@ namespace TandemBooking.Tests.ServiceTests
         [Fact]
         public async Task Availability()
         {
-            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), _pilots.Frode, _pilots.Erik);
+            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), 1, _pilots.Frode, _pilots.Erik);
 
-            var avail = await _db.GetAvailablePilotsAsync(new DateTime(2016, 11, 1));
+            var avail = await _db.GetAvailablePilotsAsync(new DateTime(2016, 11, 1), 1);
 
             Assert.Equal(3, avail.Count); // only pilots
             Assert.Equal(2, avail.Count(x => x.Available)); // frode and erik are available
@@ -38,28 +38,28 @@ namespace TandemBooking.Tests.ServiceTests
         public async Task PriorityWithBookings()
         {
             //future bookings
-            Context.AddBookingFixture(new DateTime(2016, 11, 2), _pilots.Frode);
-            Context.AddBookingFixture(new DateTime(2016, 11, 3), _pilots.Frode);
-            Context.AddBookingFixture(new DateTime(2016, 11, 4), _pilots.Frode);
-            Context.AddBookingFixture(new DateTime(2016, 11, 4), _pilots.Frode, 0);          //should not count (zero fee)
-            Context.AddBookingFixture(new DateTime(2016, 11, 1).AddDays(20), _pilots.Frode); //should not count
+            Context.AddBookingFixture(new DateTime(2016, 11, 2), 1, _pilots.Frode);
+            Context.AddBookingFixture(new DateTime(2016, 11, 3), 1, _pilots.Frode);
+            Context.AddBookingFixture(new DateTime(2016, 11, 4), 1, _pilots.Frode);
+            Context.AddBookingFixture(new DateTime(2016, 11, 4), 1, _pilots.Frode, 0);          //should not count (zero fee)
+            Context.AddBookingFixture(new DateTime(2016, 11, 1).AddDays(20), 1, _pilots.Frode); //should not count
 
             //past bookings
-            Context.AddBookingFixture(new DateTime(2016, 10, 29), _pilots.Erik);
-            Context.AddBookingFixture(new DateTime(2016, 11, 1).AddDays(-20), _pilots.Erik);
-            Context.AddBookingFixture(new DateTime(2016, 11, 1).AddDays(-40), _pilots.Erik); //should not count
+            Context.AddBookingFixture(new DateTime(2016, 10, 29), 1, _pilots.Erik);
+            Context.AddBookingFixture(new DateTime(2016, 11, 1).AddDays(-20), 1, _pilots.Erik);
+            Context.AddBookingFixture(new DateTime(2016, 11, 1).AddDays(-40), 1, _pilots.Erik); //should not count
 
             //today
-            Context.AddBookingFixture(new DateTime(2016, 11, 1), _pilots.Aasmund);
-            Context.AddBookingFixture(new DateTime(2016, 11, 2), _pilots.Aasmund);
-            Context.AddBookingFixture(new DateTime(2016, 10, 29), _pilots.Aasmund);
+            Context.AddBookingFixture(new DateTime(2016, 11, 1), 1, _pilots.Aasmund);
+            Context.AddBookingFixture(new DateTime(2016, 11, 2), 1, _pilots.Aasmund);
+            Context.AddBookingFixture(new DateTime(2016, 10, 29), 1, _pilots.Aasmund);
 
             //Canceled booking should not count
-            var b1 = Context.AddBookingFixture(new DateTime(2016, 10, 28), _pilots.Aasmund);
+            var b1 = Context.AddBookingFixture(new DateTime(2016, 10, 28), 1, _pilots.Aasmund);
             b1.Canceled = true;
 
             //Reassigned booking (should count on frode, but not Aasmund)
-            var b2 = Context.AddBookingFixture(new DateTime(2016, 11, 5), _pilots.Aasmund);
+            var b2 = Context.AddBookingFixture(new DateTime(2016, 11, 5), 1, _pilots.Aasmund);
             b2.AssignedPilot = _pilots.Frode;
             b2.BookedPilots.Single().Canceled = true;
             b2.BookedPilots.Add(new BookedPilot {Pilot = _pilots.Frode});
@@ -67,7 +67,7 @@ namespace TandemBooking.Tests.ServiceTests
             Context.SaveChanges();
 
             //act
-            var avail = await _db.GetAvailablePilotsAsync(new DateTime(2016, 11, 1));
+            var avail = await _db.GetAvailablePilotsAsync(new DateTime(2016, 11, 1),1);
 
             //assert
             Assert.All(avail, x => Assert.Equal(false, x.Available));

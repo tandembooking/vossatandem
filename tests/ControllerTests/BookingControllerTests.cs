@@ -24,15 +24,18 @@ namespace TandemBooking.Tests.ControllerTests
         private readonly PilotsFixture _pilots;
 
         [Fact]
-        public async Task CreateBookingErrorMissingDate()
+        public async Task CreateBookingErrorMissingTimeslot()
         {
             //setup
             var input = new BookingViewModel
             {
+                Date = new DateTime(2016, 11, 01),
                 Name = "My Name",
                 PhoneNumber = "11111111",
                 Email = "passenger@example.com",
-                Comment = "Blah"
+                Comment = "Blah",
+                TimeSlot = -1,
+                
             };
 
             //act
@@ -44,7 +47,7 @@ namespace TandemBooking.Tests.ControllerTests
             var viewResult = (ViewResult) result;
 
             Assert.False(viewResult.ViewData.ModelState.IsValid);
-            Assert.Equal(ModelValidationState.Invalid, viewResult.ViewData.ModelState.GetValidationState("Date"));
+            Assert.Equal(ModelValidationState.Invalid, viewResult.ViewData.ModelState.GetValidationState("TimeSlot"));
         }
 
         [Fact]
@@ -114,11 +117,11 @@ namespace TandemBooking.Tests.ControllerTests
         public async Task CreateBookingwithAdditionalPassengers()
         {
             //two available pilots
-            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), _pilots.Frode);
-            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), _pilots.Erik);
+            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), 1, _pilots.Frode);
+            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), 1, _pilots.Erik);
 
             //Erik has one booking already, so Frode will get primary booking
-            Context.AddBookingFixture(new DateTime(2016, 10, 30), _pilots.Erik);
+            Context.AddBookingFixture(new DateTime(2016, 10, 30), 1, _pilots.Erik);
 
             //three passengers
             var input = new BookingViewModel
@@ -129,6 +132,7 @@ namespace TandemBooking.Tests.ControllerTests
                 PhoneNumber = "11111111",
                 Email = "passenger@example.com",
                 Comment = "Blah",
+                TimeSlot= 1,
                 AdditionalPassengers = new[]
                 {
                     new AdditionalPassengerViewModel
@@ -248,7 +252,7 @@ namespace TandemBooking.Tests.ControllerTests
         [Fact]
         public async Task CreateSuccessfulSimpleBookingWithAvailablePilot()
         {
-            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), _pilots.Frode);
+            Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), 1,_pilots.Frode);
 
             var input = new BookingViewModel
             {
@@ -256,7 +260,9 @@ namespace TandemBooking.Tests.ControllerTests
                 Name = "My Name",
                 PhoneNumber = "11111111",
                 Email = "passenger@example.com",
-                Comment = "Blah"
+                Comment = "Blah",
+                TimeSlot = 1,
+                
             };
 
             var ctrl = GetService<BookingController>();
@@ -318,10 +324,11 @@ namespace TandemBooking.Tests.ControllerTests
             var input = new BookingViewModel
             {
                 Date = new DateTime(2016, 11, 13),
-                Name = "My Name",
+                Name = "No pilot",
                 PhoneNumber = "11111111",
                 Email = "passenger@example.com",
                 Comment = "Blah",
+                TimeSlot = 1,
             };
 
             var ctrl = GetService<BookingController>();
@@ -364,5 +371,6 @@ namespace TandemBooking.Tests.ControllerTests
             var passengerMail = mailService.Messages.Single(m => m.Recipient == "passenger@example.com");
             Assert.Contains("Thank you", passengerMail.Body);
         }
+       
     }
 }

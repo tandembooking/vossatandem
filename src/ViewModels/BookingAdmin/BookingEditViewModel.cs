@@ -14,5 +14,8 @@ namespace TandemBooking.ViewModels.BookingAdmin
         public string PassengerEmail { get; set; }
         public string PassengerPhone { get; set; }
         public int PassengerFee { get; set; }
+
+        public int TimeSlot { get; set; }
+
     }
 }

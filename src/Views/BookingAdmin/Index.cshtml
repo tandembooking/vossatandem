@@ -27,12 +27,13 @@
     </tr>
     @foreach (var booking in Model)
     {
-        <tr class="@(booking.BookingDate < DateTime.Now.Date ? "booking-past" : "") @(booking.Canceled ? "booking-canceled" : "")">
-            <td>@booking.BookingDate.ToString("dd.MM.yyyy")</td>
-            <td>@booking.PassengerName</td>
-            <td>@booking.PassengerPhone</td>
-            <td>@(booking.AssignedPilot?.Name ?? "No pilot assigned")</td>
-            <td><a href="@Url.Action("Details", new { id = booking.Id })" class="btn btn-default">Details</a></td>
-        </tr>
+    <tr class="@(booking.BookingDate < DateTime.Now.Date ? "booking-past" : "") @(booking.Canceled ? "booking-canceled" : "")">
+        <td>@booking.BookingDate.ToString("dd.MM.yyyy")</td>
+        <td>@booking.TimeSlot.asTime()</td>
+        <td>@booking.PassengerName</td>
+        <td>@booking.PassengerPhone</td>
+        <td>@(booking.AssignedPilot?.Name ?? "No pilot assigned")</td>
+        <td><a href="@Url.Action("Details", new { id = booking.Id })" class="btn btn-default">Details</a></td>
+    </tr>
     }
 </table>

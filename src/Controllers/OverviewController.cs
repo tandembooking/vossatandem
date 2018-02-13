@@ -43,7 +43,7 @@ namespace TandemBooking.Controllers
                     .AsNoTracking()
                     .Where(b => !b.Canceled && b.BookingDate >= DateTime.Today)
                     .Where(b => b.AssignedPilotId == _userManager.GetUserId(User))
-                    .OrderBy(b => b.BookingDate).ThenBy(b => b.DateRegistered)
+                    .OrderBy(b => b.BookingDate).ThenBy(b => b.TimeSlot).ThenBy(b => b.DateRegistered)
                     .ToList();
 
                 result.RecentBookings = _context.Bookings

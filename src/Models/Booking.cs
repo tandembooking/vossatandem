@@ -7,6 +7,8 @@ namespace TandemBooking.Models
         public Guid Id {get;set;}
         public DateTime DateRegistered {get;set;}
         public DateTime BookingDate {get;set;}
+
+        public int TimeSlot { get; set; }
         public bool Canceled { get; set; }
         public bool Completed { get; set; }
         public decimal PassengerFee { get; set; }
