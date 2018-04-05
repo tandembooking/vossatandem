@@ -237,3 +237,5 @@ _Pvt_Extensions
 # FAKE - F# Make
 .fake/
 *.min.css
+.vscode/tasks.json
+.vscode/launch.json
