@@ -31,7 +31,7 @@ namespace TandemBooking.Services
             await _context.SaveChangesAsync();
 
             //send message
-            var result = await _nexmoService.SendSms("VossHPK", message.RecipientNumber, message.MessageText);
+            var result = await _nexmoService.SendSms("BHPGK", message.RecipientNumber, message.MessageText);
 
             //save status
             foreach (var nexmoPart in result.Messages)

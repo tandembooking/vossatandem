@@ -40,7 +40,7 @@ namespace TandemBooking.Services
                 if (assignedPilot != null)
                 {
                     _bookingService.AddEvent(booking, null,
-                        $"Assigned to {assignedPilot.Name} ({assignedPilot.PhoneNumber.AsPhoneNumber()})");
+                        $"Tildelt pilot {assignedPilot.Name} ({assignedPilot.PhoneNumber.AsPhoneNumber()})");
 
                     //send message to pilot
                     if (notifyPilot)
@@ -49,27 +49,27 @@ namespace TandemBooking.Services
                         if (assignedPilot.SmsNotification)
                         {
                             var message =
-                                $"You have a new flight on {bookingDateString}: {booking.PassengerName}, {booking.PassengerEmail}, {booking.PassengerPhone.AsPhoneNumber()}, {booking.Comment}.";
+                                $"Du har en ny tandemtur {bookingDateString}: {booking.PassengerName}, {booking.PassengerEmail}, {booking.PassengerPhone.AsPhoneNumber()}, {booking.Comment}.";
                             await SendPilotMessage(assignedPilot, message, booking);
                         }
                         //mail to pilot
                         if (assignedPilot.EmailNotification)
                         {
-                            var subject = $"New flight on {bookingDateString}";
-                            var message = $@"Hi {assignedPilot.Name},
+                            var subject = $"Ny tandemtur  {bookingDateString}";
+                            var message = $@"Hei {assignedPilot.Name},
 
-You have been assigned a new flight:
-Date:            {bookingDateString}. 
-Passenger Name:  {booking.PassengerName},
-Passenger Phone: {booking.PassengerPhone.AsPhoneNumber()},
-Passenger Email: {booking.PassengerEmail ?? "not specified"}
-Comments:
+Du har blitt tildelt en ny tandemtur:
+Dato:                 {bookingDateString}. 
+Passasjerens navn:    {booking.PassengerName},
+Passasjerens telefon: {booking.PassengerPhone.AsPhoneNumber()},
+Passasjerens epost:   {booking.PassengerEmail ?? "ikke oppgitt"}
+Kommentar:
 {booking.Comment}
 
-Booking Url: http://vossatandem.no/BookingAdmin/Details/{booking.Id}
+Booking-lenke: http://tandembooking.bhpgk.club/BookingAdmin/Details/{booking.Id}
 
-fly safe!
-Booking Coordinator
+fly pent!
+Bookingkoordinator
 ";
                             await _mailService.Send(assignedPilot.Email, subject, message);
                         }
@@ -77,17 +77,17 @@ Booking Coordinator
 
                     //send booking assigned message to booking coordinator
                     var bookingCoordinatorMessage =
-                        $"New flight on {bookingDateString} assigned to {assignedPilot.Name}, {booking.Comment}";
+                        $"Ny tandemtur {bookingDateString} tildelt {assignedPilot.Name}, {booking.Comment}";
                     await _smsService.Send(_bookingCoordinatorSettings.PhoneNumber, bookingCoordinatorMessage, booking);
                 }
                 else
                 {
                     _bookingService.AddEvent(booking, null,
-                        $"No pilots available, sent message to tandem coordinator {_bookingCoordinatorSettings.Name} ({_bookingCoordinatorSettings.PhoneNumber.AsPhoneNumber()})");
+                        $"Ingen tilgjengelige piloter, melding er sendt til tandemkoordinator {_bookingCoordinatorSettings.Name} ({_bookingCoordinatorSettings.PhoneNumber.AsPhoneNumber()})");
 
                     //send no pilots available to booking coordinator
                     var message =
-                        $"Please find a pilot on {bookingDateString}: {booking.PassengerName}, {booking.PassengerEmail}, {booking.PassengerPhone.AsPhoneNumber()}, {booking.Comment}";
+                        $"Vennligst finn en tandempilot til {bookingDateString}: {booking.PassengerName}, {booking.PassengerEmail}, {booking.PassengerPhone.AsPhoneNumber()}, {booking.Comment}";
                     await _smsService.Send(_bookingCoordinatorSettings.PhoneNumber, message, booking);
                 }
             }
@@ -100,21 +100,21 @@ Booking Coordinator
                 {
                     var assignedPilot = primaryBooking.AssignedPilot;
                     passengerMessage = additionalBookings.Any() 
-                        ? $"Awesome! Your {allBookings.Length} tandem flights on {bookingDateString} are confirmed. You will be contacted by {assignedPilot.Name} ({assignedPilot.PhoneNumber.AsPhoneNumber()}) to coordinate your flights" 
-                        : $"Awesome! Your tandem flight on {bookingDateString} is confirmed. You will be contacted by {assignedPilot.Name} ({assignedPilot.PhoneNumber.AsPhoneNumber()}) to coordinate the details.";
+                        ? $"Fantastisk! Dine {allBookings.Length} tandemturer {bookingDateString} er bekreftet. Du vil bli kontaktet av {assignedPilot.Name} ({assignedPilot.PhoneNumber.AsPhoneNumber()}) for å avtale detaljene rundt flyturene." 
+                        : $"Fantastisk! Din tandemtur {bookingDateString} er bekreftet. Du vil bli kontaktet av {assignedPilot.Name} ({assignedPilot.PhoneNumber.AsPhoneNumber()}) for å avtale detaljene rundt flyturen.";
                 }
                 else
                 {
                     passengerMessage = additionalBookings.Any()
-                        ? $"Awesome! We will try to find {allBookings.Length} pilots who can take you flying on {bookingDateString}. You will be contacted shortly."
-                        : $"Awesome! We will try to find a pilot who can take you flying on {bookingDateString}. You will be contacted shortly.";
+                        ? $"Fantastisk! Vi prøver å finne {allBookings.Length} piloter som kan ta dere med i lufta {bookingDateString}. Dere vil snart bli kontaktet."
+                        : $"Fantastisk Vi prøver å finne en pilot som kan ta deg med i lufta {bookingDateString}. Du vil snart bli kontaktet.";
                 }
 
                 if (!string.IsNullOrEmpty(primaryBooking.PassengerPhone))
                 {
                     await _smsService.Send(primaryBooking.PassengerPhone, passengerMessage, primaryBooking);
                     _bookingService.AddEvent(primaryBooking, null,
-                        $"Sent confirmation sms message to {primaryBooking.PassengerName} ({primaryBooking.PassengerPhone.AsPhoneNumber()})");
+                        $"Bekreftelse er sendt pr. sms til {primaryBooking.PassengerName} ({primaryBooking.PassengerPhone.AsPhoneNumber()})");
                 }
 
                 if (!string.IsNullOrEmpty(primaryBooking.PassengerEmail))
@@ -127,26 +127,26 @@ Booking Coordinator
                         var pilotEmail = primaryBooking.AssignedPilot.Email;
                         assignedPilotMessage =
                             $@"
-Your assigned instructor is {pilotName} ({pilotPhone}, {pilotEmail}), feel free to 
-contact him about any questions you have regarding your flight.
+Din tildelte instruktør er {pilotName} ({pilotPhone}, {pilotEmail}), føl deg fri 
+til å kontakte ham angående spørsmål du har angående flyturen.
 ";
                     }
 
                     var message = $@"Hi {primaryBooking.PassengerName},
 
-Thank you for booking a tandem flight with Voss HPK on {bookingDateString}. Your booking 
-has been confirmed. One of our instructors will contact you to organize the details 
-of when and where you will meet a few days in advance of your flight. 
+Takk for at du booket en tandemtur med Bodø Hang & Paragliderklubb {bookingDateString}. Din booking
+er bekreftet. En av våre instruktører vil kontakte deg for å organisere detaljene rundt 
+når og hvor dere møtes, et par dager før flyturen.
 {assignedPilotMessage}
 
-Kind regards,
+Med vennlig hilsen,
 {_bookingCoordinatorSettings.Name}
-Booking Coordinator
-Voss HPK";
-                    await _mailService.Send(primaryBooking.PassengerEmail, $"Tandem flight on {bookingDateString}", message);
+Bookingkoordinator
+Bodø Hang & Paragliderklubb";
+                    await _mailService.Send(primaryBooking.PassengerEmail, $"Tandemtur {bookingDateString}", message);
 
                     _bookingService.AddEvent(primaryBooking, null,
-                        $"Sent confirmation mail to {primaryBooking.PassengerName} ({primaryBooking.PassengerEmail})");
+                        $"Bekreftelse er sendt på epost til {primaryBooking.PassengerName} ({primaryBooking.PassengerEmail})");
                 }
             }
 
@@ -156,34 +156,34 @@ Voss HPK";
         public async Task SendMissingPilotMessage(string bookingDateString, Booking booking)
         {
             //send to booking coordinator
-            var message = $"Please find a pilot on {bookingDateString}: {booking.PassengerName}, {booking.PassengerEmail}, {booking.PassengerPhone.AsPhoneNumber()}, {booking.Comment}";
+            var message = $"Vennligst finn en pilot til {bookingDateString}: {booking.PassengerName}, {booking.PassengerEmail}, {booking.PassengerPhone.AsPhoneNumber()}, {booking.Comment}";
             await _smsService.Send(_bookingCoordinatorSettings.PhoneNumber, message, booking);
 
             //passenger sms 
             if (!string.IsNullOrEmpty(booking.PassengerPhone))
             {
-                var passengerMessage = $"We're working on finding an instructor for your flight on {bookingDateString}. You will be contacted with the name and number of the new instructor. If you have any questions, you can contact the tandem booking coordinator, {_bookingCoordinatorSettings.Name} on ({_bookingCoordinatorSettings.PhoneNumber.AsPhoneNumber()})";
+                var passengerMessage = $"Vi jobber med å finne en instruktør for din flytur {bookingDateString}. Du vil bli kontaktet med navnet og nummeret til den nye instruktøren. Om du har noen spørsmål, kan du kontakte tandembookingkoordinator {_bookingCoordinatorSettings.Name} på ({_bookingCoordinatorSettings.PhoneNumber.AsPhoneNumber()})";
                 await _smsService.Send(booking.PassengerPhone, passengerMessage, booking);
             }
 
             //passenger email
             if (!string.IsNullOrEmpty(booking.PassengerEmail))
             {
-                var mailMessage = $@"Hi {booking.PassengerName},
+                var mailMessage = $@"Hei {booking.PassengerName},
 
-Your booking on {bookingDateString} has been updated. 
+Din tandembooking {bookingDateString} har blitt oppdatert.
 
-We're working on finding a new instructor for your flight on {bookingDateString}. 
-You will be contacted with the name and number of the new instructor. If you 
-have any questions, please contact the tandem booking coordinator, 
-{_bookingCoordinatorSettings.Name} on ({_bookingCoordinatorSettings.PhoneNumber.AsPhoneNumber()} or {_bookingCoordinatorSettings.Email})
+Vi jobber med å finne en ny instruktør for din flytur {bookingDateString}. 
+Du vil bli kontaktet med navnet og nummeret til den nye instruktøren.
+Om du har noen spørsmål, kan du kontakte tandembookingkoordinator,
+{_bookingCoordinatorSettings.Name} på ({_bookingCoordinatorSettings.PhoneNumber.AsPhoneNumber()} eller {_bookingCoordinatorSettings.Email})
 
-kind regards,
+Med vennlig hilsen,
 {_bookingCoordinatorSettings.Name}
-Booking Coordinator
-Voss HPK
+Bookingkoordinator
+Bodø Hang & Paragliderklubb
 ";
-                await _mailService.Send(booking.PassengerEmail, $"Tandem flight on {bookingDateString}", mailMessage);
+                await _mailService.Send(booking.PassengerEmail, $"Tandemtur {bookingDateString}", mailMessage);
             }
 
 
@@ -195,26 +195,26 @@ Voss HPK
             var assignedPilot = booking.AssignedPilot;
             if (assignedPilot.SmsNotification)
             {
-                var message = $"You have a new flight on {bookingDateString}: {booking.PassengerName}, {booking.PassengerEmail}, {booking.PassengerPhone.AsPhoneNumber()}, {booking.Comment}.";
+                var message = $"Du har en ny tandemtur {bookingDateString}: {booking.PassengerName}, {booking.PassengerEmail}, {booking.PassengerPhone.AsPhoneNumber()}, {booking.Comment}.";
                 await SendPilotMessage(assignedPilot, message, booking);
             }
             if (assignedPilot.EmailNotification)
             {
-                var subject = $"New flight on {bookingDateString}";
-                var message = $@"Hi {assignedPilot.Name},
+                var subject = $"Ny tandemtur {bookingDateString}";
+                var message = $@"Hei {assignedPilot.Name},
 
-You have been assigned a flight:
-Date:            {bookingDateString}. 
-Passenger Name:  {booking.PassengerName},
-Passenger Phone: {booking.PassengerPhone.AsPhoneNumber()},
-Passenger Email: {booking.PassengerEmail ?? "not specified"}
-Comments:
+Du har blitt tildelt en ny tandemtur:
+Dato:                 {bookingDateString}. 
+Passasjerens navn:    {booking.PassengerName},
+Passasjerens telefon: {booking.PassengerPhone.AsPhoneNumber()},
+Passasjerens epost: {booking.PassengerEmail ?? "ikke oppgitt"}
+Kommentar:
 {booking.Comment}
 
-Booking Url: http://vossatandem.no/BookingAdmin/Details/{booking.Id}
+Booking-lenke: http://tandembooking.bhpgk.club/BookingAdmin/Details/{booking.Id}
 
-fly safe!
-Booking Coordinator
+fly pent!
+Bookingkoordinator
 ";
                 await _mailService.Send(assignedPilot.Email, subject, message);
             }
@@ -225,7 +225,7 @@ Booking Coordinator
                 //sms
                 if (!string.IsNullOrEmpty(booking.PassengerPhone))
                 {
-                    var passengerMessage = $"Your flight on {bookingDateString} has been assigned a new pilot. You will be contacted by {assignedPilot.Name} ({assignedPilot.PhoneNumber.AsPhoneNumber()}) shortly.";
+                    var passengerMessage = $"Tandemturen din {bookingDateString} er tildelt en ny pilot. Du vil bli kontaktet av {assignedPilot.Name} ({assignedPilot.PhoneNumber.AsPhoneNumber()}) snart.";
                     await _smsService.Send(booking.PassengerPhone, passengerMessage, booking);
                 }
 
@@ -234,16 +234,16 @@ Booking Coordinator
                 {
                     var mailMessage = $@"Hi {booking.PassengerName},
 
-Your booking on {bookingDateString} has been updated. You have been assigned a new instructor.
+Din booking {bookingDateString} er oppdatert. Du har blitt tildelt en ny pilot.
 
-Your new instructor for {bookingDateString} is {assignedPilot.Name} ({assignedPilot.PhoneNumber.AsPhoneNumber()}, {assignedPilot.Email}). 
+Din nye instruktør for {bookingDateString} er {assignedPilot.Name} ({assignedPilot.PhoneNumber.AsPhoneNumber()}, {assignedPilot.Email}). 
 
-kind regards,
+Med vennlig hilsen,
 {_bookingCoordinatorSettings.Name}
-Booking Coordinator
-Voss HPK
+Bookingkoordinator
+Bodø Hang & Paragliderklubb
 ";
-                    await _mailService.Send(booking.PassengerEmail, $"Tandem flight on {bookingDateString}", mailMessage);
+                    await _mailService.Send(booking.PassengerEmail, $"Tandemtur {bookingDateString}", mailMessage);
                 }
             }
         }
@@ -254,23 +254,23 @@ Voss HPK
 
             if (previousPilot.SmsNotification)
             {
-                var message = $"Your booking on {bookingDateString} has been reassigned to another pilot";
+                var message = $"Din booking {bookingDateString} har blitt tildelt en annen pilot";
                 await SendPilotMessage(previousPilot, message, booking);
             }
             if (previousPilot.EmailNotification)
             {
                 var message =
-                    $@"Hi {previousPilot.Name},
+                    $@"Hei {previousPilot.Name},
 
-Your flight on {bookingDateString} has been assigned to another pilot.
+Tandemturen din {bookingDateString} har blitt tildelt en annen pilot.
 
-Booking Url: http://vossatandem.no/BookingAdmin/Details/{booking
+Booking-lenke: http://tandembooking.bhpgk.club/BookingAdmin/Details/{booking
                         .Id}
 
 fly safe!
 Booking Coordinator
 ";
-                await _mailService.Send(previousPilot.Email, $"Booking on {bookingDateString} reassigned", message);
+                await _mailService.Send(previousPilot.Email, $"Tandemtur {bookingDateString} omtildelt", message);
             }
         }
 
@@ -279,25 +279,25 @@ Booking Coordinator
             var bookingDate = $"{booking.BookingDate:dd.MM.yyyy}";
             if (!string.IsNullOrEmpty(booking.PassengerPhone))
             {
-                var message = $"Unfortunately, your flight on {bookingDate} has been canceled due to {cancelMessage}";
+                var message = $"Desverre er tandemturen dinn {bookingDate} kansellert grunnet {cancelMessage}";
                 await _smsService.Send(booking.PassengerPhone, message, booking);
             }
 
             if (!string.IsNullOrEmpty(booking.PassengerEmail))
             {
                 var senderText = $"{sender.Name} ({sender.PhoneNumber.AsPhoneNumber()}, {sender.Email})";
-                var mailMessage = $@"Hi {booking.PassengerName},
+                var mailMessage = $@"Hei {booking.PassengerName},
 
-Your booking on {bookingDate} has been updated. {senderText} has sent you a new message:
+Din booking {bookingDate} er oppdatert. {senderText} har sendt deg en ny melding:
 
-Unfortunately, your flight on {bookingDate} has been canceled due to {cancelMessage}
+Desverre er tandemturen din {bookingDate} kansellert grunnet {cancelMessage}
 
-kind regards,
+Med vennlig hilsen,
 {_bookingCoordinatorSettings.Name}
-Booking Coordinator
-Voss HPK
+Bookingkoordinator
+Bodø Hang & Paragliderklubb
 ";
-                await _mailService.Send(booking.PassengerEmail, $"Tandem flight on {bookingDate}", mailMessage);
+                await _mailService.Send(booking.PassengerEmail, $"Tandemtur {bookingDate}", mailMessage);
             }
         }
 
@@ -314,18 +314,18 @@ Voss HPK
                 {
                     var senderText = $"{sender.Name} ({sender.PhoneNumber.AsPhoneNumber()}, {sender.Email})";
                     var bookingDate = $"{booking.BookingDate:dd.MM.yyyy}";
-                    var mailMessage = $@"Hi {booking.PassengerName},
+                    var mailMessage = $@"Hei {booking.PassengerName},
 
-Your booking on {bookingDate} has been updated. {senderText} has sent you a new message:
+Bookingen din {bookingDate} er oppdatert. {senderText} har sendt deg en ny melding:
 
 {input.EventMessage}
 
-kind regards,
+Med vennlig hilsen,
 {_bookingCoordinatorSettings.Name}
-Booking Coordinator
-Voss HPK
+Bookingkoordinator
+Bodø Hang & Paragliderklubb
 ";
-                    await _mailService.Send(booking.PassengerEmail, $"Tandem flight on {bookingDate}", mailMessage);
+                    await _mailService.Send(booking.PassengerEmail, $"Tandemtur {bookingDate}", mailMessage);
                 }
             }
         }

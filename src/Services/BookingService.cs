@@ -52,12 +52,12 @@ namespace TandemBooking.Services
         {
             if (bookings.Count == 0)
             {
-                throw new Exception("No bookings to assign pilots to");
+                throw new Exception("Ingen bookinger å tilknytte pilot til");
             }
             var date = bookings.First().BookingDate;
             if (bookings.Any(b => b.BookingDate != date))
             {
-                throw new Exception("All bookings must be on the same date");
+                throw new Exception("Alle bookinger må være samme dato");
             }
             
             var spentPilots = bookings.SelectMany(b =>

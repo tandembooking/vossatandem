@@ -24,7 +24,7 @@ namespace TandemBooking.Services
         public async Task SendSmsAsync(string number, string message)
         {
             number = await _nexmo.FormatPhoneNumber(number);
-            await _nexmo.SendSms("VossHPK", number, message);
+            await _nexmo.SendSms("BHPGK", number, message);
         }
     }
 }
