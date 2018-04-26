@@ -132,7 +132,7 @@ til å kontakte ham angående spørsmål du har angående flyturen.
 ";
                     }
 
-                    var message = $@"Hi {primaryBooking.PassengerName},
+                    var message = $@"Hei {primaryBooking.PassengerName},
 
 Takk for at du booket en tandemtur med Bodø Hang & Paragliderklubb {bookingDateString}. Din booking
 er bekreftet. En av våre instruktører vil kontakte deg for å organisere detaljene rundt 
@@ -232,7 +232,7 @@ Bookingkoordinator
                 //email
                 if (!string.IsNullOrEmpty(booking.PassengerEmail))
                 {
-                    var mailMessage = $@"Hi {booking.PassengerName},
+                    var mailMessage = $@"Hei {booking.PassengerName},
 
 Din booking {bookingDateString} er oppdatert. Du har blitt tildelt en ny pilot.
 
