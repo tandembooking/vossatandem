@@ -76,9 +76,12 @@ Booking Coordinator
                     }
 
                     //send booking assigned message to booking coordinator
-                    var bookingCoordinatorMessage =
-                        $"New flight on {bookingDateString} assigned to {assignedPilot.Name}, {booking.Comment}";
-                    await _smsService.Send(_bookingCoordinatorSettings.PhoneNumber, bookingCoordinatorMessage, booking);
+                    if (booking.PassengerFee > 0)
+                    {
+                        var bookingCoordinatorMessage =
+                            $"New flight on {bookingDateString} assigned to {assignedPilot.Name}, {booking.Comment}";
+                        await _mailService.Send(_bookingCoordinatorSettings.Email, bookingCoordinatorMessage, bookingCoordinatorMessage);
+                    }
                 }
                 else
                 {
@@ -128,7 +131,7 @@ Booking Coordinator
                         assignedPilotMessage =
                             $@"
 Your assigned instructor is {pilotName} ({pilotPhone}, {pilotEmail}), feel free to 
-contact him about any questions you have regarding your flight.
+contact him about any question you have regarding your flight.
 ";
                     }
 
@@ -137,6 +140,19 @@ contact him about any questions you have regarding your flight.
 Thank you for booking a tandem flight with Voss HPK on {bookingDateString}. Your booking 
 has been confirmed. One of our instructors will contact you to organize the details 
 of when and where you will meet a few days in advance of your flight. 
+
+Unless you have agreed otherwise with your instructor, you meet your instructor near
+the Minigolf Cafe at Holbergsplassen 2, 5700 Voss. 
+
+It's reccomended to wear a long sleeve, trousers and sensible shoes for hiking / running. 
+We might have to do a short hike to get from the road to the take off, and in order to 
+take off we have to do a short sprint to get in the air. Choose footwear accordingly - 
+high heels is not an option!
+
+Unfortunately, due to techincal issues, not all of our instructors are able to accept 
+credit cards, and can only accept cash or Vipps. Please discuss payment options with your
+instructor before flying.
+
 {assignedPilotMessage}
 
 Kind regards,
