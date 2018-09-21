@@ -1,65 +1,24 @@
+@using TandemBooking.Services;
+@inject ContentService contService;
+@{
+    string lang = ViewContext.RouteData.Values["lang"].ToString();
+    contService.setLanguage(lang);
+}
 @{
     ViewData["Title"] = "Frequently Asked Questions";
 }
 <h2>@ViewData["Title"]</h2>
 
-<div class="faq-wrap">
-    <div class="faq-inner">
-        <label>What is tandem paragliding?</label>
-        <p>When flying tandem, you are flying with one of the experienced tandem instructors in Voss hang and paragliding club in a paraglider designed for two persons flying together. It is a wonderful way to safely experience paragliding and see Voss from the air.</p>
+@foreach (var faq in contService.content.FAQ.questions)
+{
+    <div class="faq-wrap">
+        <div class="faq-inner">
+            <label>@faq.Q</label>
+            <p>@faq.A</p>
+        </div>
     </div>
-</div>
-<div class="faq-wrap">
-    <div class="faq-inner">
-        <label>Who can fly?</label>
-        <p>To stay within safety margins we can only accept passengers weighing less than 120kg. Additionally, you must be able to do a short sprint. In order to launch the paraglider you and your instructor will be running down a hill as fast as you can. </p>
-    </div>
-</div>
-<div class="faq-wrap">
-    <div class="faq-inner">
-        <label>How much does it cost?</label>
-        <p>
-            <table class="table">
-                <tr>
-                    <td>Regular price</td>
-                    <td class="text-right">1&nbsp;900,-</td>
-                </tr>
-                <tr>
-                    <td>Extra for flights out of town</td>
-                    <td class="text-right">1&nbsp;000,-</td>
-                </tr>
-                <tr>
-                    <td>Extra for boat-tow launch</td>
-                    <td class="text-right">200,-</td>
-                </tr>
-                <tr>
-                    <td>Extra for photos/video using the pilots equipment</td>
-                    <td class="text-right">200,-</td>
-                </tr>
-            </table>
-            Regular price covers transport to the start from Voss town center. Out-of-town surcharge is added when flying from places outside the normal starts around Voss (such as Aurland). All prices are in norwegian kroner and are paid directly to the pilot.
-        </p>
-    </div>
-</div>
-<div class="faq-wrap">
-    <div class="faq-inner">
-        <label>Who organizes tandem paragliding?</label>
-        <p>In Norway, paragliding is organized through the clubs of the hang and paragliding-section of NLF (the Norwegian aerosports association). Voss hang and paraglidingclub the biggest club </p>
-    </div>
-</div>
-<div class="faq-wrap">
-    <div class="faq-inner">
-        <label>Am I insured?</label>
-        <p>In the extremely unlikely event of an accident, you are covered by the pilots insurance. Insurance documents are available on <a href="http://nlf.no/hangglidingparagliding/forsikringene-v-re">the NLF hang- and paragliding website</a></p>
-    </div>
-</div>
-<div class="faq-wrap">
-    <div class="faq-inner">
-        <label>What should I wear?</label>
-        <p>Sensible shoes and something to keep you warm. You will run to launch the paraglider, so wearing high heels is definitely not recommended. Depending on the conditions you might have to hike 30-40 minutes to get to a suitable launch area.</p>
-    </div>
-</div>
+}
 <div class="air-vertical">
-        <label>Any other questions?</label>
-        <p><a asp-controller="Home" asp-action="Contact" class="btn btn-action">Contact us</a></p>
+    <label>@contService.content.FAQ.other.Q</label>
+    <p><a asp-controller="@contService.content.FAQ.other.link.controller" asp-action="@contService.content.FAQ.other.link.action" class="btn btn-action">@contService.content.FAQ.other.link.name</a></p>
 </div>

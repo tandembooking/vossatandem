@@ -10,11 +10,13 @@ namespace TandemBooking.Services
     {
         private readonly TandemBookingContext _context;
         private readonly INexmoService _nexmoService;
+        private readonly ContentService _contService;
 
-        public SmsService(INexmoService nexmoService, TandemBookingContext context)
+        public SmsService(INexmoService nexmoService, TandemBookingContext context, ContentService content)
         {
             _nexmoService = nexmoService;
             _context = context;
+            _contService = content;
         }
 
         public async Task Send(string recipient, string messageText, Booking booking)
@@ -31,7 +33,7 @@ namespace TandemBooking.Services
             await _context.SaveChangesAsync();
 
             //send message
-            var result = await _nexmoService.SendSms("VossHPK", message.RecipientNumber, message.MessageText);
+            var result = await _nexmoService.SendSms((string)(_contService.content.clubnameshort), message.RecipientNumber, message.MessageText);
 
             //save status
             foreach (var nexmoPart in result.Messages)

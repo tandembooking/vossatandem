@@ -18,6 +18,7 @@ namespace TandemBooking.Services
                     options.Password.RequireUppercase = false;
                     options.Password.RequiredLength = 6;
                     options.User.RequireUniqueEmail = true;
+                    
                 })
                 .AddEntityFrameworkStores<TandemBookingContext>()
                 .AddUserManager<UserManager>()
@@ -52,6 +53,7 @@ namespace TandemBooking.Services
 
             services.AddTransient<MessageService>();
             services.AddTransient<SmsService>();
+            services.AddTransient<ContentService>();
 
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();

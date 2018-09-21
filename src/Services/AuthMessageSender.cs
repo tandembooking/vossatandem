@@ -9,11 +9,13 @@ namespace TandemBooking.Services
     {
         private readonly INexmoService _nexmo;
         private readonly IMailService _mailService;
+        private readonly ContentService _contService;
 
-        public AuthMessageSender(INexmoService nexmo, IMailService mailService)
+        public AuthMessageSender(INexmoService nexmo, IMailService mailService, ContentService content)
         {
             _nexmo = nexmo;
             _mailService = mailService;
+            _contService = content;
         }
 
         public async Task SendEmailAsync(string email, string subject, string message)
@@ -24,7 +26,7 @@ namespace TandemBooking.Services
         public async Task SendSmsAsync(string number, string message)
         {
             number = await _nexmo.FormatPhoneNumber(number);
-            await _nexmo.SendSms("VossHPK", number, message);
+            await _nexmo.SendSms(_contService.content.clubname, number, message);
         }
     }
 }

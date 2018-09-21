@@ -25,13 +25,15 @@
         <table class="table">
             <tr>
                 <th>Date</th>
+                <th>Time</th>
                 <th>Passenger</th>
-                <th></th>B
+                <th></th>
             </tr>
             @foreach (var booking in Model.MissingPilotBookings)
             {
                 <tr>
                     <td>@booking.BookingDate.ToString("dd.MM.yyyy")</td>
+                    <td>@booking.TimeSlot.asTime()</td>
                     <td>@booking.PassengerName</td>
                     <td class="text-right">
                         <a href="@Url.Action("Details", "BookingAdmin" , new { id=booking.Id })" class="btn btn-default">Details</a>
@@ -55,22 +57,24 @@
         <table class="table">
             <tr>
                 <th>Date</th>
+                <th>Time</th>
                 <th>Passenger</th>
                 <th></th>
             </tr>
             @foreach (var booking in Model.UpcomingBookings)
             {
-                <tr>
-                    <td>@booking.BookingDate.ToString("dd.MM.yyyy")</td>
-                    <td>@booking.PassengerName</td>
-                    <td class="text-right">
-                        <a href="@Url.Action("Details", "BookingAdmin", new { id = booking.Id })" class="btn btn-default">Details</a>
-                        @if (!booking.Canceled && !booking.Completed)
-                        {
-                            <a href="@Url.Action("Cancel", "BookingAdmin", new { id = booking.Id })" class="btn btn-danger">Cancel</a>  
-                        }
-                    </td>
-                </tr>
+            <tr>
+                <td>@booking.BookingDate.ToString("dd.MM.yyyy")</td>
+                <td>@booking.TimeSlot.asTime()</td>
+                <td>@booking.PassengerName</td>
+                <td class="text-right">
+                    <a href="@Url.Action("Details", "BookingAdmin", new { id = booking.Id })" class="btn btn-default">Details</a>
+                    @if (!booking.Canceled && !booking.Completed)
+        {
+            <a href="@Url.Action("Cancel", "BookingAdmin", new { id = booking.Id })" class="btn btn-danger">Cancel</a>
+}
+                </td>
+            </tr>
             }
         </table>
     }
@@ -89,23 +93,25 @@
         <table class="table">
             <tr>
                 <th>Date</th>
+                <th>Time</th>
                 <th>Passenger</th>
                 <th></th>
             </tr>
             @foreach (var booking in Model.RecentBookings)
             {
-                <tr>
-                    <td>@booking.BookingDate.ToString("dd.MM.yyyy")</td>
-                    <td>@booking.PassengerName</td>
-                    <td class="text-right">
-                        <a href="@Url.Action("Details", "BookingAdmin", new { id = booking.Id })" class="btn btn-sm btn-default">Details</a>
-                        @if (!booking.Canceled && !booking.Completed)
-                        {
-                            <a href="@Url.Action("Cancel", "BookingAdmin", new { id = booking.Id })" class="btn btn-sm btn-danger">Cancel</a>
-                            <a href="@Url.Action("Complete", "BookingAdmin", new { id = booking.Id })" class="btn btn-sm btn-success">Complete</a>
-                        }
-                    </td>
-                </tr>
+            <tr>
+                <td>@booking.BookingDate.ToString("dd.MM.yyyy")</td>
+                <td>@booking.TimeSlot.asTime()</td>
+                <td>@booking.PassengerName</td>
+                <td class="text-right">
+                    <a href="@Url.Action("Details", "BookingAdmin", new { id = booking.Id })" class="btn btn-sm btn-default">Details</a>
+                    @if (!booking.Canceled && !booking.Completed)
+        {
+            <a href="@Url.Action("Cancel", "BookingAdmin", new { id = booking.Id })" class="btn btn-sm btn-danger">Cancel</a>
+            <a href="@Url.Action("Complete", "BookingAdmin", new { id = booking.Id })" class="btn btn-sm btn-success">Complete</a>
+}
+                </td>
+            </tr>
             }
         </table>
     }

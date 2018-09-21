@@ -78,11 +78,11 @@ namespace TandemBooking.Services
                 .ToList();
                 //pilots who can fly this passenger
                 var applicablePilots = availablePilots
-                    .Where(pa => pa.Pilot.InWeightRange(booking.PassengerWeight))
+                    .Where(pa => pa.Pilot.InWeightRange(booking.PassengerWeight)).ToList()
                     ;
 
                 //find pilots with the lowest priority (lower is better)
-                var prioritizedPilots = availablePilots
+                var prioritizedPilots = applicablePilots
                     .GroupBy(pa => pa.Priority)
                     .OrderBy(grp => grp.Key)
                     .FirstOrDefault()

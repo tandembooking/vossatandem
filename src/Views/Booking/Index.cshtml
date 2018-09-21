@@ -1,6 +1,13 @@
 @using TandemBooking.ViewModels.Booking;
 @using TandemBooking.Services;
+
+
 @model TandemBooking.ViewModels.Booking.BookingViewModel
+@inject ContentService contService;
+@{
+    string lang = ViewContext.RouteData.Values["lang"].ToString();
+    contService.setLanguage(lang);
+}
 <style>
     .time-slots {
         display: block;
@@ -55,6 +62,31 @@
         border-style: solid;
         border-color: rgba(33, 226, 226, 0.89);
     }
+
+    #contact-info {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        -ms-transform: translate(-50%,-50%);
+        margin-right: auto;
+        margin-left: auto;
+        background-color: #333;
+    }
+
+    #overlay {
+        position: fixed; /* Sit on top of the page content */
+        display: block; /* Hidden by default */
+        width: 100%; /* Full width (cover the whole page) */
+        height: 100%; /* Full height (cover the whole page) */
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.5); /* Black background with opacity */
+        z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+        cursor: pointer; /* Add a pointer on hover */
+    }
 </style>
 @{
     ViewData["Title"] = "Booking";
@@ -63,138 +95,122 @@
 <h2>@ViewData["Title"]</h2>
 
 <p class="readwrap">
-    Awesome!<br />We're super excited about showing you Bergen from the air, and what paragliding is all about. Fill out
-    the form below, and one of our pilots will contact you and arrange the details.
+    @contService.content.booking.start;
+
 </p>
 
 @* All of this instead of @Html.ValidationSummary(false) due to a bug in ASP.NET Core 1.0 (probably fixed in 1.1) *@
 @if (!@ViewData.ModelState.IsValid)
 {
     var errors = ViewData.ModelState.Values.Select(item => item.Errors.FirstOrDefault()?.ErrorMessage).Where(item => item != null);
-<div class="alert alert-danger">
-    <ul>
-        @foreach (var error in errors)
-        {
+    <div class="alert alert-danger">
+        <ul>
+            @foreach (var error in errors)
+            {
 
-        <li>@error</li>
-        }
-    </ul>
-</div>
+                <li>@error</li>
+            }
+        </ul>
+    </div>
 }
 
 
 <form id`="BookingForm" asp-controller="Booking" asp-action="Index" method="post">
     @* add additional passengers on a postback with invalid model *@
+
     @{
-    var currentAdditionalPassengerIndex = 1;
-    var displayDetails = "block";
+        Html.RenderPartial("PassengerInfo", Model);
     }
-    @if (Model.Calendar != null)
+    @if (Model.Stage == 0)
     {
-    displayDetails = "none";
+        <input id="booking-stage" type="hidden" asp-for="Stage" value="1" />
     }
-    <div class="details" style="display:@displayDetails">
-        <strong>Your details</strong>
-        <div class="form-group" id="primary-passenger-group">
-            <label asp-for="Name" class="small">
-                Please enter your name
-            </label>
-            <div class="row">
-                <div class="col-sm-5">
-                    <input type="text" asp-for="Name" class="form-control" placeholder="Please enter your name" value="Asmund Birkeland" />
-                </div>
-                <div class="info col-sm-7">
-                </div>
-            </div>
-            <p>
-                <span asp-validation-for="Name" class="text-danger small">
-                </span>
-            </p>
-        </div>
 
-        <div class="form-group" id="primary-passenger-group">
-            <label asp-for="Weight" class="small">
-                Please enter your approximate weight in kg
-            </label>
-            <div class="row">
-                <div class="col-sm-5">
-                    <input type="text" asp-for="Name" class="form-control" placeholder="Please enter your approximate weight" value="100" />
-                </div>
-                <div class="info col-sm-7">
-                    Paragliders are certified for a certain weight range. By entering your weight we can find a pilot whose weight will allow you to stay in the certified weight range.
-                </div>
-            </div>
-            <p>
-                <span asp-validation-for="Weight" class="text-danger small">
-                </span>
-            </p>
-        </div>
+    @if (Model.Stage == 1)
+    {
+        Html.RenderPartial("Calender", Model);
+        <input id="booking-stage" type="hidden" asp-for="Stage" value="2" />
+    }
+    @if (Model.Stage == 2)
+    {
+        Html.RenderPartial("ContactInfo", Model);
+        <input id="booking-stage" type="hidden" asp-for="Stage" value="3" />
+    }
+
+    <div class="info-text air-vertical">
+        @contService.content.booking.warning;
+    </div>
 
 
-        <div class="form-group">
-            <label asp-for="PhoneNumber" class="small">
-                Phone number
-            </label>
-            <div class="row">
-                <div class="col-sm-5">
-                    <input type="tel" asp-for="PhoneNumber" class="form-control" placeholder="Please enter a phone number" value="92819387" />
-                </div>
-                <div class="info col-sm-7 small">
-                    Your pilot will contact you on this phone number in order to arrange the details for your flight. It will not be used for any other purpose.
-                </div>
-            </div>
-            <p>
-                <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
-            </p>
-        </div>
+    <p class="readwrap">
+        <strong> @contService.content.booking.info.header</strong>
+        <table class="table">
+            <tr>
+                <td>@contService.content.booking.info.price.label</td>
+                <td class="text-right">@(contService.content.booking.info.price.value),-</td>
+            </tr>
+            <tr>
+                <td>@contService.content.booking.info.video.label</td>
+                <td class="text-right">@(contService.content.booking.info.video.value),-</td>
+            </tr>
+        </table>
+        @contService.content.booking.info.other
+    </p>
 
-        <div class="form-group">
-            <label asp-for="Email" class="small">
-                Email
-            </label>
-            <div class="row">
-                <div class="col-sm-5">
-                    <input type="email" asp-for="Email" class="form-control" placeholder="Optionally enter an email address" value="aasmund.birkeland@gmail.com" />
-                </div>
-                <p class="info col-sm-7 small">
-                    An optional email address the pilot can use to send pictures/video of your flight. Arrange the details with your pilot.
-                </p>
-            </div>
-            <p>
-                <span asp-validation-for="Email" class="text-danger small"></span>
-            </p>
-        </div>
+    <input id="booking-nextdate" type="hidden" asp-for="NextDate" value="@Model.NextDate" />
+    <input id="booking-prevdate" type="hidden" asp-for="PrevDate" value="@Model.PrevDate" />
+    <input id="booking-timeslot" type="hidden" asp-for="TimeSlot" />
+    <input id="booking-date" type="hidden" asp-for="Date" />
+</form>
 
-        <div class="form-group">
-            <label asp-for="Comment">
-                Message to pilot
-            </label>
-            <div class="row">
-                <div class="col-sm-5">
-                    <textarea asp-for="Comment" class="form-control"></textarea>
-                </div>
-                <p class="col-sm-7 small">
-                    Extra information you want to share with the pilot, e.g. time constraints or other requirements.
-                </p>
-            </div>
-            <p>
-                <span asp-validation-for="Comment" class="text-danger small"></span>
-            </p>
-        </div>
+@section scripts
+    {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 
-        <p class="small">
-            If you are a group of people wanting to fly together, please use the "add extra passenger"-button below and enter their names. That way we can find enough pilots so you can all fly toghether.
-        </p>
-
-        <p class="small">
-            If you are a booking on behalf of somebody else (e.g. birthday or hen/stag party), enter the name of the passenger in the name field above, and use your own phone number. Also, please add a comment about the circumstances of the flight.
-        </p>
+    <script>
 
 
-        @foreach (var additionalPassenger in Model.AdditionalPassengers ?? new AdditionalPassengerViewModel[] { })
-        {
+        //$('.input-validation-error').parents('.form-group').addClass('has-error');
+        //$(document).ready(function () {
+
+        //    var form = $('#BookingForm')
+        //        , formData = $.data(form[0])
+        //        , settings = formData.validator.settings
+        //        // Store existing event handlers in local variables
+        //        , oldErrorPlacement = settings.errorPlacement
+        //        , oldSuccess = settings.success;
+
+
+
+        //    settings.errorPlacement = function (label, element) {
+        //        // Call old handler so it can update the HTML
+        //        oldErrorPlacement(label, element);
+
+        //        // Add Bootstra=p classes to newly added elements
+        //        label.parents('.form-group').addClass('has-error');
+        //        label.addClass('text-danger');
+
+        //    };
+
+        //    settings.success = function (label) {
+        //        // Remove error class from <div class="form-group">, but don't worry about
+        //        // validation error messages as the plugin is going to remove it anyway
+        //        label.parents('.form-group').removeClass('has-error');
+
+        //        // Call old handler to do rest of the work
+        //        oldSuccess(label);
+
+        //    };
+
+
+        //});
+
+    </script>
+
+    @* template used when adding additional passengers dynamically *@
+    <template id="add-passenger-template">
         <div class="additional-passenger">
-            <input type="hidden" name="AdditionalPassengers.Index" value="@currentAdditionalPassengerIndex" />
+            <input type="hidden" name="AdditionalPassengers.Index" value="--index--" />
 
             <div class="form-group">
                 <label class="small">
@@ -202,7 +218,7 @@
                 </label>
                 <div class="row">
                     <div class="col-sm-5 col-xs-8">
-                        <input type="text" name="AdditionalPassengers[@currentAdditionalPassengerIndex].Name" class="form-control" placeholder="Please enter the passenger name" value="@additionalPassenger.Name" />
+                        <input type="text" name="AdditionalPassengers[--index--].Name" class="form-control" placeholder="Please enter the passenger name" value="" />
                     </div>
                     <div class="info col-sm-7 col-xs-4">
                     </div>
@@ -215,7 +231,7 @@
                 </label>
                 <div class="row">
                     <div class="col-sm-5 col-xs-8">
-                        <input type="text" name="AdditionalPassengers[@currentAdditionalPassengerIndex].Weight" class="form-control" placeholder="Please enter the passenger weight" value="@additionalPassenger.Weight" />
+                        <input type="text" name="AdditionalPassengers[--index--].Weight" class="form-control" placeholder="Please enter the passenger weight" value="" />
                     </div>
                     <div class="info col-sm-7 col-xs-4">
                         <button class="btn remove-passenger-button" type="button">Remove</button>
@@ -223,409 +239,35 @@
                 </div>
             </div>
         </div>
-        {
-        currentAdditionalPassengerIndex++;
-        }
-        }
+    </template>
 
-        <template id="add-passenger-marker">
-        </template>
 
-        <div class="form-group">
-            <p>
-                <span asp-validation-for="AdditionalPassengers" class="text-danger small"></span>
-            </p>
-        </div>
 
-        <div class="form-group">
-            <div class="row">
-                <div class="col-xs-12">
-                    <button class="btn btn-secondary" type="button" id="add-passenger-button">Add Extra Passenger</button>
-                </div>
-            </div>
-        </div>
 
-        <p class="small">
-            When you click the submit button below, we will try to find an available pilot who can give you a tandem flight. The pilot will call you to discuss the exact time and place you'll fly. If you enter an email address, we'll send you a confirmation email with name and phone number to your pilot.
-        </p>
+    <script>
 
-        <div class="text-center air-vertical">
-            <button type="submit" name="Action" value="show_calender" class="btn btn-lg btn-action">Selecst dates!</button>
-        </div>
-    </div>
 
-    @if (Model.Calendar != null)
-    {
-    <div id="passengerInformation">
+        var addPassengerService = 1000;
+        var addPassengerButton = document.getElementById("add-passenger-button");
+        var addPassengerMarker = document.getElementById("add-passenger-marker");
+        var addPassengerTemplate = document.getElementById("add-passenger-template");
+        $(addPassengerButton).on("click", function () {
+            var addPassengerHtml = $(addPassengerTemplate).html();
+            addPassengerHtml = addPassengerHtml.replace(/\-\-index\-\-/g, '' + addPassengerService)
+            addPassengerService++;
 
-        <label>
-            Primary Passenger
-        </label>
-        <div class="row">
-            <div class="col-sm-5 col-xs-8">
-                @Model.Name
-                (@Model.Weight kg)
+            $(addPassengerHtml).insertBefore(addPassengerMarker);
+            updateCalender();
+        });
 
-            </div>
-        </div>
-        @if (Model.AdditionalPassengers != null)
-        {
-        <label class="small">
-            Additional passengers:
-        </label>
-        }
-        @foreach (var additionalPassenger in Model.AdditionalPassengers ?? new AdditionalPassengerViewModel[] { })
-        {
+        $(document).on("click", ".remove-passenger-button", function (e) {
+            $(e.target).closest(".additional-passenger").remove();
+            updateCalender();
+        });
 
 
-        <div class="additional-passenger">
 
-            <div class="row">
-                <div class="col-sm-5 col-xs-8">
-                    @additionalPassenger.Name
-                    (@additionalPassenger.Weight kg)
-                </div>
 
-
-                <div class="info col-sm-7 col-xs-4">
-                    <button class="btn remove-passenger-button" type="button">Remove</button>
-                </div>
-            </div>
-        </div>
-
-        }
-    </div>
-    <div class="form-group">
-        <h5>
-            <label asp-for="Date">
-                When would you like to fly?
-            </label>
-        </h5>
-
-        @*Calendar*@
-
-        <div class="row">
-            <div class="col-xs-2">
-                <button class="month-button" type="submit" name="Action" value="prev_month"><h2>&lt;</h2></button>
-
-            </div>
-            <div class="col-xs-8 text-center">
-                <h2>@Model.Calendar.MonthName</h2>
-            </div>
-            <div class="col-xs-2 text-right">
-                <button class="month-button" type="submit" name="Action" value="next_month"><h2>&gt;</h2></button>
-
-            </div>
-        </div>
-
-        <table id="bookingcalender" class="table table-bordered pilot-availability" style="width: 100%; table-layout: fixed;">
-            <tr>
-                <th>Mon</th>
-                <th>Tue</th>
-                <th>Wed</th>
-                <th>Thu</th>
-                <th>Fri</th>
-                <th>Sat</th>
-                <th>Sun</th>
-            </tr>
-            @{
-            int dayIndex = 0;
-            }
-            @while (dayIndex < Model.Calendar.Days.Count)
-            {
-            <tr>
-                @for (int weekDay = 0; weekDay < 7 && dayIndex < Model.Calendar.Days.Count; weekDay++)
-                {
-                var dayInfo = Model.Calendar.Days[dayIndex];
-                var freePilots = 0;
-                var availablePilots = 0;
-
-                var dayType = "";
-                <text>
-
-                    <td class="" style="position: relative; height: 30px;width:30px; padding:0px; border:0px" align="center">
-
-                        @foreach (var timeslot in dayInfo.TimeSlots)
-                        {
-
-                            freePilots = Math.Max(freePilots, timeslot.FreePilots);
-                            availablePilots = Math.Max(availablePilots, timeslot.AvailablePilots);
-
-                        }
-
-                        @if (@freePilots >= currentAdditionalPassengerIndex)
-                        {
-                            dayType = "date-free";
-                        }
-                        else if (@availablePilots >= currentAdditionalPassengerIndex)
-                        {
-                            dayType = "date-available";
-                        }
-                        else {
-                            dayType = "date-unavailable";
-                        }
-
-                        @if (dayInfo.InPast)
-                        {
-                            dayType = "date-past";
-                        }
-
-                        <div class="day date-wrap @dayType" height="100%" >
-                            @if (dayInfo.InPast)
-                            {
-                                <button class="date-button"  type="button" onclick="">@dayInfo.Date.Day</button>
-                            }
-                            else
-                            {
-                            <div style="display:none" id=@dayIndex>
-                                @foreach (var timeslot in dayInfo.TimeSlots)
-                                {
-
-                                <div style="display:none" data-timeslot="@timeslot.TimeSlot" data-freepilots="@timeslot.FreePilots" data-availablepilots="@timeslot.AvailablePilots"></div>
-                                }
-                            </div>
-
-                            <button class="date-button" type="button" name="Action" value="@dayInfo.Date.ToShortDateString()" onclick="show_times(@dayIndex)">@dayInfo.Date.Day</button>
-                            }
-                        </div>
-
-
-                    </td>
-                </text>
-                dayIndex++;
-                }
-            </tr>
-            }
-        </table>
-
-
-        @*<div id="datepicker" data-date='@Model.Date?.ToString("MM/dd/yyyy")'></div>*@
-        <div id="timeslots-marker">
-        </div>
-
-        <div class="text-center air-vertical">
-            <button type="submit" class="btn btn-lg btn-action">Take me flying!</button>
-        </div>
-
-        <input id="booking-timeslot" type="hidden" asp-for="TimeSlot" value="-1" />
-        <input id="booking-date" type="hidden" asp-for="Date" />
-        <input id="booking-nextdate" type="hidden" asp-for="NextDate" value="@Model.Calendar.Next" />
-        <input id="booking-prevdate" type="hidden" asp-for="PrevDate" value="@Model.Calendar.Prev" />
-        <p>
-            <span asp-validation-for="Date" class="text-danger"></span>
-        </p>
-    </div>
-
-    <div class="info-text air-vertical">
-        Please note that paragliding is very dependent on weather. Safety is paramount, and we will only fly if the weather conditions permit it. If the selected day turns out to be unflyable, your pilot will contact you to cancel the flight. You will of course not pay anything if we're unable to fly.
-    </div>
-
-    <p class="readwrap">
-        <strong>Current prices</strong>
-        <table class="table">
-            <tr>
-                <td>Regular price</td>
-                <td class="text-right">1&nbsp;700,-</td>
-            </tr>
-            <tr>
-                <td>Extra for photos/video using the pilots equipment</td>
-                <td class="text-right">(up to) 200,-</td>
-            </tr>
-        </table>
-        Regular price covers transport to the start from Voss town center. Out-of-town surcharge is added when flying from places outside the normal starts around Voss (such as Aurland). All prices are in norwegian kroner and are paid via Vipps or directly to the pilot. All prices are in Norwegian Krone (NOK)
-    </p>
-
-    }
-</form>
-
-@section scripts
-    {
-    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
-
-<script>
-
-
-    $('.input-validation-error').parents('.form-group').addClass('has-error');
-    $(document).ready(function () {
-
-        var form = $('#BookingForm')
-            , formData = $.data(form[0])
-            , settings = formData.validator.settings
-            // Store existing event handlers in local variables
-            , oldErrorPlacement = settings.errorPlacement
-            , oldSuccess = settings.success;
-
-
-
-        settings.errorPlacement = function (label, element) {
-            // Call old handler so it can update the HTML
-            oldErrorPlacement(label, element);
-
-            // Add Bootstra=p classes to newly added elements
-            label.parents('.form-group').addClass('has-error');
-            label.addClass('text-danger');
-
-        };
-
-        settings.success = function (label) {
-            // Remove error class from <div class="form-group">, but don't worry about
-            // validation error messages as the plugin is going to remove it anyway
-            label.parents('.form-group').removeClass('has-error');
-
-            // Call old handler to do rest of the work
-            oldSuccess(label);
-
-        };
-
-
-    });
-
-</script>
-
-    @* template used when adding additional passengers dynamically *@
-<template id="add-passenger-template">
-    <div class="additional-passenger">
-        <input type="hidden" name="AdditionalPassengers.Index" value="--index--" />
-
-        <div class="form-group">
-            <label class="small">
-                Name of additional passenger
-            </label>
-            <div class="row">
-                <div class="col-sm-5 col-xs-8">
-                    <input type="text" name="AdditionalPassengers[--index--].Name" class="form-control" placeholder="Please enter the passenger name" value="" />
-                </div>
-                <div class="info col-sm-7 col-xs-4">
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="small">
-                Weight of additional passenger (in kg)
-            </label>
-            <div class="row">
-                <div class="col-sm-5 col-xs-8">
-                    <input type="text" name="AdditionalPassengers[--index--].Weight" class="form-control" placeholder="Please enter the passenger weight" value="" />
-                </div>
-                <div class="info col-sm-7 col-xs-4">
-                    <button class="btn remove-passenger-button" type="button">Remove</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</template>
-
-
-
-<template id="time-picker">
-
-    <div class="timeslots">
-        Select time:
-        <br />
-        @for (int timeslot = 0; timeslot < 5; timeslot++)
-        {
-        <button type="button" class="btn class:@timeslot" id="@timeslot" onclick="select_slot(@timeslot)">@timeslot.asTime()</button>
-
-        }
-
-
-    </div>
-
-</template>
-
-<script>
-    var timeslotTemplate = document.getElementById("time-picker");
-    var timeslotsMarker = document.getElementById("timeslots-marker");
-
-    function show_times(inputID) {
-
-        var dayElements = document.getElementById("bookingcalender").getElementsByClassName("day");
-
-        for (var i = 0; i < dayElements.length; i++) {
-            dayElements[i].classList.remove("highlight");
-        }
-        var date = event.target.value;
-        document.getElementById("booking-date").value = date;
-
-        var nrOfPassengers = document.getElementsByClassName("additional-passenger").length + 1;
-        var dataElements = document.getElementById(inputID).getElementsByTagName("div");
-
-        document.getElementById(inputID).classList.add("selected");
-        event.target.parentElement.classList.add("highlight");
-        var timeslotHtml = $(timeslotTemplate).html();
-
-
-        for (var i = 0; i < dataElements.length; i++) {
-            var color = "date-unavailable";
-            if (Number(dataElements[i].getAttribute("data-freepilots")) >= nrOfPassengers) {
-                color = "date-free";
-            }
-            else if (Number(dataElements[i].getAttribute("data-availablepilots")) >= nrOfPassengers) {
-                color = "date-available";
-            }
-
-            var replaceValue = "class:" + i.toString();
-            timeslotHtml = timeslotHtml.replace(replaceValue, color);
-
-        }
-        timeslotsMarker.innerHTML = timeslotHtml;
-
-
-    }
-
-    function updateCalender() {
-
-        var nrOfPassengers = document.getElementsByClassName("additional-passenger").length + 1;
-        var dayElements = document.getElementById("bookingcalender").getElementsByClassName("day");
-
-        for (var i = 0; i < dayElements.length; i++) {
-            var dataElements = dayElements[i].getElementsByTagName("div");
-            for (var j = 0; j < dataElements.length; j++) {
-
-                if (Number(dataElements[j].getAttribute("data-freepilots")) >= nrOfPassengers) {
-                    color = "#00ff21"
-                }
-                else if (Number(dataElements[j].getAttribute("data-availablepilots")) >= nrOfPassengers) {
-                    color = "#ffd800"
-                }
-                else {
-                    color = "#eeeeee";
-
-                }
-                dayElements[i].style.backgroundColor = color;
-            }
-        }
-        document.getElementById("booking-timeslot").value = "-1";
-    }
-
-
-    function select_slot(slot) {
- 
-        document.getElementById("booking-timeslot").value = slot;
-    }
-
-    var addPassengerService = 1000;
-    var addPassengerButton = document.getElementById("add-passenger-button");
-    var addPassengerMarker = document.getElementById("add-passenger-marker");
-    var addPassengerTemplate = document.getElementById("add-passenger-template");
-    $(addPassengerButton).on("click", function () {
-        var addPassengerHtml = $(addPassengerTemplate).html();
-        addPassengerHtml.replace('--index--', '' + addPassengerService)
-        addPassengerService++;
-
-        $(addPassengerHtml).insertBefore(addPassengerMarker);
-        updateCalender();
-    });
-
-    $(document).on("click", ".remove-passenger-button", function (e) {
-        $(e.target).closest(".additional-passenger").remove();
-        updateCalender();
-    });
-
-
-
-
-</script>
+    </script>
 
 }

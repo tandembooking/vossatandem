@@ -6,13 +6,17 @@ namespace TandemBooking.ViewModels.Booking
 {
     public class BookingCalendarViewModel
     {
-        public DateTime? SelectedDate { get; set; }
+       
         public DateTime Next { get; set; }
         public DateTime Prev { get; set; }
         public string MonthName { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public List<BookingCalendarDayViewModel> Days { get; set; }
+
+        public List<AdditionalPassengerViewModel> Passengers { get;set; }
+
+        
     }
 
     public class BookingCalendarDayViewModel
@@ -24,8 +28,9 @@ namespace TandemBooking.ViewModels.Booking
     public class BookingCalendarTimeSlotViewModel
     {
         public int TimeSlot { get; set; }
-        public int AvailablePilots { get; set; }
-        public int FreePilots { get; set; }
+        public List<PilotAvailability> AvailablePilots { get; set; }
+        public List<PilotAvailability> FreePilots { get; set; }
+        public int PossibleNow { get; set; }
         public bool InPast { get; set; }
     }
 }

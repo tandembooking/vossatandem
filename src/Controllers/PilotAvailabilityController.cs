@@ -8,6 +8,8 @@ using TandemBooking.Models;
 using TandemBooking.ViewModels;
 using TandemBooking.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
+
 namespace TandemBooking.Controllers
 {
     [Authorize]
@@ -31,11 +33,13 @@ namespace TandemBooking.Controllers
 
         private readonly TandemBookingContext _context;
         private readonly UserManager _userManager;
+        private readonly BookingService _bookingService;
 
-        public PilotAvailabilityController(TandemBookingContext context, UserManager userManager)
+        public PilotAvailabilityController(TandemBookingContext context, UserManager userManager, BookingService bookingService)
         {
             _context = context;
             _userManager = userManager;
+            _bookingService = bookingService;
         }
 
         public ActionResult Index(DateTime? date = null, string userId=null)
@@ -45,7 +49,7 @@ namespace TandemBooking.Controllers
                 date = DateTime.UtcNow;
             }
 
-            if (userId == null || !User.IsAdmin())
+            if (userId == null ||  (User != null && !User.IsAdmin()))
             {
                 userId = _userManager.GetUserId(User);
             }
@@ -90,7 +94,7 @@ namespace TandemBooking.Controllers
 
         
          [HttpPost]
-        public ActionResult SetAvailability([FromBody]  SetPilotAvailabilityViewModel[] availabilities)
+        async public Task<ActionResult> SetAvailability([FromBody]  SetPilotAvailabilityViewModel[] availabilities)
         {
 
             for (int i = 0; i < availabilities.Length; i++)
@@ -102,7 +106,7 @@ namespace TandemBooking.Controllers
                 .Where(a => a.TimeSlot == availabilities[i].TimeSlot);
 
                 
-                if (availabilities[i].Available && existingAvailabilities.Count()==0)
+                if (availabilities[i].Available && existingAvailabilities.Count() ==0)
                 {
 
                     var pilotAvailability = new PilotAvailability()
@@ -113,8 +117,16 @@ namespace TandemBooking.Controllers
                     };
                     _context.PilotAvailabilities.Add(pilotAvailability);
 
+                    var unassignedBookings = _context.Bookings
+                    .Where(b => b.AssignedPilot == null && !b.Canceled && b.BookingDate == currentDate && b.TimeSlot == availabilities[i].TimeSlot).ToList();
+                    if(unassignedBookings.Count() > 0)
+                    {
+                        _context.SaveChanges();
+                        await _bookingService.AssignNewPilotAsync(unassignedBookings[0]);
+                    }
+
                 }
-                else
+                else if(availabilities[i].Available == false)
                 {
                     
 

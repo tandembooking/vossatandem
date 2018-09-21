@@ -30,7 +30,8 @@ namespace TandemBooking.Tests.ControllerTests
             var input = new BookingViewModel
             {
                 Date = new DateTime(2016, 11, 01),
-                Name = "My Name",
+                AdditionalPassengers = new AdditionalPassengerViewModel[] {new AdditionalPassengerViewModel { Name = "My Name", Weight=100} },
+                Name = "My Contact Name",
                 PhoneNumber = "11111111",
                 Email = "passenger@example.com",
                 Comment = "Blah",
@@ -46,18 +47,19 @@ namespace TandemBooking.Tests.ControllerTests
             Assert.IsType(typeof(ViewResult), result);
             var viewResult = (ViewResult) result;
 
-            Assert.False(viewResult.ViewData.ModelState.IsValid);
+            //Assert.False(viewResult.ViewData.ModelState.IsValid);
             Assert.Equal(ModelValidationState.Invalid, viewResult.ViewData.ModelState.GetValidationState("TimeSlot"));
         }
 
         [Fact]
-        public async Task CreateBookingErrorMissingExtraPassengerName()
+        public async Task CreateBookingErrorMissingPassengerName()
         {
             //setup
             var input = new BookingViewModel
             {
                 Date = new DateTime(2016, 11, 01),
-                Name = "My Name",
+                Name = "My Conact Name",
+                Stage=1,
                 PhoneNumber = "11111111",
                 Email = "passenger@example.com",
                 Comment = "Blah",
@@ -66,7 +68,7 @@ namespace TandemBooking.Tests.ControllerTests
                     new AdditionalPassengerViewModel
                     {
                         Name = "WithName",
-                        Weight = null
+                        Weight = 100,
                     },
                     new AdditionalPassengerViewModel
                     {
@@ -90,15 +92,24 @@ namespace TandemBooking.Tests.ControllerTests
         }
 
         [Fact]
-        public async Task CreateBookingErrorMissingName()
+        public async Task CreateBookingErrorMissingContactName()
         {
             //setup
             var input = new BookingViewModel
             {
                 Date = new DateTime(2016, 11, 01),
+                Stage = 3,
                 PhoneNumber = "11111111",
                 Email = "passenger@example.com",
-                Comment = "Blah"
+                Comment = "Blah",
+                AdditionalPassengers = new[]
+                {
+                    new AdditionalPassengerViewModel
+                    {
+                        Name = "WithName",
+                        Weight = 100,
+                    }
+                }
             };
 
             //act
@@ -127,14 +138,20 @@ namespace TandemBooking.Tests.ControllerTests
             var input = new BookingViewModel
             {
                 Date = new DateTime(2016, 11, 1),
-                Name = "My Name",
-                Weight = 100,
+                Name = "My Contact Name",
+                
                 PhoneNumber = "11111111",
                 Email = "passenger@example.com",
                 Comment = "Blah",
                 TimeSlot= 1,
+                Stage = 3,
                 AdditionalPassengers = new[]
                 {
+                    new AdditionalPassengerViewModel
+                    {
+                        Name = "primary",
+                        Weight = 100
+                    },
                     new AdditionalPassengerViewModel
                     {
                         Name = "Additional1",
@@ -143,7 +160,7 @@ namespace TandemBooking.Tests.ControllerTests
                     new AdditionalPassengerViewModel
                     {
                         Name = "Additional2", 
-                        Weight = null
+                        Weight = 90
                     },
                 }
             };
@@ -179,7 +196,7 @@ namespace TandemBooking.Tests.ControllerTests
                 Assert.Equal(_pilots.Frode, b.Pilot);
                 Assert.False(b.Canceled);
             });
-            Assert.Equal("My Name", mainBooking.PassengerName);
+            Assert.Equal("primary", mainBooking.PassengerName);
             Assert.Equal(100, mainBooking.PassengerWeight);
             Assert.Equal("passenger@example.com", mainBooking.PassengerEmail);
             Assert.Equal("4711111111", mainBooking.PassengerPhone);
@@ -204,7 +221,7 @@ namespace TandemBooking.Tests.ControllerTests
             Assert.Equal(null, otherBooking2.AssignedPilot);
             Assert.Equal(0, otherBooking2.BookedPilots.Count);
             Assert.Equal("Additional2", otherBooking2.PassengerName);
-            Assert.Equal(null, otherBooking2.PassengerWeight);
+            Assert.Equal(90, otherBooking2.PassengerWeight);
             Assert.Equal("passenger@example.com", otherBooking2.PassengerEmail);
             Assert.Equal("4711111111", otherBooking2.PassengerPhone);
             Assert.StartsWith("Blah, booking 3/3", otherBooking2.Comment);
@@ -226,22 +243,22 @@ namespace TandemBooking.Tests.ControllerTests
             Assert.Contains(coordinatorMessages, m => m.Body.Contains("assigned to Erik Røthe Klette"));
             Assert.Contains(coordinatorMessages, m => m.Body.Contains("Please find a pilot on 01.11.2016"));
 
-            var pilotMessage = nexmoService.Messages.Single(m => m.Recipient == _pilots.Frode.PhoneNumber);
+            var pilotMessage = nexmoService.Messages.First(m => m.Recipient == _pilots.Frode.PhoneNumber);
             Assert.Contains("You have a new flight", pilotMessage.Body);
 
-            var pilotMessage2 = nexmoService.Messages.Single(m => m.Recipient == _pilots.Erik.PhoneNumber);
+            var pilotMessage2 = nexmoService.Messages.First(m => m.Recipient == _pilots.Erik.PhoneNumber);
             Assert.Contains("You have a new flight", pilotMessage2.Body);
 
             //assert mail is sent
             var mailService = (MockMailService)GetService<IMailService>();
             
-            //we should have three mail sent: to the passenger and the instructors
-            Assert.Equal(3, mailService.Messages.Count);
+            //we should have three mail sent: to the passenger and the instructors and one to each pilot about the unassigned booking
+            Assert.Equal(7, mailService.Messages.Count);
 
-            var pilotMail1 = mailService.Messages.Single(m => m.Recipient == _pilots.Frode.Email);
+            var pilotMail1 = mailService.Messages.First(m => m.Recipient == _pilots.Frode.Email);
             Assert.Contains("You have been assigned", pilotMail1.Body);
 
-            var pilotMail2 = mailService.Messages.Single(m => m.Recipient == _pilots.Erik.Email);
+            var pilotMail2 = mailService.Messages.First(m => m.Recipient == _pilots.Erik.Email);
             Assert.Contains("You have been assigned", pilotMail2.Body);
 
             var passengerMail = mailService.Messages.Single(m => m.Recipient == "passenger@example.com");
@@ -258,10 +275,19 @@ namespace TandemBooking.Tests.ControllerTests
             {
                 Date = new DateTime(2016, 11, 1),
                 Name = "My Name",
+                AdditionalPassengers = new AdditionalPassengerViewModel[] 
+                {
+                    new AdditionalPassengerViewModel
+                    {
+                        Name = "My Name",
+                        Weight = 100
+                    }
+                },
                 PhoneNumber = "11111111",
                 Email = "passenger@example.com",
                 Comment = "Blah",
                 TimeSlot = 1,
+                Stage = 3,
                 
             };
 
@@ -287,7 +313,7 @@ namespace TandemBooking.Tests.ControllerTests
             });
             Assert.Equal("passenger@example.com", booking.PassengerEmail);
             Assert.Equal("4711111111", booking.PassengerPhone);
-            Assert.Equal("Blah", booking.Comment);
+            Assert.Equal("Blah, ", booking.Comment);
 
             //Assert sms is sent
             var nexmoService = (MockNexmoService) GetService<INexmoService>();
@@ -325,10 +351,13 @@ namespace TandemBooking.Tests.ControllerTests
             {
                 Date = new DateTime(2016, 11, 13),
                 Name = "No pilot",
+                AdditionalPassengers = new AdditionalPassengerViewModel[] { new AdditionalPassengerViewModel { Name = "My Name", Weight = 100 } },
+
                 PhoneNumber = "11111111",
                 Email = "passenger@example.com",
                 Comment = "Blah",
                 TimeSlot = 1,
+                Stage = 3
             };
 
             var ctrl = GetService<BookingController>();
@@ -348,7 +377,7 @@ namespace TandemBooking.Tests.ControllerTests
             Assert.Equal(null, booking.AssignedPilot); // no pilots available
             Assert.Equal("passenger@example.com", booking.PassengerEmail);
             Assert.Equal("4711111111", booking.PassengerPhone);
-            Assert.Equal("Blah", booking.Comment);
+            Assert.Equal("Blah, ", booking.Comment);
 
             //Assert sms is sent
             var nexmoService = (MockNexmoService) GetService<INexmoService>();
@@ -366,7 +395,7 @@ namespace TandemBooking.Tests.ControllerTests
             var mailService = (MockMailService) GetService<IMailService>();
 
             //we should have one mail sent: to the passenger
-            Assert.Equal(1, mailService.Messages.Count);
+            Assert.Equal(5, mailService.Messages.Count);
 
             var passengerMail = mailService.Messages.Single(m => m.Recipient == "passenger@example.com");
             Assert.Contains("Thank you", passengerMail.Body);

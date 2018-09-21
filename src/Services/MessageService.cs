@@ -11,15 +11,17 @@ namespace TandemBooking.Services
         private readonly IMailService _mailService;
         private readonly TandemBookingContext _context;
         private readonly BookingService _bookingService;
+        private readonly ContentService _contService;
         private readonly BookingCoordinatorSettings _bookingCoordinatorSettings;
 
-        public MessageService(SmsService smsService, TandemBookingContext context, BookingService bookingService, BookingCoordinatorSettings bookingCoordinatorSettings, IMailService mailService)
+        public MessageService(SmsService smsService, TandemBookingContext context, BookingService bookingService, BookingCoordinatorSettings bookingCoordinatorSettings, IMailService mailService, ContentService content)
         {
             _smsService = smsService;
             _context = context;
             _bookingService = bookingService;
             _bookingCoordinatorSettings = bookingCoordinatorSettings;
             _mailService = mailService;
+            _contService = content;
         }
 
         private async Task SendPilotMessage(ApplicationUser user, string message, Booking booking)
@@ -30,8 +32,11 @@ namespace TandemBooking.Services
         public async Task SendNewBookingMessage(Booking primaryBooking, Booking[] additionalBookings, bool notifyPassenger, bool notifyPilot)
         {
             var allBookings = new[] {primaryBooking}.Union(additionalBookings).ToArray();
-            var bookingDateString = primaryBooking.BookingDate.ToString("dd.MM.yyyy");
-
+            var bookingDateString = primaryBooking.BookingDate.ToString("dd.MM.yyyy") + " at " + primaryBooking.TimeSlot.asTime();
+            var bookingTimeStamp =
+                primaryBooking.BookingDate.ToString("yyyyMMdd") + "T" + primaryBooking.TimeSlot.asTime().Replace(":", "") + "00/" +
+                primaryBooking.BookingDate.ToString("yyyyMMdd") + "T" + (primaryBooking.TimeSlot + 1).asTime().Replace(":", "") + "00"
+                ;
             //send message to pilot or booking coordinator
             foreach (var booking in allBookings)
             {
@@ -56,17 +61,23 @@ namespace TandemBooking.Services
                         if (assignedPilot.EmailNotification)
                         {
                             var subject = $"New flight on {bookingDateString}";
-                            var message = $@"Hi {assignedPilot.Name},
+                            var eventURL = $@"https://www.google.com/calendar/render?action=TEMPLATE&text=Tandem+{System.Web.HttpUtility.UrlEncode(booking.PassengerName)}&dates={bookingTimeStamp}&ctz=Europe/Oslo&details={System.Web.HttpUtility.UrlEncode(booking.PassengerName)}%0A{booking.PassengerPhone}%0A{booking.PassengerEmail}";
+                            System.Web.HttpUtility.UrlEncode("c# objects");
 
-You have been assigned a new flight:
+                            var details = $@"You have been assigned a new flight:
 Date:            {bookingDateString}. 
 Passenger Name:  {booking.PassengerName},
 Passenger Phone: {booking.PassengerPhone.AsPhoneNumber()},
 Passenger Email: {booking.PassengerEmail ?? "not specified"}
 Comments:
-{booking.Comment}
+{booking.Comment}";
+                            var message = $@"Hi {assignedPilot.Name},
 
-Booking Url: http://vossatandem.no/BookingAdmin/Details/{booking.Id}
+{details}
+
+Booking Url: http://{_contService.content.url}/BookingAdmin/Details/{booking.Id}
+
+Add to google calender: {eventURL}
 
 fly safe!
 Booking Coordinator
@@ -82,8 +93,21 @@ Booking Coordinator
                 }
                 else
                 {
+                   
+
+
                     _bookingService.AddEvent(booking, null,
                         $"No pilots available, sent message to tandem coordinator {_bookingCoordinatorSettings.Name} ({_bookingCoordinatorSettings.PhoneNumber.AsPhoneNumber()})");
+
+                    //message all pilots of unassigned booking
+                    var messageToPilots =
+                        $"Available flight on {bookingDateString} at {booking.TimeSlot.asTime()}: {booking.PassengerName}, {booking.PassengerEmail}, {booking.PassengerPhone.AsPhoneNumber()}, {booking.Comment}";
+                    var allPilots = _context.Users.Where(p => p.IsPilot || p.IsAdmin).ToList();
+
+                    foreach (var pilot in allPilots)
+                    {
+                        await _mailService.Send(pilot.Email, $"Available flight on {bookingDateString}", messageToPilots);
+                    }
 
                     //send no pilots available to booking coordinator
                     var message =
@@ -134,15 +158,15 @@ contact him about any questions you have regarding your flight.
 
                     var message = $@"Hi {primaryBooking.PassengerName},
 
-Thank you for booking a tandem flight with Voss HPK on {bookingDateString}. Your booking 
+Thank you for booking a tandem flight with {_contService.content.clubname} on {bookingDateString}. Your booking 
 has been confirmed. One of our instructors will contact you to organize the details 
 of when and where you will meet a few days in advance of your flight. 
 {assignedPilotMessage}
 
 Kind regards,
 {_bookingCoordinatorSettings.Name}
-Booking Coordinator
-Voss HPK";
+Tandem Coordinator
+{_contService.content.clubname}";
                     await _mailService.Send(primaryBooking.PassengerEmail, $"Tandem flight on {bookingDateString}", message);
 
                     _bookingService.AddEvent(primaryBooking, null,
@@ -175,13 +199,12 @@ Your booking on {bookingDateString} has been updated.
 
 We're working on finding a new instructor for your flight on {bookingDateString}. 
 You will be contacted with the name and number of the new instructor. If you 
-have any questions, please contact the tandem booking coordinator, 
-{_bookingCoordinatorSettings.Name} on ({_bookingCoordinatorSettings.PhoneNumber.AsPhoneNumber()} or {_bookingCoordinatorSettings.Email})
+have any questions, please contact the tandem booking coordinator on ({_contService.content.contact.phone} or {_contService.content.contact.email})
 
 kind regards,
-{_bookingCoordinatorSettings.Name}
-Booking Coordinator
-Voss HPK
+{_contService.content.contact.person}
+Tandem Coordinator
+{_contService.content.clubname}
 ";
                 await _mailService.Send(booking.PassengerEmail, $"Tandem flight on {bookingDateString}", mailMessage);
             }
@@ -191,6 +214,11 @@ Voss HPK
 
         public async Task SendNewPilotMessage(string bookingDateString, Booking booking, ApplicationUser previousPilot, bool notifyPassenger)
         {
+            var bookingTimeStamp =
+                booking.BookingDate.ToString("yyyyMMdd") + "T" + booking.TimeSlot.asTime().Replace(":", "") + "00/" +
+                booking.BookingDate.ToString("yyyyMMdd") + "T" + (booking.TimeSlot + 1).asTime().Replace(":", "") + "00"
+                ;
+
             //send message to new pilot
             var assignedPilot = booking.AssignedPilot;
             if (assignedPilot.SmsNotification)
@@ -201,6 +229,9 @@ Voss HPK
             if (assignedPilot.EmailNotification)
             {
                 var subject = $"New flight on {bookingDateString}";
+
+                var eventURL = $@"https://www.google.com/calendar/render?action=TEMPLATE&text=Tandem+{System.Web.HttpUtility.UrlEncode(booking.PassengerName)}&dates={bookingTimeStamp}&ctz=Europe/Oslo&details={System.Web.HttpUtility.UrlEncode(booking.PassengerName)}%0A{booking.PassengerPhone}%0A{booking.PassengerEmail}";
+
                 var message = $@"Hi {assignedPilot.Name},
 
 You have been assigned a flight:
@@ -211,10 +242,13 @@ Passenger Email: {booking.PassengerEmail ?? "not specified"}
 Comments:
 {booking.Comment}
 
-Booking Url: http://vossatandem.no/BookingAdmin/Details/{booking.Id}
+Booking Url: http://{_contService.content.url}/BookingAdmin/Details/{booking.Id}
+
+Add to google calender: {eventURL}
+
 
 fly safe!
-Booking Coordinator
+Tandem Coordinator
 ";
                 await _mailService.Send(assignedPilot.Email, subject, message);
             }
@@ -240,8 +274,8 @@ Your new instructor for {bookingDateString} is {assignedPilot.Name} ({assignedPi
 
 kind regards,
 {_bookingCoordinatorSettings.Name}
-Booking Coordinator
-Voss HPK
+Tandem Coordinator
+{_contService.content.clubname}
 ";
                     await _mailService.Send(booking.PassengerEmail, $"Tandem flight on {bookingDateString}", mailMessage);
                 }
@@ -250,7 +284,7 @@ Voss HPK
 
         public async Task SendPilotUnassignedMessage(Booking booking, ApplicationUser previousPilot)
         {
-            var bookingDateString = booking.BookingDate.ToString("dd.MM.yyyy");
+            var bookingDateString = booking.BookingDate.ToString("dd.MM.yyyy") + " at " + booking.TimeSlot.asTime(); 
 
             if (previousPilot.SmsNotification)
             {
@@ -264,11 +298,10 @@ Voss HPK
 
 Your flight on {bookingDateString} has been assigned to another pilot.
 
-Booking Url: http://vossatandem.no/BookingAdmin/Details/{booking
-                        .Id}
+Booking Url: http://{_contService.content.url}/BookingAdmin/Details/{booking.Id}
 
 fly safe!
-Booking Coordinator
+Tandem Coordinator
 ";
                 await _mailService.Send(previousPilot.Email, $"Booking on {bookingDateString} reassigned", message);
             }
@@ -276,7 +309,7 @@ Booking Coordinator
 
         public async Task SendCancelMessage(string cancelMessage, Booking booking, ApplicationUser sender)
         {
-            var bookingDate = $"{booking.BookingDate:dd.MM.yyyy}";
+            var bookingDate = $"{booking.BookingDate:dd.MM.yyyy}" + " at " + booking.TimeSlot.asTime(); ;
             if (!string.IsNullOrEmpty(booking.PassengerPhone))
             {
                 var message = $"Unfortunately, your flight on {bookingDate} has been canceled due to {cancelMessage}";
@@ -294,8 +327,8 @@ Unfortunately, your flight on {bookingDate} has been canceled due to {cancelMess
 
 kind regards,
 {_bookingCoordinatorSettings.Name}
-Booking Coordinator
-Voss HPK
+Tandem Coordinator
+{_contService.content.clubname}
 ";
                 await _mailService.Send(booking.PassengerEmail, $"Tandem flight on {bookingDate}", mailMessage);
             }
@@ -313,7 +346,7 @@ Voss HPK
                 if (!string.IsNullOrEmpty(booking.PassengerEmail))
                 {
                     var senderText = $"{sender.Name} ({sender.PhoneNumber.AsPhoneNumber()}, {sender.Email})";
-                    var bookingDate = $"{booking.BookingDate:dd.MM.yyyy}";
+                    var bookingDate = $"{booking.BookingDate:dd.MM.yyyy}" + " at " + booking.TimeSlot.asTime(); 
                     var mailMessage = $@"Hi {booking.PassengerName},
 
 Your booking on {bookingDate} has been updated. {senderText} has sent you a new message:
@@ -321,9 +354,9 @@ Your booking on {bookingDate} has been updated. {senderText} has sent you a new 
 {input.EventMessage}
 
 kind regards,
-{_bookingCoordinatorSettings.Name}
-Booking Coordinator
-Voss HPK
+{_contService.content.contact.person}
+Tandem Coordinator
+{_contService.content.clubname}
 ";
                     await _mailService.Send(booking.PassengerEmail, $"Tandem flight on {bookingDate}", mailMessage);
                 }

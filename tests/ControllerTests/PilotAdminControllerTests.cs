@@ -10,6 +10,7 @@ using TandemBooking.Services;
 using TandemBooking.Tests.TestData;
 using TandemBooking.Tests.TestSetup;
 using TandemBooking.ViewModels;
+using TandemBooking.ViewModels.Account;
 using Xunit;
 
 namespace TandemBooking.Tests.ControllerTests
@@ -19,6 +20,7 @@ namespace TandemBooking.Tests.ControllerTests
     {
         public PilotAdminTests(IntegrationTestFixture fixture) : base(fixture)
         {
+           
             _pilots = new PilotsFixture(Context);
         }
 
@@ -28,6 +30,18 @@ namespace TandemBooking.Tests.ControllerTests
         [Fact]
         public async Task AddAvailabilityTest()
         {
+            var loginInfo = new LoginViewModel
+            {
+                Email = "nils.jordheim@gmail.com",
+                Password = "123456",
+                RememberMe = false
+
+            };
+
+
+            var ctrlLogin = GetService<AccountController>();
+            var resultLogin = await ctrlLogin.Login(loginInfo);
+
             var input = new PilotAvailabilityViewModel {
                 StartDate = new DateTime(2016, 10, 1),
                 EndDate = new DateTime(2016, 10, 31),
@@ -46,7 +60,7 @@ namespace TandemBooking.Tests.ControllerTests
                 TimeSlot = 1,
                 Available = true
             };
-            inputAvail[1] = avail1;
+            inputAvail[0] = avail1;
             var ctrl = GetService<PilotAvailabilityController>();
             ctrl.SetAvailability(inputAvail);
             ctrl.SetAvailability(inputAvail);

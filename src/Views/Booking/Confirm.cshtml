@@ -1,14 +1,18 @@
-@model TandemBooking.ViewModels.Booking.BookingViewModel
+@using TandemBooking.Services;
+@inject ContentService contService;
+@{
+    string lang = ViewContext.RouteData.Values["lang"].ToString();
+    contService.setLanguage(lang);
+}
 @{
     ViewData["Title"] = "Booking completed";
 }
 <h2>@ViewData["Title"]</h2>
 
 <p>
-    Sweet!<br />
-    We've registered your booking and will contact you as soon as possible to arrage the details of your flight.
+    @contService.content.booking.confirmation;
 </p>
 
 @section scripts
-{
+    {
 }

@@ -103,12 +103,19 @@
 
                     @foreach (var timeslot in dayInfo.TimeSlots)
                     {
+                        string pilots = "";
+                        foreach(var availability in timeslot.FreePilots)
+                        {
+                            pilots += availability.Pilot.Name + "<br>";
+
+                        }
                         <div class="timeslot-data" style="display:none"
                              data-timeslot="@timeslot.TimeSlot"
                              data-availabilities="@timeslot.Availabilities.Count"
                              data-assigned="@timeslot.PilotBookings.Count"
                              data-unassigned="@timeslot.UnassignedBookings.Count"
-                             data-free="@timeslot.FreePilots.Count">
+                             data-free="@timeslot.FreePilots.Count"
+                             data-pilotList="@pilots">
                         </div>
                     }
                     <div>@totalFree free slots</div>
@@ -120,18 +127,6 @@
                     }
 
 
-
-                    @*<ul class="list-unstyled" style="margin-top: 10px">
-                        @foreach (var pilot in timeslot.Availabilities.Select(a => a.Pilot))
-                        {
-                            <li>@pilot.Name: @timeslot.PilotBookings.Count(b => b.Pilot == pilot)</li>
-                        }
-                        @if (timeslot.UnassignedBookings.Count > 0)
-                        {
-                            <li>Unassigned: @timeslot.UnassignedBookings.Count</li>
-                        }
-                    </ul>*@
-
                 </td>
                 </text>
                 dayIndex++;
@@ -142,19 +137,23 @@
 
 <div id="day-details" class="row" style="display:none">
 
-    <div class="timeslots col-md-8 col-sm-12 col-lg-4">
+    <div class="timeslots col-md-10 col-sm-12 col-lg-6">
         Select time:
         <br />
         @for (int timeslot = 0; timeslot < 5; timeslot++)
         {
             <div id="timeslot:@timeslot"  onclick="select_slot(@timeslot)"> 
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         @timeslot.asTime()
                     </div>
-                    <div class="col-md-9" id="details:@timeslot">
+                    <div class="col-md-4" id="details:@timeslot">
 
                     </div>
+                    <div class="col-md-4" id="pilots:@timeslot">
+
+                    </div>
+
                 </div>
             </div>
 
@@ -187,6 +186,7 @@
             var assignedBookings = Number(dataElements[i].getAttribute("data-assigned"));
             var unassignedBookings = Number(dataElements[i].getAttribute("data-unassigned"));
             var freePilots = Number(dataElements[i].getAttribute("data-free"));
+            var pilots = dataElements[i].getAttribute("data-pilotList");
 
             var className = "";
             className += freePilots > 0 ? "available" : "";
@@ -202,7 +202,8 @@
                 assignedBookings + " assigned bookings <br>" +
                 unassignedBookings + " unassigned bookings";
             
-            
+            var timeslotPilots = document.getElementById("pilots:" + i);
+            timeslotPilots.innerHTML = pilots;
         }
         
 

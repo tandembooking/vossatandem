@@ -445,7 +445,7 @@ namespace TandemBooking.Controllers
             await _context.SaveChangesAsync();
 
             //notify pilot and passenger of the newly assigned pilot
-            var bookingDateString = booking.BookingDate.ToString("dd.MM.yyyy");
+            var bookingDateString = booking.BookingDate.ToString("dd.MM.yyyy") + " at " + booking.TimeSlot.asTime();
             if (assignedPilot != null)
             {
                 await _messageService.SendNewPilotMessage(bookingDateString, booking, originalPilot, newPilot.NewPilotNotifyPassenger);

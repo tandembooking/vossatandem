@@ -1,5 +1,3 @@
-using System;
-using System.Globalization;
 using Fujiy.ApplicationInsights.AspNetCore.SqlTrack;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
@@ -9,8 +7,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using System;
+using System.Globalization;
 using TandemBooking.Models;
 using TandemBooking.Services;
+using TandemBooking.Attributes;
 
 namespace TandemBooking
 {
@@ -38,7 +39,7 @@ namespace TandemBooking
             services.AddTandemBookingAuthentication();
             services.AddTandemBookingAuthorization();
             services.AddMvc();
-
+            services.AddTransient<ContentService>();
             // Add configuration services.
             services.AddTransient(provider => new BookingCoordinatorSettings
             {
@@ -72,6 +73,15 @@ namespace TandemBooking
             services.AddTransient<INexmoService, NexmoService>();
 
             services.AddBookingServices();
+     
+            
+            services.AddScoped<LocalizationAttribute>();
+
+            //services.AddMvc(options =>
+            //{
+            //    options.Filters.Add(new LocalizationAttribute());
+            //});
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -86,6 +96,8 @@ namespace TandemBooking
             //Force en-US culture to avoid date formatting issues in requests
             CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US");
             CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("en-US");
+
+
 
             //Add EF Core Application Insights
             loggerFactory.AddProvider(new AiEfCoreLoggerProvider(telemetryClient));
@@ -141,12 +153,27 @@ namespace TandemBooking
             app.UseStaticFiles();
             app.UseAuthentication();
 
+            //app.UseMvc(routes =>
+            //{
+            //    routes.MapRoute(
+            //        "default",
+            //        "{lang}/{controller=Home}/{action=Index}/{id?}");
+            //});
+
+            
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
-                    "default",
-                    "{controller=Home}/{action=Index}/{id?}");
+                        "default",
+                        "{lang=no}/{controller=Home}/{action=Index}/{id?}");
+                routes.MapRoute(
+                        "old",
+                        "{controller=Home}/{action=Index}/{id?}");
             });
+
+            
+
         }
     }
 }

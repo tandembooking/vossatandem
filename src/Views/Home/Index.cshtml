@@ -1,3 +1,11 @@
+@using TandemBooking.ViewModels.Booking;
+@using TandemBooking.Services;
+
+@inject ContentService contService;
+@{
+    string lang = ViewContext.RouteData.Values["lang"].ToString();
+    contService.setLanguage(lang);
+}
 @{
     ViewData["Title"] = "Home Page";
     ViewData["CssClass"] = "home";
@@ -6,13 +14,13 @@
 <div class="middlebar">
     <div class="container">
         <div class="teaser">
-            <h1>Wanna fly?</h1>
-            <p class="air-vertical">Experience tandem paragliding with the pilots from Voss hang and paragliding club and see Voss from the air!</p>
-            <p><a asp-controller="Booking" asp-action="Index" class="btn btn-action" role="button">Book your flight here</a></p>
+            <h1>@contService.content.front.welcome</h1>
+            <p class="air-vertical">@contService.content.front.text</p>
+            <p><a asp-controller="Booking" asp-action="Index" class="btn btn-action" role="button">@contService.content.front.button</a></p>
         </div>
     </div>
 </div>
 
-@section scripts{ 
+@section scripts{
     <script>dh.inithome();</script>
 }
