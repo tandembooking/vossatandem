@@ -26,7 +26,7 @@ gulp.task("clean:css", function (cb) {
   rimraf(paths.concatCssDest, cb);
 });
 
-gulp.task("clean", ["clean:js", "clean:css"]);
+gulp.task("clean", ["clean:js", "clean:css"], function() {});
 
 gulp.task("min:js", function () {
   return gulp.src([paths.js, "!" + paths.minJs], {
@@ -44,7 +44,7 @@ gulp.task("min:css", function () {
     .pipe(gulp.dest("."));
 });
 
-gulp.task("min", ["min:js", "min:css"]);
+gulp.task("min", ["min:js", "min:css"], function() {});
 
 gulp.task('watch', function () {
     gulp.watch([paths.js], ["min:js"]);
