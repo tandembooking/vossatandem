@@ -43,7 +43,7 @@ namespace TandemBooking.ViewModels.Booking
         public DateTime? NextDate { get; set; }
         public DateTime? PrevDate { get; set; }
 
-        public BookingCalendarViewModel Calendar { get; set; }
+        public BookingCalendarViewModel Calender { get; set; }
 
        
     }

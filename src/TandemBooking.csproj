@@ -12,6 +12,9 @@
   <ItemGroup>
     <Content Remove="PageContent\bergen-en.json" />
     <Content Remove="PageContent\bergen-no.json" />
+    <Content Remove="Views\Booking\Calender.cshtml" />
+    <Content Remove="Views\Booking\ContactInfo.cshtml" />
+    <Content Remove="Views\Booking\PassengerInfo.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,6 +53,7 @@
 
   <ItemGroup>
     <Folder Include="log\" />
+    <Folder Include="Attributes\" />
     <Folder Include="ViewModels\Overview\" />
   </ItemGroup>
 
@@ -71,6 +75,9 @@
     <None Include="PageContent\bergen-en.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Views\Booking\Calender.cshtml" />
+    <None Include="Views\Booking\ContactInfo.cshtml" />
+    <None Include="Views\Booking\PassengerInfo.cshtml" />
   </ItemGroup>
 
   <ItemGroup>

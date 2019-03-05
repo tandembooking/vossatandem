@@ -1,0 +1,152 @@
+﻿@using TandemBooking.ViewModels.Booking;
+@using TandemBooking.Services;
+
+@model TandemBooking.ViewModels.Booking.BookingViewModel
+@inject ContentService contService;
+@{
+    string lang = ViewContext.RouteData.Values["lang"].ToString();
+    contService.setLanguage(lang);
+}
+
+<div class="details">
+
+
+    <div id="passengerInformation">
+
+        @if(Model.Stage == 0){
+        var currentAdditionalPassengerIndex = 2;
+
+        <div class="additional-passenger">
+            <input type="hidden" name="AdditionalPassengers.Index" value="1" />
+
+            <div class="form-group">
+                <label class="small">
+                    Name of passenger
+                </label>
+                <div class="row">
+                    <div class="col-sm-5 col-xs-8">
+                        <input type="text" name="AdditionalPassengers[1].Name" class="form-control" placeholder="Please enter the passenger name" value="test" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="small">
+                    Weight of passenger (in kg)
+                </label>
+                <div class="row">
+                    <div class="col-sm-5 col-xs-8">
+                        <input type="text" name="AdditionalPassengers[1].Weight" class="form-control" placeholder="Please enter the passenger weight" value="30" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p class="small">
+            If you are a group of people wanting to fly together, please use the "add extra passenger"-button below and enter their names. That way we can find enough pilots so you can all fly toghether.
+        </p>
+
+        <p class="small">
+            If you are a booking on behalf of somebody else (e.g. birthday or hen/stag party), enter the name of the passenger in the name field above, and use your own phone number. Also, please add a comment about the circumstances of the flight.
+        </p>
+
+        @foreach (var additionalPassenger in Model.AdditionalPassengers.Skip(1) ?? new AdditionalPassengerViewModel[] { })
+        {
+        <div class="additional-passenger">
+            <input type="hidden" name="AdditionalPassengers.Index" value="@currentAdditionalPassengerIndex" />
+
+            <div class="form-group">
+                <label class="small">
+                    Name of additional passenger
+                </label>
+                <div class="row">
+                    <div class="col-sm-5 col-xs-8">
+                        <input type="text" name="AdditionalPassengers[@currentAdditionalPassengerIndex].Name" class="form-control" placeholder="Please enter the passenger name" value="@additionalPassenger.Name" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="small">
+                    Weight of additional passenger (in kg)
+                </label>
+                <div class="row">
+                    <div class="col-sm-5 col-xs-8">
+                        <input type="text" name="AdditionalPassengers[@currentAdditionalPassengerIndex].Weight" class="form-control" placeholder="Please enter the passenger weight" value="@additionalPassenger.Weight" />
+                    </div>
+                    <div class="info col-sm-7 col-xs-4">
+                        <button class="btn remove-passenger-button" type="button">Remove</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {
+        currentAdditionalPassengerIndex++;
+        }
+        }
+        <template id="add-passenger-marker">
+        </template>
+
+        <div class="form-group">
+            <p>
+                <span asp-validation-for="AdditionalPassengers" class="text-danger small"></span>
+            </p>
+        </div>
+
+        <div class="form-group">
+            <div class="row">
+                <div class="col-xs-12">
+                    <button class="btn btn-secondary" type="button" id="add-passenger-button">Add Extra Passenger</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center air-vertical">
+            <button type="submit" class="btn btn-lg btn-action">Show availability!</button>
+        </div>
+  
+
+    }
+    else
+    {
+    var currentAdditionalPassengerIndex = 1;
+    @* add additional passengers on a postback with invalid model *@
+    <div id="passengerInformation">
+
+        <strong>Your flight details</strong>
+        <p>
+            Antall passasjerer: <label>@Model.AdditionalPassengers.Length</label>
+            <br>
+            Valgt dato: <label id="selected-date">@( Model.Date != null ? Model.Date.GetValueOrDefault().ToShortDateString() : "Dato ikke valgt")</label>
+            <br>
+            Valgt klokkeslett: <label id="selected-time">@(Model.TimeSlot != null ? Model.TimeSlot.GetValueOrDefault().asTime() : "Klokkeslett ikke valgt") </label>
+
+        </p>
+        <label class="small">
+            Passasjerer:
+        </label>
+
+        <div class="additional-passenger">
+            @foreach (var additionalPassenger in Model.AdditionalPassengers ?? new AdditionalPassengerViewModel[] { })
+            {
+                <input type="hidden" name="AdditionalPassengers.Index" value="@currentAdditionalPassengerIndex">
+
+                <div class="row">
+                    <div class="col-sm-8 col-xs-8">
+                        @additionalPassenger.Name
+                        (@additionalPassenger.Weight kg)
+                        <input type="hidden" name="AdditionalPassengers[@currentAdditionalPassengerIndex].Name" class="form-control" value="@additionalPassenger.Name">
+                        <input type="hidden" name="AdditionalPassengers[@currentAdditionalPassengerIndex].Weight" class="form-control" value="@additionalPassenger.Weight">
+                    </div>
+                </div>
+                {
+                currentAdditionalPassengerIndex++;
+                }
+            }
+        </div>
+    </div>
+
+    }
+
+</div>
+

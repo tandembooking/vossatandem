@@ -206,21 +206,21 @@ namespace TandemBooking.Controllers
             if (Action.Contains("next_month"))
             {
 
-                input.Calendar = UpdateBookingCalendar(passengers, input.NextDate ?? DateTime.UtcNow);
+                input.Calender = UpdateBookingCalendar(passengers, input.NextDate ?? DateTime.UtcNow);
                 
             }
             else if (Action.Contains("prev_month"))
             {
 
-                input.Calendar = UpdateBookingCalendar(passengers, input.PrevDate ?? DateTime.UtcNow);
+                input.Calender = UpdateBookingCalendar(passengers, input.PrevDate ?? DateTime.UtcNow);
                 
             }
             else
             {
-                input.Calendar = UpdateBookingCalendar(passengers, input.Date?? DateTime.UtcNow);
+                input.Calender = UpdateBookingCalendar(passengers, input.Date?? DateTime.UtcNow);
             }
-            input.NextDate = input.Calendar.Next;
-            input.PrevDate = input.Calendar.Prev;
+            input.NextDate = input.Calender.Next;
+            input.PrevDate = input.Calender.Prev;
             return true;
 
         }

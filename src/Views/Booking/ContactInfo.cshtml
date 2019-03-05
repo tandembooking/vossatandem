@@ -1,0 +1,91 @@
+﻿@using TandemBooking.ViewModels.Booking;
+@using TandemBooking.Services;
+
+@model TandemBooking.ViewModels.Booking.BookingViewModel
+@inject ContentService contService;
+@{
+    string lang = ViewContext.RouteData.Values["lang"].ToString();
+    contService.setLanguage(lang);
+}
+
+<div class="details">
+    <strong> Kontaktinformasjon</strong>
+    <div class="form-group" id="primary-passenger-group">
+        <label class="small" for="Name">
+            Navn
+        </label>
+        <div class="row">
+            <div class="col-sm-5">
+                <input type="text" class="form-control" placeholder="Vennligst før inn navnet ditt" id="Name" name="Name" value="">
+            </div>
+            <div class="info col-sm-7">
+            </div>
+        </div>
+        <p>
+            <span class="text-danger small field-validation-valid" data-valmsg-for="Name" data-valmsg-replace="true">
+            </span>
+        </p>
+    </div>
+
+    <div class="form-group">
+        <label class="small" for="PhoneNumber">
+            Telefon
+        </label>
+        <div class="row">
+            <div class="col-sm-5">
+                <input type="tel" class="form-control" placeholder="Vennligst før inn telefonnummeret ditt" data-val="true" data-val-phone="We need a phone number to contact you about your flight. Please enter valid phone number." id="PhoneNumber" name="PhoneNumber" value="">
+            </div>
+            <div class="info col-sm-7 small">
+                Vi vil kontakte deg på dette telefonnummeret for å avklare detaljene rundt tandemturen. Det vil ikkje bli brukt til noe annet formål.
+            </div>
+        </div>
+        <p>
+            <span class="text-danger small field-validation-valid" data-valmsg-for="PhoneNumber" data-valmsg-replace="true"></span>
+        </p>
+    </div>
+
+    <div class="form-group">
+        <label class="small" for="Email">
+            Epost
+        </label>
+        <div class="row">
+            <div class="col-sm-5">
+                <input type="email" class="form-control" placeholder="Vennligst før inn epostadressen din" data-val="true" data-val-email="Please enter a valid email address" id="Email" name="Email" value="">
+            </div>
+            <p class="info col-sm-7 small">
+                Epostadressen brukes til å sende informasjon angående tandemturen. Det vil ikkje bli brukt til noe annet formål.
+            </p>
+        </div>
+        <p>
+            <span class="text-danger small field-validation-valid" data-valmsg-for="Email" data-valmsg-replace="true"></span>
+        </p>
+    </div>
+
+    <div class="form-group">
+        <label for="Comment">
+            Melding til pilot
+        </label>
+        <div class="row">
+            <div class="col-sm-5">
+                <textarea class="form-control" id="Comment" name="Comment"></textarea>
+            </div>
+            <p class="col-sm-7 small">
+                Tilleggsinformasjon du vil gi piloten. F.eks. tidsbegrensing, osv..
+            </p>
+        </div>
+        <p>
+            <span class="text-danger small field-validation-valid" data-valmsg-for="Comment" data-valmsg-replace="true"></span>
+        </p>
+    </div>
+    <div class="text-center air-vertical">
+        <button type="submit" name="Action" value="back" class="btn btn-lg btn-action">Tilbake</button>
+        <button type="submit" name="Action" value="confirm" class="btn btn-lg btn-action">Fly med meg!</button>
+    </div>
+
+
+
+
+
+
+
+</div>
