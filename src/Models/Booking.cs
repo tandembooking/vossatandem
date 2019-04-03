@@ -3,6 +3,13 @@ using System.Collections.Generic;
 
 namespace TandemBooking.Models
 {
+    public enum FlightType
+    {
+        Other = 0,
+        Gondola = 1,
+        Winch = 2
+    }
+
     public class Booking {
         public Guid Id {get;set;}
         public DateTime DateRegistered {get;set;}
@@ -16,6 +23,8 @@ namespace TandemBooking.Models
         public string PassengerEmail {get;set;}
         public string PassengerPhone {get;set;} 
         public string Comment {get;set;}
+        public FlightType? FlightType { get; set; }
+        public string BoatDriver { get; set; }
 
         public string AssignedPilotId { get; set; }
         public ApplicationUser AssignedPilot { get; set; }

@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Net.WebSockets;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -517,6 +514,8 @@ namespace TandemBooking.Controllers
 
         #endregion
 
+        #region Complete Booking
+
         [HttpGet]
         public async Task<ActionResult> Complete(Guid id)
         {
@@ -535,6 +534,8 @@ namespace TandemBooking.Controllers
             {
                 Booking = booking,
                 PassengerFee = (int)booking.PassengerFee,
+                FlightType = booking.FlightType ?? FlightType.Other,
+                BoatDriver = booking.BoatDriver
             });
         }
 
@@ -554,6 +555,8 @@ namespace TandemBooking.Controllers
 
             //update passenger fee and completed status
             booking.PassengerFee = input.PassengerFee;
+            booking.FlightType = input.FlightType;
+            booking.BoatDriver = input.BoatDriver;
             booking.Canceled = false;
             booking.Completed = true;
             await _context.SaveChangesAsync();
@@ -563,5 +566,7 @@ namespace TandemBooking.Controllers
 
             return RedirectToAction("Details", new { Id = booking.Id });
         }
+
+        #endregion
     }
 }
