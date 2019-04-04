@@ -312,7 +312,7 @@
         var addPassengerTemplate = document.getElementById("add-passenger-template");
         $(addPassengerButton).on("click", function () {
             var addPassengerHtml = $(addPassengerTemplate).html();
-            addPassengerHtml.replace('--index--', '' + addPassengerService)
+            addPassengerHtml = addPassengerHtml.replace(new RegExp('--index--', 'g'), '' + addPassengerService);
             addPassengerService++;
 
             $(addPassengerHtml).insertBefore(addPassengerMarker);
@@ -336,8 +336,8 @@
             }
             
             //should not be during veko
-            var vekoStart = new Date(2017, 6-1, 26);
-            var vekoEnd = new Date(2017, 7-1, 1);
+            var vekoStart = new Date(2019, 6-1, 24);
+            var vekoEnd = new Date(2019, 6-1, 29);
             if (date >= vekoStart && date <= vekoEnd) {
                 return {
                     enabled: false,
