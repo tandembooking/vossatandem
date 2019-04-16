@@ -92,22 +92,23 @@
         <button class="month-button" type="submit" name="Action" value="calender_prev_month"><h2>&lt;</h2</button>
     </div>
     <div class="col-xs-8 text-center">
-        <h2>@Model.Calender.MonthName</h2>
+        <h2>
+            @Model.Calender.MonthName
+        </h2>
     </div>
     <div class="col-xs-2 text-right">        
         <button class="month-button" type="submit" name="Action" value="calender_next_month"><h2>&gt;</h2></button>
     </div>
 </div>
 
-<table id="bookingcalender" class="table table-bordered pilot-availability" style="width: 100%; table-layout: fixed;">
+<table id="bookingcalender" 
+       class="table table-bordered pilot-availability" 
+       style="width: 100%; table-layout: fixed;">
     <tr>
-        <th>Mon</th>
-        <th>Tue</th>
-        <th>Wed</th>
-        <th>Thu</th>
-        <th>Fri</th>
-        <th>Sat</th>
-        <th>Sun</th>
+        @foreach (var day in contService.content.booking.calender.days)
+        {
+            <th>@day</th>
+        }
     </tr>
     @{
         int dayIndex = 0;
@@ -125,28 +126,37 @@
                 {
                     if (timeslot.FreePilots.Count > maxFree)
                     {
-                        maxFree = timeslot.FreePilots.Count;
+                        maxFree = timeslot.PossibleNow;
                         maxFreeTimeSlot = timeslot.TimeSlot;
 
                     }
                     totalFree += timeslot.FreePilots.Count;
                 }
-                bool available = totalFree > Model.AdditionalPassengers.Length;
+                bool available = maxFree >= Model.AdditionalPassengers.Length;
 
         <text>
         <td class="" style="position: relative; height: 30px;width:30px; padding:0px; border:0px" align="center">
 
-                <div class="day date-wrap @(available ? "date-free" : "date-unavailable")" height="100%" data-maxflow="1">
+                <div class="day date-wrap @(available ? "date-free" : "date-unavailable")" 
+                     height="100%" 
+                     data-maxflow="@maxFree">
+
                     <div style="display:none" id="@dayIndex">
                         @foreach (var timeslot in dayInfo.TimeSlots)  {
                         <div style="display:none"
                              data-timeslot="@timeslot.TimeSlot"
-                             data-freepilots="@timeslot.FreePilots.Count"
-                             data-availablepilots="@timeslot.AvailablePilots.Count">
+                             data-freepilots="@timeslot.PossibleNow"
+                             data-availablepilots="@timeslot.PossibleNow">
                         </div>
                 }
                     </div>
-                    <button class="date-button" type="button" name="Action" value="@dayInfo.Date.ToShortDateString()" onclick="show_times(@dayIndex)">@dayInfo.Date.Day</button>
+                    <button class="date-button" 
+                            type="button" 
+                            name="Action" 
+                            value="@dayInfo.Date.ToShortDateString()" 
+                            onclick="show_times(@dayIndex)">
+                        @dayInfo.Date.Day
+                    </button>
                 </div>
 
 
@@ -180,8 +190,12 @@
 
 <div>
     <div class="text-center air-vertical">
-        <button type="submit" name="Action" value="back" class="btn btn-lg btn-action">Tilbake</button>
-        <button type="submit" class="btn btn-lg btn-action">Take me flying!</button>
+        <button type="submit" name="Action" value="back" class="btn btn-lg btn-action">
+            @contService.content.booking.buttons.back
+        </button>
+        <button type="submit" class="btn btn-lg btn-action">
+            @contService.content.booking.buttons.book
+        </button>
     </div>
 </div>
 
@@ -217,11 +231,10 @@
             if (Number(dataElements[i].getAttribute("data-freepilots")) >= nrOfPassengers) {
                 color = "date-free";
             }
-            //else if (Number(dataElements[i].getAttribute("data-availablepilots")) >= nrOfPassengers) {
-            //    color = "date-available";
-            //}
-
             var replaceValue = "class:" + i.toString();
+            console.log(replaceValue);
+            console.log(Number(dataElements[i].getAttribute("data-freepilots")));
+            console.log(nrOfPassengers)
             timeslotHtml = timeslotHtml.replace(replaceValue, color);
 
         }

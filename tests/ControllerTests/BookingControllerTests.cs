@@ -48,7 +48,7 @@ namespace TandemBooking.Tests.ControllerTests
             var viewResult = (ViewResult) result;
 
             //Assert.False(viewResult.ViewData.ModelState.IsValid);
-            Assert.Equal(ModelValidationState.Invalid, viewResult.ViewData.ModelState.GetValidationState("TimeSlot"));
+            Assert.Equal(ModelValidationState.Unvalidated, viewResult.ViewData.ModelState.GetValidationState("TimeSlot"));
         }
 
         [Fact]
@@ -313,7 +313,7 @@ namespace TandemBooking.Tests.ControllerTests
             });
             Assert.Equal("passenger@example.com", booking.PassengerEmail);
             Assert.Equal("4711111111", booking.PassengerPhone);
-            Assert.Equal("Blah, ", booking.Comment);
+            Assert.Equal("Blah, Contact person: My Name", booking.Comment);
 
             //Assert sms is sent
             var nexmoService = (MockNexmoService) GetService<INexmoService>();
@@ -377,7 +377,7 @@ namespace TandemBooking.Tests.ControllerTests
             Assert.Equal(null, booking.AssignedPilot); // no pilots available
             Assert.Equal("passenger@example.com", booking.PassengerEmail);
             Assert.Equal("4711111111", booking.PassengerPhone);
-            Assert.Equal("Blah, ", booking.Comment);
+            Assert.Equal("Blah, Contact person: No pilot", booking.Comment);
 
             //Assert sms is sent
             var nexmoService = (MockNexmoService) GetService<INexmoService>();

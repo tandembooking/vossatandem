@@ -9,7 +9,7 @@ using TandemBooking.Services;
 
 namespace TandemBooking.Controllers
 {
-    [Authorize(Policy="IsValidated")]
+    [Authorize(Policy = "IsValidated")]
     public class ReportController : Controller
     {
         private readonly TandemBookingContext _context;
@@ -40,7 +40,7 @@ namespace TandemBooking.Controllers
             {
                 pilotId = _userManager.GetUserId(User);
             }
-                
+
             if (pilotId != null)
             {
                 bookings = bookings.Where(b => b.AssignedPilot.Id == pilotId);
@@ -99,6 +99,47 @@ namespace TandemBooking.Controllers
             {
                 Year = fromDate.Year,
                 PilotStats = pilotStats,
+            });
+        }
+
+
+
+        public async Task<IActionResult> MyCompletedBookings(string pilotId = null, DateTime? fromDate = null, DateTime? toDate = null)
+        {
+            if (fromDate == null)
+                fromDate = DateTime.Today.AddMonths(-1);
+            if (toDate == null)
+                toDate = DateTime.Today;
+            
+
+            var bookings = _context.Bookings
+                .Include(b => b.AssignedPilot)
+                .AsNoTracking()
+                .Where(b => !b.Canceled && b.BookingDate >= fromDate && b.BookingDate < toDate);
+
+            pilotId = _userManager.GetUserId(User);
+        
+            if (pilotId != null)
+            {
+                bookings = bookings.Where(b => b.AssignedPilot.Id == pilotId);
+            }
+
+            var pilotName = pilotId == null
+                ? "all pilots"
+                : (await _userManager.FindByIdAsync(pilotId)).Name;
+
+            var orderedBookings = bookings
+                .OrderBy(b => b.BookingDate)
+                .ToList();
+
+            return View(new CompletedBookingsViewModel()
+            {
+                Bookings = orderedBookings,
+                Year = fromDate.Value.Year,
+                FromDate = fromDate,
+                ToDate = toDate,
+                PilotId = pilotId,
+                PilotName = pilotName
             });
         }
     }

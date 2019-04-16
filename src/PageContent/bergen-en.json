@@ -92,7 +92,7 @@
       "book": "Take me flying!"
     },
     "info": {
-      "header": "Current prices",
+      "header": "Current prices - No card payments - see FAQ for more information",
       "price": {
         "label": "Regular price",
         "value": 1700
@@ -114,7 +114,7 @@
       },
       {
         "Q": "Who can fly?",
-        "A": "To stay within safety margins we can only accept passengers weighing less than 120kg. Additionally, you must be able to do a short sprint. In order to launch the paraglider you and your instructor will be running down a hill as fast as you can."
+        "A": "To stay within safety margins our pilots have certain weight restrictions. The calendar will show if we have pilots available in your weight category. Additionally, you must be able to do a short sprint. In order to launch the paraglider you and your instructor will be running down a hill as fast as you can."
       },
       {
         "Q": "How much does it cost?",
@@ -131,6 +131,11 @@
       {
         "Q": "What should I wear?",
         "A": "Sensible shoes and something to keep you warm. You will run to launch the paraglider, so wearing high heels is definitely not recommended. Windproof jacket/pants i also adwiced in standard Bergenweather"
+      },
+      {
+        "Q": "How do I pay?",
+        "A": "Payment is done by cash or the norwegian payment system Vipps at the day of the flight. Unfortunately we are unable to accept credit cards."
+         
       }
     ],
     "other": {

@@ -130,8 +130,8 @@ Booking Coordinator
                 else
                 {
                     passengerMessage = additionalBookings.Any()
-                        ? $"Awesome! We will try to find {allBookings.Length} pilots who can take you flying on {bookingDateString}. You will be contacted shortly."
-                        : $"Awesome! We will try to find a pilot who can take you flying on {bookingDateString}. You will be contacted shortly.";
+                        ? $"Awesome! We will try to find {allBookings.Length} pilots who can take you flying on {bookingDateString}. "
+                        : $"Awesome! We will try to find a pilot who can take you flying on {bookingDateString}.";
                 }
 
                 if (!string.IsNullOrEmpty(primaryBooking.PassengerPhone))
@@ -167,6 +167,22 @@ Kind regards,
 {_bookingCoordinatorSettings.Name}
 Tandem Coordinator
 {_contService.content.clubname}";
+
+                    if (allBookings.Any(b => b.AssignedPilot == null))
+                    {
+                        message = $@"Hi {primaryBooking.PassengerName},
+
+Thank you for booking a tandem flight with {_contService.content.clubname} on {bookingDateString}. We currently do not have
+enough available pilots at the given date. We will try to organize pilots as soon as possible, but we might have to reschedule or
+cancel if no pilots become available.
+
+Kind regards,
+{_bookingCoordinatorSettings.Name}
+Tandem Coordinator
+{_contService.content.clubname}";
+                    }
+
+
                     await _mailService.Send(primaryBooking.PassengerEmail, $"Tandem flight on {bookingDateString}", message);
 
                     _bookingService.AddEvent(primaryBooking, null,

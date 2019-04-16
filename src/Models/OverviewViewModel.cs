@@ -8,5 +8,6 @@ namespace TandemBooking.Models
         public List<Booking> UpcomingBookings { get; set; }
         public List<Booking> MissingPilotBookings { get; set; }
         public List<Booking> RecentBookings { get; set; }
+        public List<Booking> CorrespondingBookings { get; set; }
     }
 }

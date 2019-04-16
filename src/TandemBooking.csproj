@@ -7,14 +7,14 @@
     <RootNamespace>TandemBooking</RootNamespace>
     <ApplicationInsightsResourceId>/subscriptions/1e764059-0762-4405-b2dd-1567ac0687c5/resourcegroups/TandemBooking/providers/microsoft.insights/components/TandemBooking</ApplicationInsightsResourceId>
     <ApplicationInsightsAnnotationResourceId>/subscriptions/1e764059-0762-4405-b2dd-1567ac0687c5/resourcegroups/TandemBooking/providers/microsoft.insights/components/TandemBooking</ApplicationInsightsAnnotationResourceId>
+
+    <RazorCompileOnBuild>false</RazorCompileOnBuild>
+    <RazorCompileOnPublish>false</RazorCompileOnPublish>
   </PropertyGroup>
 
   <ItemGroup>
     <Content Remove="PageContent\bergen-en.json" />
     <Content Remove="PageContent\bergen-no.json" />
-    <Content Remove="Views\Booking\Calender.cshtml" />
-    <Content Remove="Views\Booking\ContactInfo.cshtml" />
-    <Content Remove="Views\Booking\PassengerInfo.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,8 +41,6 @@
   <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
     <Exec Command="yarn" />
     <Exec Command="yarn run bower install" />
-    <Exec Command="yarn run gulp clean" />
-    <Exec Command="yarn run gulp min" />
   </Target>
 
   <ItemGroup>
@@ -75,12 +73,12 @@
     <None Include="PageContent\bergen-en.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Views\Booking\Calender.cshtml" />
-    <None Include="Views\Booking\ContactInfo.cshtml" />
-    <None Include="Views\Booking\PassengerInfo.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Views\Report\MyCompletedBookings.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="wwwroot\images\bg1.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

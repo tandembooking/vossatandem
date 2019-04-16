@@ -17,21 +17,7 @@ namespace TandemBooking.Controllers
 
     public class BookingController : Controller
     {
-        private static string[] _monthNames = new[]
-        {
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December"
-        };
+        private dynamic _monthNames;
         private readonly ILogger<BookingController> _logger;
         private readonly INexmoService _nexmo;
         private readonly TandemBookingContext _context;
@@ -49,6 +35,7 @@ namespace TandemBooking.Controllers
             _messageService = messageService;
             _logger = logger;
             _contentService = contentService;
+            _monthNames = _contentService.content.booking.calender.months;
         }
 
         [HttpGet]
@@ -280,7 +267,7 @@ namespace TandemBooking.Controllers
             //Assign pilots
             await _bookingService.AssignNewPilotAsync(bookings);
             _context.SaveChanges();
-
+            
             await _messageService.SendNewBookingMessage(bookings[0], bookings.Skip(1).ToArray(), true, true);
             return RedirectToAction("Confirm", new { bookingId = bookings[0].Id });
         }
@@ -336,12 +323,7 @@ namespace TandemBooking.Controllers
                     
                     var bookingsNow = bookingsToday.Where(a => a.Booking.TimeSlot == timeSlotIndex);
                     var freeNow = availableNow.Where(a => bookingsNow.All(b => b.Pilot != a.Pilot));
-                    
-
-                    if(freeNow.Count() > 0)
-                    {
-                        var test = 0;
-                    }
+                   
                     var possibleWithPassengers = PassengerAssigment.DistributePilots(freeNow.ToList(), passengers);
 
                     timeSlots.Add(new BookingCalendarTimeSlotViewModel()

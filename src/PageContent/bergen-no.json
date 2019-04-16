@@ -41,7 +41,7 @@
       "placeholder": "Vennligst før inn vekt til passasjer"
     },
     "details": {
-      "header": "Your flight details",
+      "header": "Dine detaljer",
       "nop": "Antall passasjerer:",
       "date": {
         "label": "Valgt dato:",
@@ -60,7 +60,7 @@
       "time": "Velg klokkeslett",
       "labels": {
         "available": "klokkeslett/dato har ledige piloter",
-        "unavailable": "Foreløpig ingen ledige pliter på klokkeslett/dato"
+        "unavailable": "Foreløpig ingen ledige piloter på klokkeslett/dato"
       }
     },
     "contact": {
@@ -92,7 +92,7 @@
       "book": "Fly med meg!"
     },
     "info": {
-      "header": "Priser",
+      "header": "Priser - ingen kort betaling, sjå FAQ for meir informasjon",
       "price": {
         "label": "Ordinær pris",
         "value": 1700
@@ -114,7 +114,7 @@
       },
       {
         "Q": "Hvem kan fly?",
-        "A": "Stort sett alle kan fly. Det er ingen aldersbegrensing for tandemparagliding. For at vi skal ha visse sikkerhetsmarginer, har vi en øvre vektbegrensing på 120kg. I tillegg må en være god nok til beins til å gjøre en kort sprint. For å starte en paraglider må en springe sammen men instruktøren ned en bakke så fort en kan. "
+        "A": "Stort sett alle kan fly. Det er ingen aldersbegrensing for tandemparagliding. For at vi skal ha visse sikkerhetsmarginer, har pilotene ein øvre vektgrense. Kalenderen vil vise om det er noen ledige piloter i din vektklasse. I tillegg må en være god nok til beins til å gjøre en kort sprint. For å starte en paraglider må en springe sammen men instruktøren ned en bakke så fort en kan. "
       },
       {
         "Q": "Hvor mye koster det?",
@@ -131,6 +131,10 @@
       {
         "Q": "Hva skal jeg ha på meg?",
         "A": "Fornuftige sko, helst med ankelstøtte. Du skal løpe på litt ulent terreng. I vanlig bergenstemperatur er Vindtett jakke/bukse lurt, gjerne eit par hansker."
+      },
+      {
+        "Q": "Hvordan betaler jeg?",
+        "A": "Betaling kan gjøres via Vipps eller kontant til piloten samme dag som flyturen. Vi har desverre ikke mulighet for betaling med kort."
       }
     ],
     "other": {

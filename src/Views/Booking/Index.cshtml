@@ -115,7 +115,7 @@
 }
 
 
-<form id`="BookingForm" asp-controller="Booking" asp-action="Index" method="post">
+<form id="BookingForm" asp-controller="Booking" asp-action="Index" method="post"  onSubmit="@(Model.Stage == 2 ? "return confirm('Remember to read the FAQ')" : "")">
     @* add additional passengers on a postback with invalid model *@
 
     @{
@@ -219,12 +219,12 @@
             addPassengerService++;
 
             $(addPassengerHtml).insertBefore(addPassengerMarker);
-            updateCalender();
+            //updateCalender();
         });
 
         $(document).on("click", ".remove-passenger-button", function (e) {
             $(e.target).closest(".additional-passenger").remove();
-            updateCalender();
+            //updateCalender();
         });
 
 

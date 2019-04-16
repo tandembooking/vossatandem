@@ -365,6 +365,10 @@ namespace TandemBooking.Controllers
                 _bookingService.AddEvent(booking, User, $"Canceled due to {cancelMessage} (did not notify passenger)");
             }
 
+            foreach (var bookedPilot in _context.BookedPilots.Where(b => b.Booking.Id == booking.Id))
+            {
+                bookedPilot.Canceled = true;
+            }
             _context.SaveChanges();
 
             return RedirectToAction("Details", new { Id = booking.Id });
