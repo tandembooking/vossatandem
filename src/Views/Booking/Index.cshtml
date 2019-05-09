@@ -114,7 +114,7 @@
                 </label>
                 <div class="row">
                     <div class="col-sm-5">
-                        <input type="tel" asp-for="PhoneNumber" class="form-control" placeholder="Please enter a phone number" />
+                        <input id="@Html.IdFor(m => m.PhoneNumber)" type="tel" asp-for="PhoneNumber" class="form-control" placeholder="Please enter a phone number" />
                     </div>
                     <div class="info col-sm-7 small">
                         Your pilot will contact you on this phone number in order to arrange the details for your flight. It will not be used for any other purpose.
@@ -377,5 +377,19 @@
                 $('#datepicker').datepicker('getFormattedDate')
             );
         });
+    </script>
+    
+    <script>
+        (function() {
+            var inputElement = document.getElementById("@Html.IdFor(m => m.PhoneNumber)");
+            var intlInput = window.intlTelInput(inputElement,
+                {
+                    initialCountry: "no",
+                    preferredCountries: ["no"],
+                    separateDialCode: true,
+                    utilsScript: "/lib/intl-tel-input/js/utils.js",
+                    hiddenInput: "IntlPhoneNumber",
+                });
+        })();
     </script>
 }

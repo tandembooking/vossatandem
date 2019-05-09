@@ -50,7 +50,7 @@ namespace TandemBooking.Controllers
                 if (ModelState.IsValid)
                 {
                     //validate phone number
-                    var phoneNumber = await _nexmo.FormatPhoneNumber(input.PhoneNumber);
+                    var phoneNumber = await _nexmo.FormatPhoneNumber(input.IntlPhoneNumber);
                     if (phoneNumber == null)
                     {
                         ModelState.AddModelError("PhoneNumber", "Please enter a valid phone number");
