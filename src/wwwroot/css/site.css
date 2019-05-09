@@ -151,6 +151,9 @@ body.booking .form-group .form-control {
   box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
   max-width: none;
 }
+body.booking .intl-tel-input {
+  width: 100%;
+}
 /*faq*/
 .faq-wrap {
   border-radius: 6px;
