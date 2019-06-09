@@ -48,5 +48,11 @@
       <AbsolutePath>appsettings.local.json</AbsolutePath>
     </MsDeploySkipRules>
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Migrations\20190609135415_LocationData.Designer.cs">
+      <DependentUpon>20190609135415_LocationData.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
   
 </Project>

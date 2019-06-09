@@ -24,6 +24,10 @@ namespace TandemBooking.Tests.TestSetup
             {
                 return Task.FromResult("47" + phoneNumber);
             }
+            else if (phoneNumber?.StartsWith("+47") ?? false)
+            {
+                return Task.FromResult(phoneNumber.Substring(1));
+            }
             else
             {
                 return Task.FromResult((string)null);

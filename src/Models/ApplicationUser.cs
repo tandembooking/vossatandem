@@ -20,8 +20,8 @@ namespace TandemBooking.Models
 
         public bool InWeightRange(int? passengerWeight)
         {
-            return (MinPassengerWeight ?? int.MinValue) <= (passengerWeight ?? 0)
-                && (passengerWeight ?? 0) <= (MaxPassengerWeight ?? int.MaxValue);
+            return (MinPassengerWeight ?? int.MinValue) <= (passengerWeight ?? int.MaxValue)
+                && (passengerWeight ?? int.MinValue) <= (MaxPassengerWeight ?? int.MaxValue);
         }
 
         public string FormatWeightRange()

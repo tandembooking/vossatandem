@@ -77,7 +77,7 @@ namespace TandemBooking.Services
                     ;
 
                 //find pilots with the lowest priority (lower is better)
-                var prioritizedPilots = availablePilots
+                var prioritizedPilots = applicablePilots
                     .GroupBy(pa => pa.Priority)
                     .OrderBy(grp => grp.Key)
                     .FirstOrDefault()

@@ -30,6 +30,7 @@ namespace TandemBooking.Tests.ControllerTests
             var input = new BookingViewModel
             {
                 Name = "My Name",
+                IntlPhoneNumber = "+4711111111",
                 PhoneNumber = "11111111",
                 Email = "passenger@example.com",
                 Comment = "Blah"
@@ -55,6 +56,7 @@ namespace TandemBooking.Tests.ControllerTests
             {
                 Date = new DateTime(2016, 11, 01),
                 Name = "My Name",
+                IntlPhoneNumber = "+4711111111",
                 PhoneNumber = "11111111",
                 Email = "passenger@example.com",
                 Comment = "Blah",
@@ -93,6 +95,7 @@ namespace TandemBooking.Tests.ControllerTests
             var input = new BookingViewModel
             {
                 Date = new DateTime(2016, 11, 01),
+                IntlPhoneNumber = "+4711111111",
                 PhoneNumber = "11111111",
                 Email = "passenger@example.com",
                 Comment = "Blah"
@@ -127,6 +130,7 @@ namespace TandemBooking.Tests.ControllerTests
                 Name = "My Name",
                 Weight = 100,
                 PhoneNumber = "11111111",
+                IntlPhoneNumber = "+4711111111",
                 Email = "passenger@example.com",
                 Comment = "Blah",
                 AdditionalPassengers = new[]
@@ -208,18 +212,16 @@ namespace TandemBooking.Tests.ControllerTests
             //Assert sms is sent
             var nexmoService = (MockNexmoService) GetService<INexmoService>();
 
-            //we should have sent six text messages: 
+            //we should have sent four text messages: 
             // - one to passenger
             // - one to each of the two assigned pilots
-            // - three to booking coordinator
-            Assert.Equal(6, nexmoService.Messages.Count);
+            // - one to booking coordinator about the missing pilot
+            Assert.Equal(4, nexmoService.Messages.Count);
 
             var passengerMessage = nexmoService.Messages.Single(m => m.Recipient == "4711111111");
             Assert.Contains("We will try to find 3 pilots", passengerMessage.Body);
 
             var coordinatorMessages = nexmoService.Messages.Where(m => m.Recipient == "4798463072").ToList();
-            Assert.Contains(coordinatorMessages, m => m.Body.Contains("assigned to Frode Fester"));
-            Assert.Contains(coordinatorMessages, m => m.Body.Contains("assigned to Erik Røthe Klette"));
             Assert.Contains(coordinatorMessages, m => m.Body.Contains("Please find a pilot on 01.11.2016"));
 
             var pilotMessage = nexmoService.Messages.Single(m => m.Recipient == _pilots.Frode.PhoneNumber);
@@ -254,6 +256,7 @@ namespace TandemBooking.Tests.ControllerTests
             {
                 Date = new DateTime(2016, 11, 1),
                 Name = "My Name",
+                IntlPhoneNumber = "+4711111111",
                 PhoneNumber = "11111111",
                 Email = "passenger@example.com",
                 Comment = "Blah"
@@ -286,14 +289,11 @@ namespace TandemBooking.Tests.ControllerTests
             //Assert sms is sent
             var nexmoService = (MockNexmoService) GetService<INexmoService>();
 
-            //we should have sent three text messages: one to passenger, one to booking coordinator, one to pilot
-            Assert.Equal(3, nexmoService.Messages.Count);
+            //we should have sent two text messages: one to passenger, one to pilot
+            Assert.Equal(2, nexmoService.Messages.Count);
 
             var passengerMessage = nexmoService.Messages.Single(m => m.Recipient == "4711111111");
             Assert.Contains("You will be contacted by Frode Fester", passengerMessage.Body);
-
-            var coordinatorMessage = nexmoService.Messages.Single(m => m.Recipient == "4798463072");
-            Assert.Contains("assigned to Frode Fester", coordinatorMessage.Body);
 
             var pilotMessage = nexmoService.Messages.Single(m => m.Recipient == _pilots.Frode.PhoneNumber);
             Assert.Contains("You have a new flight", pilotMessage.Body);
@@ -319,6 +319,7 @@ namespace TandemBooking.Tests.ControllerTests
             {
                 Date = new DateTime(2016, 11, 13),
                 Name = "My Name",
+                IntlPhoneNumber = "+4711111111",
                 PhoneNumber = "11111111",
                 Email = "passenger@example.com",
                 Comment = "Blah",
