@@ -32,6 +32,8 @@ namespace TandemBooking.Models
         public Booking PrimaryBooking { get; set; }
         public ICollection<Booking> AdditionalBookings { get; set; }
 
+        public Location BookingLocation { get; set; }
+
         public ICollection<BookedPilot> BookedPilots { get; set; }
         public ICollection<BookingEvent> BookingEvents { get; set; }
     }
