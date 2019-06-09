@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using System;
@@ -87,9 +88,9 @@ namespace TandemBooking
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(
             IApplicationBuilder app,
-            IHostingEnvironment env,
+            IWebHostEnvironment env,
             ILoggerFactory loggerFactory,
-            IApplicationLifetime appLifetime,
+            IHostApplicationLifetime appLifetime,
             TelemetryClient telemetryClient
         )
         {
@@ -109,7 +110,6 @@ namespace TandemBooking
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
             }
             else
             {
@@ -151,29 +151,17 @@ namespace TandemBooking
             }
 
             app.UseStaticFiles();
+            app.UseRouting();
             app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseCors();
 
-            //app.UseMvc(routes =>
-            //{
-            //    routes.MapRoute(
-            //        "default",
-            //        "{lang}/{controller=Home}/{action=Index}/{id?}");
-            //});
-
-            
-
-            app.UseMvc(routes =>
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
+                endpoints.MapControllerRoute(
                         "default",
                         "{lang=no}/{controller=Home}/{action=Index}/{id?}");
-                routes.MapRoute(
-                        "old",
-                        "{controller=Home}/{action=Index}/{id?}");
             });
-
-            
-
         }
     }
 }

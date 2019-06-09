@@ -3,6 +3,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
 
@@ -49,9 +50,8 @@ namespace TandemBooking
                     Log.Logger = new LoggerConfiguration()
                         .ReadFrom.Configuration(hostingContext.Configuration)
                         .Enrich.FromLogContext()
-                        .WriteTo.LiterateConsole()
-                        .WriteTo.Trace()
-                        .WriteTo.RollingFile("log/tandembooking-{Date}.log")
+                        .WriteTo.Console()
+                        .WriteTo.File("log/tandembooking-{Date}.log")
                         .CreateLogger();
 
                     logging.AddSerilog();
