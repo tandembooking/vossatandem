@@ -21,7 +21,7 @@ namespace TandemBooking.Services
             _userManager = userManager;
         }
 
-        public async Task<List<AvailablePilot>> GetAvailablePilotsAsync(DateTime date)
+        public async Task<List<AvailablePilot>> GetAvailablePilotsAsync(DateTime date, Guid? locationId)
         {
             var availablePilots = new List<AvailablePilot>();
             var conn = (SqlConnection) _context.Database.GetDbConnection();
@@ -36,6 +36,11 @@ namespace TandemBooking.Services
 		                SELECT PilotId, COUNT(Id) AvailabilityCount FROM PilotAvailabilities
 		                WHERE
 			                CONVERT(date, PilotAvailabilities.[Date]) = @Date
+                            AND (
+                                LocationId = @LocationId
+                                OR LocationId IS NULL
+                                OR @LocationId IS NULL
+                            )
 		                GROUP BY PilotId 
 	                ) Availabilities ON Pilots.Id = Availabilities.PilotId
 	                LEFT OUTER JOIN (
@@ -73,6 +78,7 @@ namespace TandemBooking.Services
                 cmd.Transaction = _context.Database.GetExistingTransaction()?.GetDbTransaction() as SqlTransaction;
                 cmd.CommandText = sql;
                 cmd.Parameters.AddWithValue("DateParam", date);
+                cmd.Parameters.AddWithValue("LocationId", (object)locationId ?? DBNull.Value);
 
                 using (var rd = cmd.ExecuteReader())
                 {

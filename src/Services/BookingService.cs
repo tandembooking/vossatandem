@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using TandemBooking.Models;
@@ -28,9 +29,14 @@ namespace TandemBooking.Services
             _bookingServiceDb = bookingServiceDb;
         }
 
-        public async Task<List<AvailablePilot>> FindAvailablePilotsAsync(DateTime date, bool includeUnavailable = false)
+        public async Task<List<AvailablePilot>> FindAvailablePilotsAsync(DateTime date, Location location, bool includeUnavailable = false)
         {
-            var result = await _bookingServiceDb.GetAvailablePilotsAsync(date);
+            return await FindAvailablePilotsAsync(date, location?.Id, includeUnavailable);
+        }
+
+        public async Task<List<AvailablePilot>> FindAvailablePilotsAsync(DateTime date, Guid? locationId, bool includeUnavailable = false)
+        {
+            var result = await _bookingServiceDb.GetAvailablePilotsAsync(date, locationId);
             if (includeUnavailable)
             {
                 return result;
@@ -59,12 +65,19 @@ namespace TandemBooking.Services
             {
                 throw new Exception("All bookings must be on the same date");
             }
-            
+
+            var location = bookings.First().BookingLocation;
+            if (bookings.Any(b => b.BookingLocation?.Id != location?.Id))
+            {
+                throw new Exception("All bookings must be on the same location");
+            }
+
+
             var spentPilots = bookings.SelectMany(b =>
                         b.BookedPilots?.Select(bp => bp.Pilot).ToList() ?? new List<ApplicationUser>()
             );
 
-            var availablePilots = (await FindAvailablePilotsAsync(date))
+            var availablePilots = (await FindAvailablePilotsAsync(date, location))
                 .Where(ap => !spentPilots.Contains(ap.Pilot))
                 .ToList();
 

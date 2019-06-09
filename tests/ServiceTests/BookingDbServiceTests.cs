@@ -26,7 +26,7 @@ namespace TandemBooking.Tests.ServiceTests
         {
             Context.AddAvailabilityFixture(new DateTime(2016, 11, 1), _pilots.Frode, _pilots.Erik);
 
-            var avail = await _db.GetAvailablePilotsAsync(new DateTime(2016, 11, 1));
+            var avail = await _db.GetAvailablePilotsAsync(new DateTime(2016, 11, 1), null);
 
             Assert.Equal(3, avail.Count); // only pilots
             Assert.Equal(2, avail.Count(x => x.Available)); // frode and erik are available
@@ -67,7 +67,7 @@ namespace TandemBooking.Tests.ServiceTests
             Context.SaveChanges();
 
             //act
-            var avail = await _db.GetAvailablePilotsAsync(new DateTime(2016, 11, 1));
+            var avail = await _db.GetAvailablePilotsAsync(new DateTime(2016, 11, 1), null);
 
             //assert
             Assert.All(avail, x => Assert.Equal(false, x.Available));

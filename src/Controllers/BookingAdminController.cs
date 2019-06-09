@@ -285,14 +285,19 @@ namespace TandemBooking.Controllers
                 .Include(b => b.AdditionalBookings).ThenInclude(b => b.AssignedPilot)
                 .Include(b => b.PrimaryBooking).ThenInclude(b => b.AssignedPilot)
                 .Include(b => b.PrimaryBooking).ThenInclude(b => b.AdditionalBookings)
+                .Include(b => b.BookingLocation)
                 .FirstOrDefault(b => b.Id == id);
+            if (booking == null)
+            {
+                return NotFound("Booking not found");
+            }
 
             var vm = new BookingDetailsViewModel
             {
                 ErrorMessage = errorMessage,
                 Booking = booking,
                 Editable = User.IsAdmin() || booking.AssignedPilot?.Id == _userManager.GetUserId(User),
-                AvailablePilots = await _bookingService.FindAvailablePilotsAsync(booking.BookingDate, true),
+                AvailablePilots = await _bookingService.FindAvailablePilotsAsync(booking.BookingDate, booking.BookingLocation, true),
             };
 
             ViewBag.ErrorMessage = errorMessage;
@@ -385,7 +390,7 @@ namespace TandemBooking.Controllers
             {
                 ErrorMessage = errorMessage,
                 Booking = booking,
-                AvailablePilots = await _bookingService.FindAvailablePilotsAsync(booking.BookingDate, true),
+                AvailablePilots = await _bookingService.FindAvailablePilotsAsync(booking.BookingDate, booking.BookingLocation, true),
             };
 
             ViewBag.ErrorMessage = errorMessage;
