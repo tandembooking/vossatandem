@@ -27,7 +27,7 @@ namespace TandemBooking.Services
             await _smsService.Send(user.PhoneNumber, message, booking);
         }
 
-        public async Task SendNewBookingMessage(Booking primaryBooking, Booking[] additionalBookings, bool notifyPassenger, bool notifyPilot)
+        public async Task SendNewBookingMessage(Booking primaryBooking, Booking[] additionalBookings, bool notifyPassenger, bool notifyPilot, bool notifyBookingCoordinator)
         {
             var allBookings = new[] {primaryBooking}.Union(additionalBookings).ToArray();
             var bookingDateString = primaryBooking.BookingDate.ToString("dd.MM.yyyy");
@@ -83,7 +83,7 @@ Booking Coordinator
                         await _mailService.Send(_bookingCoordinatorSettings.Email, bookingCoordinatorMessage, bookingCoordinatorMessage);
                     }
                 }
-                else
+                else if (notifyBookingCoordinator || booking.PassengerFee > 0)
                 {
                     _bookingService.AddEvent(booking, null,
                         $"No pilots available, sent message to tandem coordinator {_bookingCoordinatorSettings.Name} ({_bookingCoordinatorSettings.PhoneNumber.AsPhoneNumber()})");

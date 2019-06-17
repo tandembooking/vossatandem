@@ -18,12 +18,13 @@ namespace TandemBooking.ViewComponents
             _bookingService = bookingService;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(string controlName, DateTime date, Guid? locationId)
+        public async Task<IViewComponentResult> InvokeAsync(string controlName, DateTime date, string selectedPilotId = null, Guid? locationId = null)
         {
             return View(new PilotSelectorViewModel
             {
                 AvailablePilots = await _bookingService.FindAvailablePilotsAsync(date, locationId, true),
                 ControlName = controlName,
+                SelectedPilotId = selectedPilotId,
             });
         }
     }

@@ -128,7 +128,7 @@ namespace TandemBooking.Controllers
                     await _bookingService.AssignNewPilotAsync(bookings);
                     _context.SaveChanges();
 
-                    await _messageService.SendNewBookingMessage(booking, additionalBookings, true, true);
+                    await _messageService.SendNewBookingMessage(booking, additionalBookings, true, true, true);
 
                     return RedirectToAction("Confirm", new {bookingId = booking.Id});
                 }

@@ -90,6 +90,7 @@ namespace TandemBooking.Controllers
                     PrimaryBookingId = originalBooking.Id,
                     NotifyPassenger = false,
                     NotifyPilot = true,
+                    NofityBookingCoordinator = true,
                     PassengerFee = (int)originalBooking.PassengerFee,
                 };
             }
@@ -98,6 +99,10 @@ namespace TandemBooking.Controllers
                 vm = new CreateBookingViewModel
                 {
                     Date = DateTime.Today,
+                    PilotId = User.IsAdmin() ? "-1" : _userManager.GetUserId(User),
+                    NotifyPassenger = false,
+                    NotifyPilot = false,
+                    NofityBookingCoordinator = false,
                 };
             }
 
@@ -160,6 +165,9 @@ namespace TandemBooking.Controllers
                         //if no pilot is selected, find a new one
                         await _bookingService.AssignNewPilotAsync(booking);
                     }
+                    else if (input.PilotId == "-1") {
+                        //leave pilot unassigned
+                    }
                     else
                     {
                         //or use pilot as provided
@@ -168,7 +176,7 @@ namespace TandemBooking.Controllers
                     }
                     _context.SaveChanges();
 
-                    await _messageService.SendNewBookingMessage(booking, new Booking[] {}, input.NotifyPassenger, input.NotifyPilot);
+                    await _messageService.SendNewBookingMessage(booking, new Booking[] {}, input.NotifyPassenger, input.NotifyPilot, input.NofityBookingCoordinator);
 
                     //redirect to edit action
                     return RedirectToAction("Details", new {id = booking.Id});

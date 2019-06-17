@@ -34,7 +34,7 @@ else
             <label asp-for="Date" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 <div id="datepicker" class="input-width" data-date='@Model.Date?.ToString("MM/dd/yyyy")'></div>
-                <input type="hidden" asp-for="Date" class="form-control"/>
+                <input type="hidden" asp-for="Date" class="form-control" />
                 <span asp-validation-for="Date" class="text-danger" />
             </div>
         </div>
@@ -43,7 +43,7 @@ else
             <label asp-for="PilotId" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 <div id="pilot-selector">
-                    @await Component.InvokeAsync("PilotSelector", new { date = @Model.Date, controlName = "PilotId" })
+                    @await Component.InvokeAsync("PilotSelector", new { date = Model.Date, controlName = "PilotId", selectedPilotId = Model.PilotId })
                 </div>
                 <span asp-validation-for="PilotId" class="text-danger"></span>
             </div>
@@ -52,7 +52,7 @@ else
         <div class="form-group">
             <label asp-for="Name" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="Name" class="form-control"/>
+                <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger" />
             </div>
         </div>
@@ -68,7 +68,7 @@ else
         <div class="form-group">
             <label asp-for="PhoneNumber" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="PhoneNumber" class="form-control"/>
+                <input asp-for="PhoneNumber" class="form-control" />
                 <span asp-validation-for="PhoneNumber" class="text-danger" />
             </div>
         </div>
@@ -76,7 +76,7 @@ else
         <div class="form-group">
             <label asp-for="Email" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="Email" class="form-control"/>
+                <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger" />
             </div>
         </div>
@@ -100,7 +100,7 @@ else
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <div class="checkbox">
-                    <input asp-for="NotifyPassenger"/>
+                    <input asp-for="NotifyPassenger" />
                     <label asp-for="NotifyPassenger"></label>
                 </div>
             </div>
@@ -114,6 +114,16 @@ else
                 </div>
             </div>
         </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="checkbox">
+                    <input asp-for="NofityBookingCoordinator" />
+                    <label asp-for="NofityBookingCoordinator"></label>
+                </div>
+            </div>
+        </div>
+
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Create" class="btn btn-default" />
