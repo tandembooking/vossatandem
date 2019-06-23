@@ -45,6 +45,7 @@ namespace TandemBooking
             {
                 Name = Configuration["BookingCoordinator:Name"],
                 PhoneNumber = Configuration["BookingCoordinator:PhoneNumber"],
+                PublicPhoneNumber = Configuration["BookingCoordinator:PublicPhoneNumber"],
                 Email = Configuration["BookingCoordinator:Email"],
                 DefaultPassengerFee = int.Parse(Configuration["BookingCoordinator:DefaultPassengerFee"])
             });

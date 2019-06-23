@@ -9,6 +9,13 @@ namespace TandemBooking.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly BookingCoordinatorSettings _bookingCoordinatorSettings;
+
+        public HomeController(BookingCoordinatorSettings bookingCoordinatorSettings)
+        {
+            _bookingCoordinatorSettings = bookingCoordinatorSettings;
+        }
+
         public IActionResult Index()
         {
             if (User.IsAdmin() || User.IsPilot())
@@ -25,12 +32,22 @@ namespace TandemBooking.Controllers
 
         public IActionResult Contact()
         {
-            return View();
+            return View(new ContactViewModel()
+            {
+                BookingCoordinatorPhoneNumber = _bookingCoordinatorSettings.PublicPhoneNumber ?? _bookingCoordinatorSettings.PhoneNumber.AsPhoneNumber(),
+                BookingCoordinatorEmail = _bookingCoordinatorSettings.Email,
+            });
         }
 
         public IActionResult Error()
         {
             return View();
         }
+    }
+
+    public class ContactViewModel
+    {
+        public string BookingCoordinatorPhoneNumber { get; set; }
+        public string BookingCoordinatorEmail { get; set; }
     }
 }

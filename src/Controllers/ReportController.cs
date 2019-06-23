@@ -83,6 +83,7 @@ namespace TandemBooking.Controllers
                 .AsNoTracking()
                 .Where(b => !b.Canceled && b.AssignedPilotId != null && b.BookingDate >= fromDate && b.BookingDate < toDate)
                 .Where(b => b.PassengerFee > 0)
+                .ToList()
                 .GroupBy(b => b.AssignedPilotId)
                 .Select(grp => new BookingsByPilotViewModelItem
                 {

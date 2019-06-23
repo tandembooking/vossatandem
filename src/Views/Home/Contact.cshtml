@@ -1,17 +1,19 @@
+@model TandemBooking.Controllers.ContactViewModel
 @{
     ViewData["Title"] = "Contact";
     ViewData["CssClass"] = "contact";
 }
 <h2>@ViewData["Title"]</h2>
 
-<p>Voss Hang og Paragliderklubb<br/>
-    <a href="http://www.vosshpk.no">www.vosshpk.no</a><br/>
+<p>
+    Voss Hang og Paragliderklubb<br />
+    <a href="http://www.vosshpk.no">www.vosshpk.no</a><br />
 </p>
 
 <p>
-    <strong>Tandem Coordinator:</strong><br/>
-    Phone: <a href="tel:+4745775703">457 75 703</a><br />
-    Email: <a href="mailto:tandemvoss@gmail.com">tandem@vosshpk.no</a>
+    <strong>Tandem Coordinator:</strong><br />
+    Phone: <a href="tel:@Model.BookingCoordinatorPhoneNumber.Replace(" ", "")">@Model.BookingCoordinatorPhoneNumber</a><br />
+    Email: <a href="mailto:@Model.BookingCoordinatorEmail">@Model.BookingCoordinatorEmail</a>
 </p>
 <p class="air-vertical">
     <a href="http://vosshpk.no" title="Voss Hang og Paragliderklubb">

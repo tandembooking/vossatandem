@@ -73,6 +73,8 @@ namespace TandemBooking.Services
 
             var users = _context.Users.ToList();
 
+            var isDuringVeko = (date > new DateTime(2019, 6, 23) && date < new DateTime(2019, 6, 30));
+
             using (var cmd = conn.CreateCommand())
             {
                 cmd.Transaction = _context.Database.GetExistingTransaction()?.GetDbTransaction() as SqlTransaction;
@@ -93,8 +95,9 @@ namespace TandemBooking.Services
                         {
                             Pilot = users.Single(u => u.Id == pilotId),
                             Available = availabilities > 0,
-                            Priority = bookings
-                                        + 1000*bookingsToday,
+                            Priority = isDuringVeko
+                                ? bookingsToday
+                                : bookings + 1000 * bookingsToday,
                             // a booking the same day is weighted more heavily to avoid pilots getting too many flights a day
                         };
                         availablePilots.Add(availablePilot);
