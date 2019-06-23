@@ -9,5 +9,6 @@ namespace TandemBooking.ViewModels.BookingAdmin
         public string ErrorMessage { get; set; }
         public TandemBooking.Models.Booking Booking { get; set; }
         public List<AvailablePilot> AvailablePilots { get; set; }
+        public string SelectedPilotId { get; internal set; }
     }
 }

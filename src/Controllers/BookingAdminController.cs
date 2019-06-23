@@ -389,7 +389,7 @@ namespace TandemBooking.Controllers
                 .FirstOrDefault(b => b.Id == id);
 
             var userId = _userManager.GetUserId(User);
-            if (!User.IsAdmin() && booking.AssignedPilot.Id != userId)
+            if (!User.IsAdmin() && booking.AssignedPilot != null && booking.AssignedPilot.Id != userId)
             {
                 return RedirectToAction("Details", new { id = id, errorMessage = "Only admin or currently assigned pilot can assign new pilot" });
             }
@@ -399,6 +399,7 @@ namespace TandemBooking.Controllers
                 ErrorMessage = errorMessage,
                 Booking = booking,
                 AvailablePilots = await _bookingService.FindAvailablePilotsAsync(booking.BookingDate, booking.BookingLocation, true),
+                SelectedPilotId = User.IsAdmin() ? null : _userManager.GetUserId(User),
             };
 
             ViewBag.ErrorMessage = errorMessage;
@@ -415,7 +416,7 @@ namespace TandemBooking.Controllers
                 .FirstOrDefault(b => b.Id == id);
 
             var userId = _userManager.GetUserId(User);
-            if (!User.IsAdmin() && booking.AssignedPilot.Id != userId)
+            if (!User.IsAdmin() && booking.AssignedPilot != null && booking.AssignedPilot.Id != userId)
             {
                 return RedirectToAction("Details", new { id = id, errorMessage = "Only admin or currently assigned pilot can assign new pilot" });
             }

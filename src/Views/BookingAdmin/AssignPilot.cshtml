@@ -30,7 +30,7 @@
                             <option value="">Choose from available pilots</option>
                             @foreach (var pilot in Model.AvailablePilots.OrderByDescending(p => p.Available).ThenBy(p => p.Priority))
                             {
-                                <option class="@(pilot.Available ? "available" : "unavailable")" value="@pilot.Pilot.Id">
+                                <option class="@(pilot.Available ? "available" : "unavailable")" value="@pilot.Pilot.Id" selected="@(Model.SelectedPilotId == pilot.Pilot.Id)">
                                     @pilot.Pilot.Name (@pilot.Pilot.PhoneNumber.AsPhoneNumber())
                                     @pilot.Pilot.FormatWeightRange()
                                     @(pilot.Available ? "Available" : "Unavailable"),

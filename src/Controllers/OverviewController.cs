@@ -25,16 +25,13 @@ namespace TandemBooking.Controllers
         public IActionResult Index()
         {
             var result = new OverviewViewModel();
-            if (User.IsAdmin())
-            {
-                result.MissingPilotBookings = _context.Bookings
-                    .Include(b => b.AssignedPilot)
-                    .AsNoTracking()
-                    .Where(b => !b.Canceled && b.BookingDate >= DateTime.Today)
-                    .Where(b => b.AssignedPilot == null)
-                    .OrderBy(b => b.BookingDate).ThenBy(b => b.DateRegistered)
-                    .ToList();
-            }
+            result.MissingPilotBookings = _context.Bookings
+                .Include(b => b.AssignedPilot)
+                .AsNoTracking()
+                .Where(b => !b.Canceled && b.BookingDate >= DateTime.Today)
+                .Where(b => b.AssignedPilot == null)
+                .OrderBy(b => b.BookingDate).ThenBy(b => b.DateRegistered)
+                .ToList();
 
             if (User.IsPilot())
             {
