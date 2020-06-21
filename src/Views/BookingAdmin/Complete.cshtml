@@ -15,14 +15,10 @@
                 <form asp-controller="BookingAdmin" asp-action="Complete" method="post" role="form" onsubmit="return submitComplete()" class="form-horizontal">
                     <input type="hidden" name="Id" value="@Model.Booking.Id" />
 
-                    <p>
-                        Make sure that passenger fee matches the fee the passenger paid for the flight. Payment should be made to the dedicated pilot account. Either through Vipps or bank transfer by pilot, if the passenger is unable to use Vipps.
-                    </p>
-
                     <div class="radio">
                         <label>
-                            <input type="radio" asp-for="FlightType" value="@FlightType.Gondola" checked="@(Model.FlightType == FlightType.Gondola)" />
-                            Flight from Hanguren using the cable car
+                            <input type="radio" asp-for="FlightType" value="@FlightType.Hangur" checked="@(Model.FlightType == FlightType.Hangur)" />
+                            Flight from Hanguren
                         </label>
                     </div>
                     <div class="radio">
@@ -33,11 +29,20 @@
                     </div>
                     <div class="radio">
                         <label>
-                            <input type="radio" asp-for="FlightType" value="@FlightType.Other" checked="@(Model.FlightType == FlightType.Other)" />
-                            Flight from other takeoff
+                            <input type="radio" asp-for="FlightType" value="@FlightType.MyrkdalenRokneLiaset" checked="@(Model.FlightType == FlightType.MyrkdalenRokneLiaset)" />
+                            Flight from Myrkdalen/Rokne/Liaset or other mountain takeoff near Voss
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" asp-for="FlightType" value="@FlightType.Aurland" checked="@(Model.FlightType == FlightType.Aurland)" />
+                            Flight from Aurland or other out-of-town takeoff
                         </label>
                     </div>
 
+                    <p>
+                        Make sure that passenger fee matches the fee the passenger paid for the flight.
+                    </p>
 
                     <div class="form-group">
                         <label asp-for="PassengerFee" class="col-md-2 control-label">Passenger fee</label>
@@ -46,6 +51,20 @@
                             <span asp-validation-for="PassengerFee" class="text-danger" />
                         </div>
                     </div>
+
+                    <div class="radio">
+                        <label>
+                            <input type="radio" asp-for="PaymentType" value="@PaymentType.IZettle" checked="@(Model.PaymentType == PaymentType.IZettle)" />
+                            Paid with iZettle
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" asp-for="PaymentType" value="@PaymentType.IZettle" checked="@(Model.PaymentType == PaymentType.IZettle)" />
+                            Paid with Vipps
+                        </label>
+                    </div>
+
 
                     <div class="form-group">
                         <label asp-for="BoatDriver" class="col-md-2 control-label">Boat driver (when winching)</label>

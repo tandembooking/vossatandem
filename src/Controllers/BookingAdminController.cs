@@ -548,7 +548,8 @@ namespace TandemBooking.Controllers
             {
                 Booking = booking,
                 PassengerFee = (int)booking.PassengerFee,
-                FlightType = booking.FlightType ?? FlightType.Other,
+                FlightType = booking.FlightType ?? FlightType.Hangur,
+                PaymentType = booking.PaymentType ?? PaymentType.IZettle,
                 BoatDriver = booking.BoatDriver
             });
         }
@@ -570,9 +571,21 @@ namespace TandemBooking.Controllers
             //update passenger fee and completed status
             booking.PassengerFee = input.PassengerFee;
             booking.FlightType = input.FlightType;
+            booking.PaymentType = input.PaymentType;
             booking.BoatDriver = input.BoatDriver;
+
+            var remainingFee = booking.PassengerFee;
+            var boatDriverFee = booking.FlightType == FlightType.Winch ? Math.Min(remainingFee, _bookingCoordinatorSettings.DefaultBoatDriverFee) : 0m;
+            remainingFee -= boatDriverFee;
+
+            var clubFee = Math.Min(remainingFee, _bookingCoordinatorSettings.DefaultClubFee);
+            remainingFee -= clubFee;
+
+            booking.PilotFee = remainingFee;
+            booking.BoatDriverFee = boatDriverFee;
             booking.Canceled = false;
             booking.Completed = true;
+            booking.CompletedDate = DateTime.Now;
             await _context.SaveChangesAsync();
 
             _bookingService.AddEvent(booking, User, "booking confirmed");

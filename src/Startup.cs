@@ -41,32 +41,9 @@ namespace TandemBooking
             services.AddMvc();
 
             // Add configuration services.
-            services.AddTransient(provider => new BookingCoordinatorSettings
-            {
-                Name = Configuration["BookingCoordinator:Name"],
-                PhoneNumber = Configuration["BookingCoordinator:PhoneNumber"],
-                PublicPhoneNumber = Configuration["BookingCoordinator:PublicPhoneNumber"],
-                Email = Configuration["BookingCoordinator:Email"],
-                DefaultPassengerFee = int.Parse(Configuration["BookingCoordinator:DefaultPassengerFee"])
-            });
-
-            services.AddTransient(provider => new NexmoSettings
-            {
-                Enable = Configuration["Nexmo:Enable"] == "True",
-                ApiKey = Configuration["Nexmo:ApiKey"],
-                ApiSecret = Configuration["Nexmo:ApiSecret"]
-            });
-
-            services.AddTransient(provider => new MailSettings
-            {
-                Enable = Configuration["Mail:Enable"] == "True",
-                SmtpUser = Configuration["Mail:SmtpUser"],
-                SmtpPassword = Configuration["Mail:SmtpPassword"],
-                SmtpServer = Configuration["Mail:SmtpServer"],
-                SmtpPort = int.Parse(Configuration["Mail:SmtpPort"]),
-                FromName = Configuration["Mail:FromName"],
-                FromAddress = Configuration["Mail:FromAddress"]
-            });
+            services.AddTransient(provider => Configuration.GetSection("BookingCoordinator").Get<BookingCoordinatorSettings>());
+            services.AddTransient(provider => Configuration.GetSection("Nexmo").Get<NexmoSettings>());
+            services.AddTransient(provider => Configuration.GetSection("Mail").Get<MailSettings>());
 
             //add implementations of mail and nexmo services, which does communication with the outside world
             //they are interfaced because we want to provide different implementations for testing

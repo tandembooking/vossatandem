@@ -25,7 +25,7 @@ namespace TandemBooking.Tests.TestSetup
             Log.Logger = new LoggerConfiguration()
                 .Enrich.FromLogContext()
                 .MinimumLevel.Warning()
-                .WriteTo.LiterateConsole()
+                .WriteTo.Console()
                 .CreateLogger();
         }
 

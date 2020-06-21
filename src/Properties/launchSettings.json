@@ -15,6 +15,9 @@
         "Hosting:Environment": "Development"
       },
       "ancmHostingModel": "OutOfProcess"
+    },
+    "Kestrel": {
+      "commandName": "Project"
     }
   }
 }

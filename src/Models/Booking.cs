@@ -6,9 +6,18 @@ namespace TandemBooking.Models
     public enum FlightType
     {
         Other = 0,
-        Gondola = 1,
-        Winch = 2
+        Hangur = 1,
+        Winch = 2,
+        MyrkdalenRokneLiaset = 3,
+        Aurland = 4,
     }
+
+    public enum PaymentType
+    {
+        IZettle = 1,
+        Vipps = 2
+    }
+
 
     public class Booking {
         public Guid Id {get;set;}
@@ -23,8 +32,13 @@ namespace TandemBooking.Models
         public string PassengerEmail {get;set;}
         public string PassengerPhone {get;set;} 
         public string Comment {get;set;}
+        
         public FlightType? FlightType { get; set; }
+        public PaymentType? PaymentType { get; set; }
         public string BoatDriver { get; set; }
+        public decimal? PilotFee { get; set; }
+        public decimal? BoatDriverFee { get; set; }
+        public DateTime? CompletedDate { get; set; }
 
         public string AssignedPilotId { get; set; }
         public ApplicationUser AssignedPilot { get; set; }
