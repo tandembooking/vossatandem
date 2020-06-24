@@ -12,8 +12,8 @@
         <th>Name</th>
         <th>Email</th>
         <th>Phone</th>
-        <th>Tandem Pilot</th>
-        <th>Admin</th>
+        <th>Roles</th>
+        <th>Accounts</th>
         <th></th>
     </tr>
     @foreach (var user in Model)
@@ -22,8 +22,11 @@
             <td>@user.Name</td>
             <td>@user.Email</td>
             <td>@user.PhoneNumber</td>
-            <td>@(user.IsPilot ? "Yes" : "No")</td>
-            <td>@(user.IsAdmin ? "Yes" : "No")</td>
+            <td>
+                @(user.IsPilot ? "Pilot " : "")
+                @(user.IsAdmin ? "Admin " : "")
+            </td>
+            <td>@user.VippsAccount @user.IZettleAccount</td>
             <td>
                 @if (User.IsAdmin())
                 {

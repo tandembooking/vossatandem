@@ -15,6 +15,9 @@ namespace TandemBooking.Models
         public int? MinPassengerWeight { get; set; }
         public int? MaxPassengerWeight { get; set; }
 
+        public string IZettleAccount { get; set; }
+        public string VippsAccount { get; set; }
+
         public ICollection<BookedPilot> Bookings { get; set; }
         public ICollection<PilotAvailability> Availabilities { get; set; }
 
