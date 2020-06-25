@@ -26,10 +26,6 @@ namespace TandemBooking.Controllers
         {
             var fromDate = new DateTime(year ?? DateTime.Today.Year, 1, 1);
             var toDate = fromDate.AddYears(1);
-            if (toDate > DateTime.Today)
-            {
-                toDate = DateTime.Today;
-            }
 
             var bookings = _context.Bookings
                 .Include(b => b.AssignedPilot)
@@ -75,10 +71,6 @@ namespace TandemBooking.Controllers
         {
             var fromDate = new DateTime(year ?? DateTime.Today.Year, 1, 1);
             var toDate = fromDate.AddYears(1);
-            if (toDate > DateTime.Today)
-            {
-                toDate = DateTime.Today;
-            }
 
             var bookings = _context.Bookings
                 .Include(b => b.AssignedPilot)
@@ -87,8 +79,8 @@ namespace TandemBooking.Controllers
                     !b.Canceled
                     && b.Completed
                     && (
-                        (b.CompletedDate == null && b.BookingDate >= fromDate && b.BookingDate < toDate)
-                        || (b.CompletedDate != null && b.CompletedDate >= fromDate && b.CompletedDate < toDate)
+                        (b.CompletedDate == null && b.BookingDate >= fromDate && b.BookingDate <= toDate)
+                        || (b.CompletedDate != null && b.CompletedDate >= fromDate && b.CompletedDate <= toDate)
                     )
                 );
 
@@ -120,8 +112,12 @@ namespace TandemBooking.Controllers
                 CompletedDate = b.CompletedDate,
                 InstructorName = b.AssignedPilot.Name,
                 InstructorEmail = b.AssignedPilot.Email,
-                InstructorIZettleAccount = "",
-                InstructorVippsAccount = "",
+                IZettleAccount = b.PaymentType == PaymentType.IZettle 
+                    ? b.IZettleAccount ?? b.AssignedPilot?.IZettleAccount ?? "ukjent iZettle-konto"
+                    : "",
+                VippsAccount = b.PaymentType == PaymentType.Vipps
+                    ? b.VippsAccount ?? b.AssignedPilot?.VippsAccount?? "ukjent Vipps-konto"
+                    : "",
                 PassengerName = b.PassengerName,
                 PassengerEmail = b.PassengerEmail,
 

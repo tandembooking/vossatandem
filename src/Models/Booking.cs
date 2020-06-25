@@ -47,6 +47,8 @@ namespace TandemBooking.Models
         public ICollection<Booking> AdditionalBookings { get; set; }
 
         public Location BookingLocation { get; set; }
+        public string IZettleAccount { get; set; }
+        public string VippsAccount { get; set; }
 
         public ICollection<BookedPilot> BookedPilots { get; set; }
         public ICollection<BookingEvent> BookingEvents { get; set; }

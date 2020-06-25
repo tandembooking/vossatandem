@@ -13,5 +13,7 @@ namespace TandemBooking.ViewModels.BookingAdmin
         public FlightType FlightType { get; set; }
         public PaymentType PaymentType { get; set; }
         public string BoatDriver { get; set; }
+        public string IZettleAccount { get; set; }
+        public string VippsAccount { get; set; }
     }
 }

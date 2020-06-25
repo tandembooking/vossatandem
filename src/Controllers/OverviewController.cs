@@ -46,7 +46,7 @@ namespace TandemBooking.Controllers
                 result.RecentBookings = _context.Bookings
                     .Include(b => b.AssignedPilot)
                     .AsNoTracking()
-                    .Where(b => !b.Canceled && b.BookingDate < DateTime.Today)
+                    .Where(b => !b.Canceled && b.BookingDate < DateTime.Today.AddDays(1))
                     .Where(b => b.AssignedPilotId == _userManager.GetUserId(User))
                     .OrderByDescending(b => b.BookingDate).ThenBy(b => b.DateRegistered)
                     .Take(10)
