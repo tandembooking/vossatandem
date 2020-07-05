@@ -5,6 +5,13 @@ using TandemBooking.Models;
 
 namespace TandemBooking.Services
 {
+    public static class Policy
+    {
+        public const string IsValidated = "IsValidated";
+        public const string IsAdmin = "IsAdmin";
+        public const string IsPilot = "IsPilot";
+    }
+
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddTandemBookingAuthentication(this IServiceCollection services)
@@ -31,9 +38,9 @@ namespace TandemBooking.Services
             services
                 .AddAuthorization(options =>
                 {
-                    options.AddPolicy("IsValidated", policy => policy.RequireAssertion(ctx => ctx.User.IsAdmin() || ctx.User.IsPilot()));
-                    options.AddPolicy("IsAdmin", policy => policy.RequireClaim(ClaimsPrincipalExtensions.AdminClaim));
-                    options.AddPolicy("IsPilot", policy => policy.RequireClaim(ClaimsPrincipalExtensions.PilotClaim));
+                    options.AddPolicy(Policy.IsValidated, policy => policy.RequireAssertion(ctx => ctx.User.IsAdmin() || ctx.User.IsPilot()));
+                    options.AddPolicy(Policy.IsAdmin, policy => policy.RequireClaim(ClaimsPrincipalExtensions.AdminClaim));
+                    options.AddPolicy(Policy.IsPilot, policy => policy.RequireClaim(ClaimsPrincipalExtensions.PilotClaim));
                 });
 
             return services;

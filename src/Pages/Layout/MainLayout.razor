@@ -1,0 +1,53 @@
+﻿@inherits LayoutComponentBase
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" @onclick="ToggleNavbarOpen">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <a href="/" class="navbar-brand">
+                <img src="images/logo.png" alt="" style="height: 35px; display: inline-block; margin: -10px 0;" />
+                Voss tandem paragliding
+            </a>
+        </div>
+        <div class="navbar-collapse collapse @(IsNavbarOpen ? "in" : "")">
+            <ul class="nav navbar-nav">
+                <li><a href="/booking">Booking</a></li>
+                <li><a href="/home/faq">FAQ</a></li>
+                <li><a href="/home/contact">Contact</a></li>
+            </ul>
+
+            <AuthorizeView Policy="@Policy.IsValidated">
+                <Authorized>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>Authorized!</li>
+                    </ul>
+                </Authorized>
+                <NotAuthorized>
+                    <ul class="nav navbar-nav navbar-right">
+                        <MenuDropdown Caption="Pilots">
+                            <li><a href="account/register">Register</a></li>
+                            <li><a href="account/login">Log in</a></li>
+                        </MenuDropdown>
+                    </ul>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
+    </div>
+</div>
+<div class="container body-content">
+    @Body
+</div>
+
+@code {
+    public bool IsNavbarOpen { get; set; }
+
+    public void ToggleNavbarOpen(MouseEventArgs args)
+    {
+        IsNavbarOpen = !IsNavbarOpen;
+    }
+}

@@ -1,0 +1,24 @@
+﻿<li class="dropdown @(IsOpen ? "open" : "")">
+    <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="@(!IsOpen)" @onclick="ToggleOpen">
+        @Caption
+        <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu">
+        @ChildContent
+    </ul>
+</li>
+
+@code {
+    [Parameter]
+    public string Caption { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    public bool IsOpen { get; set; }
+
+    protected async Task ToggleOpen(MouseEventArgs args)
+    {
+        IsOpen = !IsOpen;
+    }
+}

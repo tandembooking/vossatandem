@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Runtime.InteropServices.ComTypes;
 using Fujiy.ApplicationInsights.AspNetCore.SqlTrack;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
@@ -39,6 +40,8 @@ namespace TandemBooking
             services.AddTandemBookingAuthentication();
             services.AddTandemBookingAuthorization();
             services.AddMvc();
+            services.AddRazorPages();
+            services.AddServerSideBlazor();
 
             // Add configuration services.
             services.AddTransient(provider => Configuration.GetSection("BookingCoordinator").Get<BookingCoordinatorSettings>());
@@ -124,8 +127,11 @@ namespace TandemBooking
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapRazorPages();
+                //endpoints.MapRazorPages();
+                endpoints.MapBlazorHub();
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                //endpoints.MapFallbackToController("Index", "Controller");
+                endpoints.MapFallbackToPage("admin/{*path}", "/_Host");
             });
         }
     }
