@@ -3,8 +3,8 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:49892/",
-      "sslPort": 44397
+      "applicationUrl": "http://localhost:60863/",
+      "sslPort": 44352
     }
   },
   "profiles": {
@@ -12,12 +12,16 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
-        "Hosting:Environment": "Development"
-      },
-      "ancmHostingModel": "OutOfProcess"
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
     },
-    "Kestrel": {
-      "commandName": "Project"
+    "TandemBooking": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:5001;http://localhost:5000"
     }
   }
 }
