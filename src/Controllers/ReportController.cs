@@ -76,7 +76,8 @@ namespace TandemBooking.Controllers
                 .Include(b => b.AssignedPilot)
                 .AsNoTracking()
                 .Where(b =>
-                    !b.Canceled
+                    b.PassengerFee > 0 // don't need to export free trips to accounting
+                    && !b.Canceled
                     && b.Completed
                     && (
                         (b.CompletedDate == null && b.BookingDate >= fromDate && b.BookingDate <= toDate)
@@ -112,12 +113,19 @@ namespace TandemBooking.Controllers
                 CompletedDate = b.CompletedDate,
                 InstructorName = b.AssignedPilot.Name,
                 InstructorEmail = b.AssignedPilot.Email,
-                IZettleAccount = b.PaymentType == PaymentType.IZettle 
-                    ? b.IZettleAccount ?? b.AssignedPilot?.IZettleAccount ?? "ukjent iZettle-konto"
-                    : "",
-                VippsAccount = b.PaymentType == PaymentType.Vipps
-                    ? b.VippsAccount ?? b.AssignedPilot?.VippsAccount?? "ukjent Vipps-konto"
-                    : "",
+                PaymentType = b.PaymentType switch
+                {
+                    PaymentType.Vipps => "Vipps",
+                    PaymentType.IZettle => "iZettle",
+                    PaymentType.Free => "Free",
+                    _ => "Other",
+                },
+                //IZettleAccount = b.PaymentType == PaymentType.IZettle 
+                //    ? b.IZettleAccount ?? b.AssignedPilot?.IZettleAccount ?? "Unknown iZettle-accont"
+                //    : "",
+                //VippsAccount = b.PaymentType == PaymentType.Vipps
+                //    ? b.VippsAccount ?? b.AssignedPilot?.VippsAccount?? "Unknown Vipps-account"
+                //    : "",
                 PassengerName = b.PassengerName,
                 PassengerEmail = b.PassengerEmail,
 

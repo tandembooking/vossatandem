@@ -54,13 +54,19 @@
 
                     <div class="radio">
                         <label>
+                            <input type="radio" asp-for="PaymentType" value="@PaymentType.Free" checked="@(Model.PaymentType == PaymentType.Free)" />
+                            No payment
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
                             <input type="radio" asp-for="PaymentType" value="@PaymentType.IZettle" checked="@(Model.PaymentType == PaymentType.IZettle)" />
                             Paid with iZettle
                         </label>
                     </div>
                     <div class="radio">
                         <label>
-                            <input type="radio" asp-for="PaymentType" value="@PaymentType.IZettle" checked="@(Model.PaymentType == PaymentType.IZettle)" />
+                            <input type="radio" asp-for="PaymentType" value="@PaymentType.Vipps" checked="@(Model.PaymentType == PaymentType.Vipps)" />
                             Paid with Vipps
                         </label>
                     </div>

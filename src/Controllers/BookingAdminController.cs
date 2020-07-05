@@ -551,8 +551,8 @@ namespace TandemBooking.Controllers
                 FlightType = booking.FlightType ?? FlightType.Hangur,
                 PaymentType = booking.PaymentType ?? PaymentType.IZettle,
                 BoatDriver = booking.BoatDriver,
-                IZettleAccount = booking.IZettleAccount ?? booking.AssignedPilot?.IZettleAccount,
-                VippsAccount = booking.VippsAccount ?? booking.AssignedPilot?.VippsAccount,
+                //IZettleAccount = booking.IZettleAccount ?? booking.AssignedPilot?.IZettleAccount,
+                //VippsAccount = booking.VippsAccount ?? booking.AssignedPilot?.VippsAccount,
             });
         }
 
@@ -574,8 +574,8 @@ namespace TandemBooking.Controllers
             booking.PassengerFee = input.PassengerFee;
             booking.FlightType = input.FlightType;
             booking.PaymentType = input.PaymentType;
-            booking.IZettleAccount = !string.IsNullOrWhiteSpace(input.IZettleAccount) ? input.IZettleAccount : null;
-            booking.VippsAccount = !string.IsNullOrWhiteSpace(input.VippsAccount) ? input.VippsAccount : null;
+            //booking.IZettleAccount = !string.IsNullOrWhiteSpace(input.IZettleAccount) ? input.IZettleAccount : null;
+            //booking.VippsAccount = !string.IsNullOrWhiteSpace(input.VippsAccount) ? input.VippsAccount : null;
             booking.BoatDriver = input.BoatDriver;
 
             var remainingFee = booking.PassengerFee;

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 using TandemBooking.Services;
@@ -10,13 +11,16 @@ namespace TandemBooking.Models
         public string Name { get; set; }
         public bool IsPilot { get; set; }
         public bool IsAdmin { get; set; }
+        public bool IsPaymentAdmin { get; set; }
         public bool EmailNotification { get; set; }
         public bool SmsNotification { get; set; }
         public int? MinPassengerWeight { get; set; }
         public int? MaxPassengerWeight { get; set; }
 
-        public string IZettleAccount { get; set; }
-        public string VippsAccount { get; set; }
+        public Guid? VippsPaymentAccountId { get; set; }
+        public PaymentAccount VippsPaymentAccountIdId { get; set; }
+        public Guid? IZettleAccountId { get; set; }
+        public PaymentAccount IZettlePaymentAccount { get; set; }
 
         public ICollection<BookedPilot> Bookings { get; set; }
         public ICollection<PilotAvailability> Availabilities { get; set; }

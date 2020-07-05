@@ -50,8 +50,8 @@ namespace TandemBooking.Controllers
                 user.PhoneNumber = input.PhoneNumber;
                 user.IsPilot = input.IsPilot;
                 user.IsAdmin = input.IsAdmin;
-                user.IZettleAccount = input.IZettleAccount;
-                user.VippsAccount = input.VippsAccount;
+                //user.IZettleAccount = input.IZettleAccount;
+                //user.VippsAccount = input.VippsAccount;
                 _context.SaveChanges();
             }
 

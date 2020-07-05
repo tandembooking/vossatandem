@@ -15,7 +15,9 @@ namespace TandemBooking.Models
     public enum PaymentType
     {
         IZettle = 1,
-        Vipps = 2
+        Vipps = 2,
+        Free = 3,
+        Other = 4,
     }
 
 
@@ -47,8 +49,9 @@ namespace TandemBooking.Models
         public ICollection<Booking> AdditionalBookings { get; set; }
 
         public Location BookingLocation { get; set; }
-        public string IZettleAccount { get; set; }
-        public string VippsAccount { get; set; }
+
+        public Guid? PaymentAccountId { get; set; }
+        public PaymentAccount PaymentAccount { get; set; }
 
         public ICollection<BookedPilot> BookedPilots { get; set; }
         public ICollection<BookingEvent> BookingEvents { get; set; }
