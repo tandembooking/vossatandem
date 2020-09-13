@@ -1,0 +1,53 @@
+﻿@page "/admin/payments"
+@attribute [Authorize(Policy = TandemBooking.Services.Policy.IsAdmin)]
+
+@if (Progress != null)
+{
+    <div class="alert alert-info">
+        @Progress
+    </div>
+}
+else
+{
+    <h2>Payment Accounts</h2>
+
+    <div>
+        <ul class="list list-inline">
+            <li><button class="btn btn-default" @onclick="ImportPaymentsIZettle">Import payments from iZettle</button></li>
+            <li><button class="btn btn-default" @onclick="ImportPaymentsVippsDownload">Import payments from Vipps</button></li>
+            <li><InputFile class="btn btn-default" OnChange="ImportPaymentsVippsFiles">Import payments from Vipps</InputFile></li>
+        </ul>
+    </div>
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger">
+            @ErrorMessage
+        </div>
+    }
+
+    <table class="table">
+        <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Account</th>
+            <th class="text-right">Amount</th>
+            <th></th>
+        </tr>
+
+        @if (ImportedPayments != null)
+        {
+            @foreach (var payment in ImportedPayments)
+            {
+                <tr>
+                    <td>@payment.PaymentDate.ToString("dd.MM.yyy HH:mm")</td>
+                    <td>@payment.PaymentType.ToString()</td>
+                    <td>@payment.PaymentAccount.Name</td>
+                    <td class="text-right">@payment.Amount.ToString("n2")</td>
+                    <td class="text-right">
+                    </td>
+                </tr>
+            }
+        }
+    </table>
+}

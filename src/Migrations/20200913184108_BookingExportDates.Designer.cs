@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TandemBooking.Models;
 
 namespace tandembooking.Migrations
 {
     [DbContext(typeof(TandemBookingContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200913184108_BookingExportDates")]
+    partial class BookingExportDates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -174,6 +176,9 @@ namespace tandembooking.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
+                    b.Property<Guid?>("IZettleAccountId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("IZettlePaymentAccountId")
                         .HasColumnType("uniqueidentifier");
 
@@ -236,6 +241,9 @@ namespace tandembooking.Migrations
                     b.Property<Guid?>("VippsPaymentAccountId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("VippsPaymentAccountIdIdId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IZettlePaymentAccountId");
@@ -248,7 +256,7 @@ namespace tandembooking.Migrations
                         .HasName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.HasIndex("VippsPaymentAccountId");
+                    b.HasIndex("VippsPaymentAccountIdIdId");
 
                     b.ToTable("AspNetUsers");
                 });
@@ -677,9 +685,9 @@ namespace tandembooking.Migrations
                         .WithMany()
                         .HasForeignKey("IZettlePaymentAccountId");
 
-                    b.HasOne("TandemBooking.Models.PaymentAccount", "VippsPaymentAccount")
+                    b.HasOne("TandemBooking.Models.PaymentAccount", "VippsPaymentAccountIdId")
                         .WithMany()
-                        .HasForeignKey("VippsPaymentAccountId");
+                        .HasForeignKey("VippsPaymentAccountIdIdId");
                 });
 
             modelBuilder.Entity("TandemBooking.Models.BookedPilot", b =>

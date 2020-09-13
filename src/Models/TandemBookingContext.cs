@@ -19,6 +19,9 @@ namespace TandemBooking.Models
         public DbSet<BookedPilot> BookedPilots { get; set; }
         public DbSet<SentSmsMessage> SentSmsMessages { get; set; }
         public DbSet<SentSmsMessagePart> SentSmsMessageParts { get; set; }
+        public DbSet<Payment> Payments { get; set; }
+        public DbSet<PaymentAccount> PaymentAccounts { get; set; }
+        public DbSet<VippsSettlement> VippsSettlements { get; set; }
 
 
         public TandemBookingContext(DbContextOptions<TandemBookingContext> options) : base(options)

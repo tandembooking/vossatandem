@@ -24,7 +24,9 @@
             <AuthorizeView Policy="@Policy.IsValidated">
                 <Authorized>
                     <ul class="nav navbar-nav navbar-right">
-                        <li>Authorized!</li>
+                        <MenuDropdown Caption="Pilots">
+                            <li><a href="admin/paymentAccounts">Payment Accounts</a></li>
+                        </MenuDropdown>
                     </ul>
                 </Authorized>
                 <NotAuthorized>

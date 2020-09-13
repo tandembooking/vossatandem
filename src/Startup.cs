@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Runtime.InteropServices.ComTypes;
+using System.Threading;
 using Fujiy.ApplicationInsights.AspNetCore.SqlTrack;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
@@ -47,11 +48,15 @@ namespace TandemBooking
             services.AddTransient(provider => Configuration.GetSection("BookingCoordinator").Get<BookingCoordinatorSettings>());
             services.AddTransient(provider => Configuration.GetSection("Nexmo").Get<NexmoSettings>());
             services.AddTransient(provider => Configuration.GetSection("Mail").Get<MailSettings>());
+            services.AddTransient(provider => Configuration.GetSection("IZettle").Get<IZettleSettings>());
+            services.AddTransient(provider => Configuration.GetSection("Vipps").Get<VippsSettings>());
 
             //add implementations of mail and nexmo services, which does communication with the outside world
             //they are interfaced because we want to provide different implementations for testing
             services.AddTransient<IMailService, MailService>();
             services.AddTransient<INexmoService, NexmoService>();
+            services.AddSingleton<IZettleService>();
+            services.AddSingleton<VippsService>();
 
             services.AddBookingServices();
         }

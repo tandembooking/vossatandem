@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TandemBooking.Models;
 
 namespace tandembooking.Migrations
 {
     [DbContext(typeof(TandemBookingContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200823191614_VippsSettlement")]
+    partial class VippsSettlement
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -174,6 +176,9 @@ namespace tandembooking.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
+                    b.Property<Guid?>("IZettleAccountId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("IZettlePaymentAccountId")
                         .HasColumnType("uniqueidentifier");
 
@@ -236,6 +241,9 @@ namespace tandembooking.Migrations
                     b.Property<Guid?>("VippsPaymentAccountId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("VippsPaymentAccountIdIdId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IZettlePaymentAccountId");
@@ -248,7 +256,7 @@ namespace tandembooking.Migrations
                         .HasName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.HasIndex("VippsPaymentAccountId");
+                    b.HasIndex("VippsPaymentAccountIdIdId");
 
                     b.ToTable("AspNetUsers");
                 });
@@ -321,9 +329,6 @@ namespace tandembooking.Migrations
                     b.Property<DateTime>("DateRegistered")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("ExportedDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<int?>("FlightType")
                         .HasColumnType("int");
 
@@ -353,9 +358,6 @@ namespace tandembooking.Migrations
 
                     b.Property<Guid?>("PrimaryBookingId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("ReconciledDate")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -396,33 +398,6 @@ namespace tandembooking.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("BookingEvent");
-                });
-
-            modelBuilder.Entity("TandemBooking.Models.BookingPayment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid>("BookingId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("InsertDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("PaymentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BookingId");
-
-                    b.HasIndex("PaymentId");
-
-                    b.ToTable("BookingPayment");
                 });
 
             modelBuilder.Entity("TandemBooking.Models.Location", b =>
@@ -677,9 +652,9 @@ namespace tandembooking.Migrations
                         .WithMany()
                         .HasForeignKey("IZettlePaymentAccountId");
 
-                    b.HasOne("TandemBooking.Models.PaymentAccount", "VippsPaymentAccount")
+                    b.HasOne("TandemBooking.Models.PaymentAccount", "VippsPaymentAccountIdId")
                         .WithMany()
-                        .HasForeignKey("VippsPaymentAccountId");
+                        .HasForeignKey("VippsPaymentAccountIdIdId");
                 });
 
             modelBuilder.Entity("TandemBooking.Models.BookedPilot", b =>
@@ -721,21 +696,6 @@ namespace tandembooking.Migrations
                     b.HasOne("TandemBooking.Models.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("TandemBooking.Models.BookingPayment", b =>
-                {
-                    b.HasOne("TandemBooking.Models.Booking", "Booking")
-                        .WithMany("BookingPayments")
-                        .HasForeignKey("BookingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TandemBooking.Models.Payment", "Payment")
-                        .WithMany()
-                        .HasForeignKey("PaymentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("TandemBooking.Models.Payment", b =>

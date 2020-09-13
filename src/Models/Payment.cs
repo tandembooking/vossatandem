@@ -11,9 +11,10 @@ namespace TandemBooking.Models
         public PaymentType PaymentType { get; set; }
         public string ExternalRef { get; set; }
         public decimal Amount { get; set; }
+        public decimal Fee { get; set; }
         public decimal UnreconciledAmount { get; set; }
-        public DateTime? InsertDate { get; set; }
-        public DateTime? ConfirmedDate { get; set; }
+        public DateTimeOffset? InsertDate { get; set; }
+        public DateTimeOffset PaymentDate { get; set; }
 
         public Guid PaymentAccountId { get; set; }
         public PaymentAccount PaymentAccount { get; set; }

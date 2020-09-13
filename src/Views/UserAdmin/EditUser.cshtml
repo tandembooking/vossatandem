@@ -1,6 +1,6 @@
-@model ApplicationUser
+@model TandemBooking.Controllers.EditUserViewModel
 @{
-    ViewData["Title"] = string.IsNullOrEmpty(Model.Name) ? "Edit User" : Model.Name;
+    ViewData["Title"] = string.IsNullOrEmpty(Model.User.Name) ? "Edit User" : Model.User.Name;
 }
 
 <h2>@ViewData["Title"]</h2>
@@ -9,54 +9,66 @@
     <div class="col-md-8">
         <section>
             <form asp-controller="UserAdmin" asp-action="EditUser" method="post" class="form-horizontal" role="form">
-                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="User.Id" />
                 <div asp-validation-summary="All" class="text-danger"></div>
 
                 <div class="form-group">
-                    <label asp-for="Name" class="col-md-2 control-label">Name</label>
+                    <label asp-for="User.Name" class="col-md-2 control-label">Name</label>
                     <div class="col-md-10">
-                        <input asp-for="Name" class="form-control" />
-                        <span asp-validation-for="Name" class="text-danger"></span>
+                        <input asp-for="User.Name" class="form-control" />
+                        <span asp-validation-for="User.Name" class="text-danger"></span>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="Email" class="col-md-2 control-label">Email</label>
+                    <label asp-for="User.Email" class="col-md-2 control-label">Email</label>
                     <div class="col-md-10">
-                        <input asp-for="Email" class="form-control" />
-                        <span asp-validation-for="Email" class="text-danger"></span>
+                        <input asp-for="User.Email" class="form-control" />
+                        <span asp-validation-for="User.Email" class="text-danger"></span>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="PhoneNumber" class="col-md-2 control-label">Phone</label>
+                    <label asp-for="User.PhoneNumber" class="col-md-2 control-label">Phone</label>
                     <div class="col-md-10">
-                        <input asp-for="PhoneNumber" class="form-control" />
-                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                    </div>
-                </div>
-
-                @*<div class="form-group">
-                    <label asp-for="VippsAccount" class="col-md-2 control-label">Vipps Account</label>
-                    <div class="col-md-10">
-                        <input asp-for="VippsAccount" class="form-control" />
-                        <span asp-validation-for="VippsAccount" class="text-danger"></span>
+                        <input asp-for="User.PhoneNumber" class="form-control" />
+                        <span asp-validation-for="User.PhoneNumber" class="text-danger"></span>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="IZettleAccount" class="col-md-2 control-label">iZettle Account</label>
+                    <label asp-for="User.VippsPaymentAccountId" class="col-md-2 control-label">Vipps Account</label>
                     <div class="col-md-10">
-                        <input asp-for="IZettleAccount" class="form-control" />
-                        <span asp-validation-for="IZettleAccount" class="text-danger"></span>
+                        <select asp-for="User.VippsPaymentAccountId" class="form-control">
+                            <option value="">No Vipps account</option>
+                            @foreach (var acct in Model.VippsAccounts)
+                            {
+                                <option value="@acct.Id" selected="@(acct.Id == Model.User.VippsPaymentAccountId)">@acct.Name</option>
+                            }
+                        </select>
+                        <span asp-validation-for="User.VippsPaymentAccountId" class="text-danger"></span>
                     </div>
-                </div>*@
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="User.IZettlePaymentAccountId" class="col-md-2 control-label">iZettle Account</label>
+                    <div class="col-md-10">
+                        <select asp-for="User.IZettlePaymentAccountId" class="form-control">
+                            <option value="">No iZettle account</option>
+                            @foreach (var acct in Model.IZettleAccounts)
+                            {
+                                <option value="@acct.Id" selected="@(acct.Id == Model.User.VippsPaymentAccountId)">@acct.Name</option>
+                            }
+                        </select>
+                        <span asp-validation-for="User.IZettlePaymentAccountId" class="text-danger"></span>
+                    </div>
+                </div>
 
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">
                         <div class="checkbox checkbox-inline">
-                            <input asp-for="IsPilot" />
-                            <label asp-for="IsPilot">Tandem Pilot</label>
+                            <input asp-for="User.IsPilot" />
+                            <label asp-for="User.IsPilot">Pilot</label>
                         </div>
                     </div>
                 </div>
@@ -64,8 +76,8 @@
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">
                         <div class="checkbox checkbox-inline">
-                            <input asp-for="IsAdmin" />
-                            <label asp-for="IsAdmin">Admin</label>
+                            <input asp-for="User.IsAdmin" />
+                            <label asp-for="User.IsAdmin">Admin</label>
                         </div>
                     </div>
                 </div>

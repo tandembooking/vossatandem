@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -34,28 +35,44 @@ namespace TandemBooking.Controllers
         public ActionResult EditUser(string id)
         {
             var user = _context.Users.First(u => u.Id == id);
-            return View(user);
+            var accounts = _context.PaymentAccounts
+                .Where(a => a.Active)
+                .OrderBy(a => a.Name)
+                .ToList();
+            return View(new EditUserViewModel
+            {
+                User = user,
+                IZettleAccounts = accounts.Where(a => a.PaymentType == PaymentType.IZettle).ToList(),
+                VippsAccounts = accounts.Where(a => a.PaymentType == PaymentType.Vipps).ToList(),
+            });
         }
 
         [HttpPost]
         [Authorize(Policy = "IsAdmin")]
-        public async Task<ActionResult> EditUser(string id, ApplicationUser input)
+        public async Task<ActionResult> EditUser(string id, ApplicationUser user)
         {
             if (ModelState.IsValid)
             {
-                var user = _context.Users.First(u => u.Id == id);
-                user.Name = input.Name;
-                user.Email = input.Email;
-                input.PhoneNumber = await _nexmo.FormatPhoneNumber(input.PhoneNumber);
-                user.PhoneNumber = input.PhoneNumber;
-                user.IsPilot = input.IsPilot;
-                user.IsAdmin = input.IsAdmin;
-                //user.IZettleAccount = input.IZettleAccount;
-                //user.VippsAccount = input.VippsAccount;
+                var updateUser = _context.Users.First(u => u.Id == id);
+                updateUser.Name = user.Name;
+                updateUser.Email = user.Email;
+                user.PhoneNumber = await _nexmo.FormatPhoneNumber(user.PhoneNumber);
+                updateUser.PhoneNumber = user.PhoneNumber;
+                updateUser.IsPilot = user.IsPilot;
+                updateUser.IsAdmin = user.IsAdmin;
+                updateUser.IZettlePaymentAccountId = user.IZettlePaymentAccountId;
+                updateUser.VippsPaymentAccountId = user.VippsPaymentAccountId;
                 _context.SaveChanges();
             }
 
-            return View(input);
+            return EditUser(id);
         }
+    }
+
+    public class EditUserViewModel
+    {
+        public ApplicationUser User { get; set; }
+        public List<PaymentAccount> VippsAccounts { get; set; }
+        public List<PaymentAccount> IZettleAccounts { get; set; }
     }
 }

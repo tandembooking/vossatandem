@@ -11,7 +11,7 @@ namespace TandemBooking.Models
         public Guid PaymentId { get; set; }
         public Payment Payment { get; set; }
 
-        public Guid BookinId { get; set; }
+        public Guid BookingId { get; set; }
         public Booking Booking { get; set; }
     }
 }

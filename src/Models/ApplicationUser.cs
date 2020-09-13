@@ -18,8 +18,9 @@ namespace TandemBooking.Models
         public int? MaxPassengerWeight { get; set; }
 
         public Guid? VippsPaymentAccountId { get; set; }
-        public PaymentAccount VippsPaymentAccountIdId { get; set; }
-        public Guid? IZettleAccountId { get; set; }
+        public PaymentAccount VippsPaymentAccount { get; set; }
+
+        public Guid? IZettlePaymentAccountId { get; set; }
         public PaymentAccount IZettlePaymentAccount { get; set; }
 
         public ICollection<BookedPilot> Bookings { get; set; }

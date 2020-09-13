@@ -149,10 +149,6 @@ We might have to do a short hike to get from the road to the take off, and in or
 take off we have to do a short sprint to get in the air. Choose footwear accordingly - 
 high heels is not an option!
 
-Unfortunately, due to techincal issues, not all of our instructors are able to accept 
-credit cards, and can only accept cash or Vipps. Please discuss payment options with your
-instructor before flying.
-
 {assignedPilotMessage}
 
 Kind regards,

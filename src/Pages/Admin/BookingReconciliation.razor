@@ -1,0 +1,119 @@
+﻿@page "/admin/reconciliation"
+@attribute [Authorize(Policy = TandemBooking.Services.Policy.IsAdmin)]
+@using TandemBooking.Models
+
+<h2>Booking Reconciliation</h2>
+
+<div>
+    <ul class="list list-inline">
+        @*<li><button class="btn btn-default" @onclick="ImportPaymentsIZettle">Import payments from iZettle</button></li>
+            <li><button class="btn btn-default" @onclick="ImportPaymentsVippsDownload">Import payments from Vipps</button></li>
+            <li><InputFile class="btn btn-default" OnChange="ImportPaymentsVippsFiles">Import payments from Vipps</InputFile></li>*@
+    </ul>
+</div>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="alert alert-danger">
+        @ErrorMessage
+    </div>
+}
+
+@if (SelectedBooking != null)
+{
+    <div>
+        <form>
+            <div>
+                <label>Instructor:</label>
+                @(SelectedBooking.AssignedPilot?.Name ?? "No assigned instructor")
+            </div>
+            <div>
+                <label>Passenger Fee:</label>
+                @SelectedBooking.PassengerFee
+            </div>
+            <div>
+                <label>Booking Date:</label>
+                @SelectedBooking.BookingDate.ToString("dd.MM.yyy")
+            </div>
+            <div>
+                <label>Completed Date:</label>
+                @SelectedBooking.CompletedDate?.ToString("dd.MM.yyy HH:mm:ss")
+            </div>
+            <div class="form-row">
+                <label>Payment type</label>
+                <select class="form-control" @onchange="OnPaymentTypeSelected">
+                    <option value="">Please select payment type</option>
+                    <option value="@PaymentType.Free" selected="@(SelectedBooking.PaymentType == PaymentType.Free)">Free</option>
+                    <option value="@PaymentType.IZettle" selected="@(SelectedBooking.PaymentType == PaymentType.IZettle)">iZettle</option>
+                    <option value="@PaymentType.Vipps" selected="@(SelectedBooking.PaymentType == PaymentType.Vipps)">Vipps</option>
+                    <option value="@PaymentType.Other" selected="@(SelectedBooking.PaymentType == PaymentType.Other)">Other</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label>Account</label>
+                <select class="form-control" @onchange="(c => OnAccountSelected(c))">
+                    <option value="">Please select account</option>
+                    @foreach (var account in FilteredPaymentAccounts)
+                    {
+                        <option value="@account.Id" selected="@(account == SelectedBooking.PaymentAccount)">
+                            @account.Name
+                        </option>
+                    }
+                </select>
+            </div>
+        </form>
+
+        @if (FilteredPayments != null)
+        { 
+            <table class="table">
+                <tr>
+                    <th>Payment date</th>
+                    <th>Unreconciled amount</th>
+                    <th></th>
+                </tr>
+                @foreach (var payment in FilteredPayments)
+                {
+                    <tr>
+                        <td>@payment.PaymentDate.ToString("dd.MM.yyyy HH:mm:ss")</td>
+                        <td>@payment.UnreconciledAmount</td>
+                        <td class="text-right">
+                            <button type="button" class="btn btn-success" @onclick="@(() => AddBookingPayment(SelectedBooking, payment))">
+                                Use payment on booking
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </table>
+        }
+    </div>
+}
+
+<table class="table">
+    <tr>
+        <th>Booking date</th>
+        <th>Completed</th>
+        <th>Pilot</th>
+        <th>Passenger</th>
+        <th>Amount</th>
+        <th></th>
+    </tr>
+
+    @if (UnreconciledBookings != null)
+    {
+        @foreach (var booking in UnreconciledBookings)
+        {
+            <tr>
+                <td>@booking.BookingDate.ToString("dd.MM.yyyy")</td>
+                <td>@booking.CompletedDate?.ToString("dd.MM.yyyy HH:mm:ss")</td>
+                <td>@(booking.AssignedPilot?.Name ?? "No pilot assigned")</td>
+                <td>@booking.PassengerName</td>
+                <td>@booking.PassengerFee.ToString("n2")</td>
+                <td class="text-right">
+                    <button type="button" class="btn btn-primary" @onclick="@(() => SelectBooking(booking))">
+                        Select booking
+                    </button>
+                </td>
+            </tr>
+        }
+    }
+</table>
