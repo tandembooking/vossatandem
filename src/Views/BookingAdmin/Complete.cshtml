@@ -70,24 +70,30 @@
                             Paid with Vipps
                         </label>
                     </div>
-
-                    @*<div class="form-group" id="izettle-account-group">
-                        <label asp-for="IZettleAccount" class="col-md-2 control-label">iZettle account</label>
-                        <div class="col-md-10">
-                            <input asp-for="IZettleAccount" class="form-control" />
-                            <span>use if passenger paid to iZettle-account of another instructor</span>
-                            <span asp-validation-for="IZettleAccount" class="text-danger" />
-                        </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" asp-for="PaymentType" value="@PaymentType.Invoice" checked="@(Model.PaymentType == PaymentType.Invoice)" />
+                            Paid with Invoice
+                        </label>
                     </div>
 
-                    <div class="form-group" id="vipps-acount-group">
-                        <label asp-for="VippsAccount" class="col-md-2 control-label">Vipps Account</label>
-                        <div class="col-md-10">
-                            <input asp-for="VippsAccount" class="form-control" />
-                            <span>use if passenger paid to Vipps-account of another instructor</span>
-                            <span asp-validation-for="VippsAccount" class="text-danger" />
-                        </div>
-                    </div>*@
+                    @*<div class="form-group" id="izettle-account-group">
+            <label asp-for="IZettleAccount" class="col-md-2 control-label">iZettle account</label>
+            <div class="col-md-10">
+                <input asp-for="IZettleAccount" class="form-control" />
+                <span>use if passenger paid to iZettle-account of another instructor</span>
+                <span asp-validation-for="IZettleAccount" class="text-danger" />
+            </div>
+        </div>
+
+        <div class="form-group" id="vipps-acount-group">
+            <label asp-for="VippsAccount" class="col-md-2 control-label">Vipps Account</label>
+            <div class="col-md-10">
+                <input asp-for="VippsAccount" class="form-control" />
+                <span>use if passenger paid to Vipps-account of another instructor</span>
+                <span asp-validation-for="VippsAccount" class="text-danger" />
+            </div>
+        </div>*@
 
                     <div class="form-group" id="boat-driver-group">
                         <label asp-for="BoatDriver" class="col-md-2 control-label">Boat driver (when winching)</label>

@@ -19,6 +19,7 @@ namespace TandemBooking.Models
         Vipps = 2,
         Free = 3,
         Other = 4,
+        Invoice = 5,
     }
 
 
