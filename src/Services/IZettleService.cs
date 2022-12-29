@@ -75,11 +75,11 @@ namespace TandemBooking.Services
             var args = new List<string>();
             if (startDate != null)
             {
-                args.Add($"startDate={startDate:yyyy-dd-MM}");
+                args.Add($"startDate={startDate:yyyy-MM-dd}");
             }
             if (endDate != null)
             {
-                args.Add($"endDate={endDate:yyyy-dd-MM}");
+                args.Add($"endDate={endDate:yyyy-MM-dd}");
             }
             var message = new HttpRequestMessage(HttpMethod.Get, $"https://purchase.izettle.com/purchases/v2?{string.Join("&", args)}");
             message.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", await GetToken());

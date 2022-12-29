@@ -43,7 +43,7 @@ namespace TandemBooking.Pages.Admin
             {
                 var db = scope.ServiceProvider.GetService<TandemBookingContext>();
 
-                var purchases = await IZettleService.GetPayments(DateTime.Now.AddYears(-1), null);
+                var purchases = await IZettleService.GetPayments(DateTime.Now.AddYears(-2), null);
                 var payments = purchases.Purchases
                     .SelectMany(purchase => purchase.Payments
                         .Select(payment => new
