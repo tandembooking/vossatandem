@@ -11,5 +11,6 @@ jobs:
     env:
       DEPLOY_TARGET_PATH: ${{ secrets.DEPLOY_TARGET_PATH }}
     steps:
+    - uses: actions/checkout@v3
     - name: Build and Deploy
       run: .\deploy.ps1
