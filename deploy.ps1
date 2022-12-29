@@ -1,4 +1,4 @@
-. deploy-tools.ps1
+. .\deploy-tools.ps1
 
 Build
 Publish
