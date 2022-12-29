@@ -8,6 +8,8 @@ jobs:
   deploy:
     runs-on: [self-hosted, vossatandem-web]
     environment: voss-test
+    env:
+      DEPLOY_TARGET_PATH: ${{ secrets.DEPLOY_TARGET_PATH }}
     steps:
     - name: Build and Deploy
       run: .\Deploy.ps1
