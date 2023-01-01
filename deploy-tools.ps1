@@ -1,3 +1,5 @@
+echo $env:PATH
+
 function Build()
 {
     Push-Location .\src
