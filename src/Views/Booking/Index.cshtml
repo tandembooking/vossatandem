@@ -11,11 +11,6 @@
         the form below, and one of our pilots will contact you and arrange the details.
     </p>
 
-    <div class="info-text air-vertical" style="background-color: #ff400f">
-        Corona update:<br />
-        From June 25th, we are able to fly tandems again under the current health regulations. It is important that anyone with COVID-19 symptoms stays at home, and does not fly tandem. Furthermore, we are unable to accept anyone in the <a href="https://www.fhi.no/nettpub/coronavirus/fakta/risikogrupper/#grupper-med-moderat-hoey-risiko">moderate/high</a> risk group, as defined by the health authorities.
-    </div>
-
     @* All of this instead of @Html.ValidationSummary(false) due to a bug in ASP.NET Core 1.0 (probably fixed in 1.1) *@
     @if (!@ViewData.ModelState.IsValid)
     {
